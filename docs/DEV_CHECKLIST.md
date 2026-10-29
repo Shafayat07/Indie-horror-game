@@ -1,0 +1,41 @@
+# Development checklist — THE TIDE REMEMBERS
+
+Legend: [x] done and verified · [~] done, partly verified · [ ] not done
+
+## Environment / tooling
+- [x] Godot 4.3 stable (official GitHub release) — `/opt/godot`, symlinked to `godot`
+- [x] Python 3 + numpy + Pillow (preinstalled) for texture/audio generation
+- [ ] Blender — not installed (download server blocked by the environment's network policy); key models are built procedurally in-engine instead
+- [ ] Poly Haven / ambientCG / Kenney — blocked by network policy (HTTP 403); all textures and sounds generated procedurally instead
+
+## Core systems
+- [x] First-person controller: walk, sprint, crouch (headroom check), jump, gravity, collision
+- [x] Flashlight (shadowed spot, slight lag), click is audible to The Listener
+- [x] Interaction ray + prompts (generic Interactable, Door, notes)
+- [x] Surface-aware footsteps (wood / stone / gravel / grass / metal / water) that emit noise
+- [x] Field recorder: Listen (filters ambience, opens ListenOnly bus), Record (2.4 s, must stay in range), Replay (speaker noise + echo at the recording's origin)
+- [x] PRE-ECHO system (signature swell, PreEcho reverb bus, tinted captions, Listener hears it)
+- [x] The Listener: procedural rope/net model, procedural animation, independent head, DORMANT/ROAMING/INVESTIGATING/SEARCHING/HUNTING/RETURNING, navmesh pathing, stuck recovery, hunt timeout, safe-room repulsion, never passes doorways
+- [x] Debug AI overlay (`--debug-ai` command-line flag only)
+- [x] Death sequence + checkpoint reload
+- [x] Save/continue (user://save.json), settings (user://settings.cfg)
+- [x] Zone-based ambience mixer with nested interiors, reverb per space
+- [x] Sea boundary (tide decides what is reachable)
+
+## Content
+- [x] A — Flooded Dock: boat radio pre-echo, footsteps that follow and take three more steps, shed + recorder tutorial
+- [x] B — Settlement: teahouse radio → conversation from the blue house, backwards clock with key, wet footprints, lit windows, motionless bell pre-echo, Listener patrol, lighthouse wall + gate
+- [x] C — Weather Station: fence + gate, fuel valve + generator, powered lights, hidden calibration tape, relay sequence (wrong order = blackout + reset), transmission lowers the tide
+- [x] D — Tidal Caves: carved cave mesh, pools (loud water), mineral light, survey cable guide, drowned bell + acoustic seal, gallery Listener encounter, loose-plate lure
+- [x] E — Lighthouse: walkable tower, contradicting tapes, seal release (hatch heard before pulled), beacon that stops when watched
+- [x] Transmitter chamber: three couplings with pre-echo lure, valve lure, armed console, two choices
+- [x] Ending A (break): overload, silence, Listener collapses, tide returns, quiet radio pre-echo on the boat
+- [x] Ending B (send): transmission, Listener leaves, voices on every radio, radio speaks your next words on the boat
+- [x] Main menu (live lighthouse scene), options, credits, pause menu, ending/credits screen
+
+## Verification
+- [x] Headless parse/import of all scripts, no errors
+- [x] Level builds at every checkpoint
+- [x] Rendered screenshots of all areas (software GL under Xvfb)
+- [ ] Automated full playthrough, both endings (tests/scenarios.gd) — see README "Testing status"
+- [ ] Windows export (needs export templates)
