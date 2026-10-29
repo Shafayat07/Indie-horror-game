@@ -16,7 +16,7 @@ static var _detail: FastNoiseLite
 
 ## Flattened pads: [x, z, radius, height, falloff]
 const PADS := [
-	[0.0, 79.0, 7.0, 1.9, 6.0],      # dock landing
+	[0.0, 79.0, 7.0, 1.35, 6.0],     # dock landing (just below the deck)
 	[8.0, 72.0, 6.0, 2.1, 5.0],      # shed
 	[0.0, 45.0, 26.0, 4.2, 10.0],    # settlement
 	[-2.0, 25.0, 12.0, 4.4, 8.0],    # square / junction
@@ -27,7 +27,7 @@ const PADS := [
 
 ## Paths: [ax, az, bx, bz, half_width, height_a, height_b] (NAN = keep terrain)
 const PATHS := [
-	[0.0, 80.0, 0.0, 62.0, 1.8, 1.9, 3.7],
+	[0.0, 80.0, 0.0, 62.0, 1.8, 1.35, 3.7],
 	[0.0, 62.0, 0.0, 22.0, 2.2, 3.7, 4.4],
 	[-2.0, 22.0, -36.0, -6.0, 2.0, 4.4, 6.4],
 	[-36.0, -6.0, -46.0, -8.0, 2.0, 6.4, 6.5],

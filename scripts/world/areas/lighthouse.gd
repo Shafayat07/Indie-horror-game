@@ -6,7 +6,8 @@ extends Node3D
 ## it stops turning while you look straight at it.
 
 const C := Vector3(0, 16.5, -82)
-const R_IN := 5.0
+const R_IN := 5.6
+const S := 3.1      # half-size of the stair square (landings must fit inside the octagon)
 const TOP := 15.5
 
 var level: Node
@@ -103,7 +104,7 @@ func _tower() -> void:
 func _stairs_and_floors() -> void:
 	var wood := B.mat("wood_planks", Color(0.75, 0.72, 0.66), 0.6)
 	var iron := B.mat("metal_rust", Color(0.7, 0.7, 0.7), 1.0, {"metallic": 0.4})
-	var s := 3.3
+	var s := S
 	var w := 1.1
 	var e := s + w * 0.5
 	# F1 north 0->3, F2 east 3->6, F3 south 6->9, F4 west 9->12
@@ -113,18 +114,19 @@ func _stairs_and_floors() -> void:
 	B.stairs(self, C + Vector3(s, 6.0, e), C + Vector3(-s, 9.0, e), w, iron, "metal")
 	B.box(self, C + Vector3(-e, 8.9, e), Vector3(w + 0.1, 0.2, w + 0.1), iron, {"surface": "metal"})
 	B.stairs(self, C + Vector3(-e, 9.0, s), C + Vector3(-e, 12.0, -s), w, iron, "metal")
-	# floors (ground, landing at 6 with the east strip open, control room at 12 with the west strip open)
-	B.cyl(self, C + Vector3(0, -0.1, 0), R_IN + 0.1, 0.2, wood, {"segments": 8, "surface": "wood"})
-	B.box(self, C + Vector3(-0.85, 5.9, 0), Vector3(8.3, 0.2, 9.6), wood, {"surface": "wood"})
+	# floors: ground; landing at 6 (east strip open over F2); control room at 12 (west strip open over F4)
+	var r := R_IN
+	B.cyl(self, C + Vector3(0, -0.1, 0), r + 0.1, 0.2, wood, {"segments": 8, "surface": "wood"})
+	B.box(self, C + Vector3((s - r) * 0.5, 5.9, 0), Vector3(s + r, 0.2, r * 2.0), wood, {"surface": "wood"})
 	B.box(self, C + Vector3(e, 5.9, e), Vector3(w + 0.1, 0.2, w + 0.1), wood, {"surface": "wood"})
-	B.box(self, C + Vector3(0.85, 11.9, 0), Vector3(8.3, 0.2, 9.6), wood, {"surface": "wood"})
+	B.box(self, C + Vector3((r - s) * 0.5, 11.9, 0), Vector3(s + r, 0.2, r * 2.0), wood, {"surface": "wood"})
 	B.box(self, C + Vector3(-e, 11.9, -e), Vector3(w + 0.1, 0.2, w + 0.1), wood, {"surface": "wood"})
-	B.box(self, C + Vector3(0, TOP - 0.1, 0), Vector3(9.6, 0.2, 9.6), B.mat("wood_dark", Color.WHITE, 0.6), {"collide": true})
-	# railings so nobody steps off a landing into the stairwell
-	B.collider(self, C + Vector3(s - 0.05, 7.0, -0.6), Vector3(0.1, 2.0, 8.2))
-	B.box(self, C + Vector3(s - 0.05, 7.0, -0.6), Vector3(0.06, 0.06, 8.2), iron, {"collide": false})
-	B.collider(self, C + Vector3(-s + 0.05, 13.0, 0.6), Vector3(0.1, 2.0, 8.2))
-	B.box(self, C + Vector3(-s + 0.05, 13.0, 0.6), Vector3(0.06, 0.06, 8.2), iron, {"collide": false})
+	B.box(self, C + Vector3(0, TOP - 0.1, 0), Vector3(r * 2.0, 0.2, r * 2.0), B.mat("wood_dark", Color.WHITE, 0.6), {"collide": true})
+	# railings so nobody steps off a landing into the stairwell (each leaves its landing corner open)
+	B.collider(self, C + Vector3(s - 0.05, 7.0, (s - r) * 0.5), Vector3(0.1, 2.0, r + s))
+	B.box(self, C + Vector3(s - 0.05, 7.0, (s - r) * 0.5), Vector3(0.06, 0.06, r + s), iron, {"collide": false})
+	B.collider(self, C + Vector3(-s + 0.05, 13.0, (r - s) * 0.5), Vector3(0.1, 2.0, r + s))
+	B.box(self, C + Vector3(-s + 0.05, 13.0, (r - s) * 0.5), Vector3(0.06, 0.06, r + s), iron, {"collide": false})
 	# lamps
 	for y in [2.6, 8.6, 14.6]:
 		var l := B.omni(self, C + Vector3(0, y, 0), Color(1.0, 0.72, 0.42), 0.9, 8.0, y < 3.0)

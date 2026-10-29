@@ -132,7 +132,17 @@ func _build() -> void:
 	torso = Node3D.new()
 	add_child(torso)
 	torso.position.y = 1.15
-	torso.add_child(_bundle(Vector3(0, 0, 0), Vector3(0.0, 1.15, 0.12), 16, 0.18, 0.035, 11))
+	torso.add_child(_bundle(Vector3(0, 0, 0), Vector3(0.0, 1.15, 0.12), 26, 0.2, 0.05, 11))
+	# a dark, wet mass inside the strands so the body never reads as hollow
+	var core := MeshInstance3D.new()
+	var cm := CapsuleMesh.new()
+	cm.radius = 0.2
+	cm.height = 1.2
+	core.mesh = cm
+	core.material_override = B.flat(Color(0.015, 0.018, 0.017), 0.2, 0.1)
+	torso.add_child(core)
+	core.position = Vector3(0, 0.6, 0.06)
+	core.scale = Vector3(1.1, 1.0, 0.7)
 	torso.add_child(_bundle(Vector3(-0.32, 1.05, 0.1), Vector3(0.32, 1.05, 0.1), 7, 0.06, 0.03, 12, 0.08))  # shoulder yoke
 	# maritime fragments: a split buoy on one shoulder, chain on the chest
 	var buoy := B.cyl(torso, Vector3(0.3, 1.12, 0.05), 0.17, 0.32, B.mat("metal_red", Color(0.7, 0.6, 0.6), 2.0, {"world": false}), {"collide": false, "segments": 8, "rot": Vector3(0, 0, 70)})
@@ -153,13 +163,21 @@ func _build() -> void:
 		var hip := Node3D.new()
 		add_child(hip)
 		hip.position = Vector3(0.14 * sgn, 1.15, 0)
-		hip.add_child(_bundle(Vector3.ZERO, Vector3(0.03 * sgn, -1.15, 0.05), 8, 0.08, 0.03, 20 + sgn))
+		hip.add_child(_bundle(Vector3.ZERO, Vector3(0.03 * sgn, -1.15, 0.05), 13, 0.09, 0.04, 20 + sgn))
+		var leg_core := MeshInstance3D.new()
+		var lc := CapsuleMesh.new()
+		lc.radius = 0.06
+		lc.height = 1.1
+		leg_core.mesh = lc
+		leg_core.material_override = B.flat(Color(0.015, 0.018, 0.017), 0.2, 0.1)
+		hip.add_child(leg_core)
+		leg_core.position = Vector3(0.015 * sgn, -0.57, 0.025)
 		if sgn < 0: hip_l = hip
 		else: hip_r = hip
 		var sh := Node3D.new()
 		torso.add_child(sh)
 		sh.position = Vector3(0.33 * sgn, 1.05, 0.1)
-		sh.add_child(_bundle(Vector3.ZERO, Vector3(0.12 * sgn, -1.45, 0.12), 6, 0.06, 0.025, 30 + sgn))
+		sh.add_child(_bundle(Vector3.ZERO, Vector3(0.12 * sgn, -1.45, 0.12), 9, 0.06, 0.032, 30 + sgn))
 		# trailing strands from the fingers
 		sh.add_child(_bundle(Vector3(0.12 * sgn, -1.45, 0.12), Vector3(0.16 * sgn, -1.8, 0.2), 4, 0.04, 0.012, 40 + sgn))
 		if sgn < 0: shoulder_l = sh

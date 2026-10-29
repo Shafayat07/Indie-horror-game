@@ -103,7 +103,7 @@ def planks(name, base_cols, boards=6, seed=1):
     alb *= tint[board][..., None]
     # Seams between boards and a few cross butt-joints
     seam = np.abs((yy * boards) % 1.0 - 0.5) > 0.47
-    butt = (np.abs(((xx + offsets[board]) * 2) % 1.0 - 0.5) > 0.493)
+    butt = (np.abs(((xx + offsets[board]) * 1) % 1.0 - 0.5) > 0.497)
     gaps = seam | butt
     alb[gaps] *= 0.25
     wet = fbm(2, 4, seed=seed + 99)

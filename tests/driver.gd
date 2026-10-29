@@ -59,6 +59,11 @@ func _shots(spec: String) -> void:
 	var p: Node3D = level.player
 	level.listener.hunt_enabled = false
 	level.listener.sight = 0.0
+	if args.has("listener"):
+		var v := str(args.listener).split(",")
+		level.listener.activate(Vector3(float(v[0]), float(v[1]), float(v[2])), [])
+		level.listener.rotation_degrees.y = float(v[3])
+		level.listener.frozen = true
 	for s in spec.split(";", false):
 		var v := s.split(",")
 		if v.size() >= 5:

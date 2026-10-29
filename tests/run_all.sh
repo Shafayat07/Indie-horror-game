@@ -13,3 +13,9 @@ run ai --cp=settlement --flags=entered_settlement --scenario=ai --wait=1
 run death --cp=settlement --flags=entered_settlement --scenario=death --wait=1
 run full_break --cp=dock_start --scenario=full_break --wait=1
 run full_send --cp=dock_start --scenario=full_send --wait=1
+run walk_surface --cp=dock_start --scenario=walk_surface --wait=1
+run walk_cliff --cp=station_transmit --flags=tide_out,transmitted,has_station_key,reached_station,door_station_gate,door_station_main,station_power,relays_ok --scenario=walk_cliff --wait=1
+run walk_cave_a --cp=caves --flags=tide_out,found_caves --scenario=walk_cave_a --wait=1
+run walk_cave --cp=caves_gate --flags=tide_out,found_caves,seal_open,door_seal --scenario=walk_cave --wait=1
+run walk_lighthouse --cp=lighthouse --flags=tide_out,reached_lighthouse --scenario=walk_lighthouse --wait=1
+run walk_return --cp=aftermath --flags=tide_out,chose_break,lh_unbarred,gate_unchained,entered_settlement --scenario=walk_return --wait=1

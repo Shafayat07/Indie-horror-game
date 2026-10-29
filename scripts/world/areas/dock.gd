@@ -77,18 +77,23 @@ func _build_boat() -> void:
 	# cabin with the radio
 	var cab := B.mat("plaster_white", Color(0.75, 0.78, 0.76), 0.8)
 	B.box(boat, Vector3(0, DECK_Y + 1.0, 2.7), Vector3(2.4, 2.0, 0.1), cab, {})
-	B.box(boat, Vector3(-1.15, DECK_Y + 1.0, 1.8), Vector3(0.1, 2.0, 1.8), cab, {})
-	B.box(boat, Vector3(1.15, DECK_Y + 1.0, 1.8), Vector3(0.1, 2.0, 1.8), cab, {})
-	B.box(boat, Vector3(0, DECK_Y + 2.05, 1.8), Vector3(2.5, 0.1, 2.0), cab, {"collide": true})
+	B.box(boat, Vector3(-1.15, DECK_Y + 1.0, 2.15), Vector3(0.1, 2.0, 1.1), cab, {})
+	B.box(boat, Vector3(1.15, DECK_Y + 1.0, 2.15), Vector3(0.1, 2.0, 1.1), cab, {})
+	B.box(boat, Vector3(0, DECK_Y + 2.05, 2.1), Vector3(2.5, 0.1, 1.4), cab, {"collide": true})
 	B.box(boat, Vector3(0, DECK_Y + 0.5, 2.4), Vector3(2.2, 1.0, 0.5), B.mat("wood_dark", Color.WHITE, 1.0), {"surface": "wood"})
 	boat_radio = P.radio_set(boat, Vector3(0.4, DECK_Y + 1.0, 2.4), 180)
 	B.omni(boat, Vector3(0, DECK_Y + 1.8, 1.8), Color(0.5, 0.9, 0.6), 0.6, 4.0)
 	# rails
-	for sx in [-1, 1]:
-		B.collider(boat, Vector3(sx * 1.25, DECK_Y + 0.6, 0), Vector3(0.1, 1.2, 7.0))
-		B.box(boat, Vector3(sx * 1.25, DECK_Y + 0.55, -0.5), Vector3(0.06, 0.06, 6.0), B.flat(Color(0.2, 0.2, 0.2), 0.4, 0.7), {"collide": false})
+	var rail_m := B.flat(Color(0.2, 0.2, 0.2), 0.4, 0.7)
+	B.collider(boat, Vector3(1.25, DECK_Y + 0.6, 0), Vector3(0.1, 1.2, 7.0))
+	B.box(boat, Vector3(1.25, DECK_Y + 0.55, -0.5), Vector3(0.06, 0.06, 6.0), rail_m, {"collide": false})
+	# port rail has a gap (local z 0..1.5) where the gangplank meets the dock
+	B.collider(boat, Vector3(-1.25, DECK_Y + 0.6, -1.75), Vector3(0.1, 1.2, 3.5))
+	B.box(boat, Vector3(-1.25, DECK_Y + 0.55, -1.75), Vector3(0.06, 0.06, 3.5), rail_m, {"collide": false})
+	B.collider(boat, Vector3(-1.25, DECK_Y + 0.6, 2.5), Vector3(0.1, 1.2, 2.0))
 	B.collider(boat, Vector3(0, DECK_Y + 0.6, -4.4), Vector3(2.4, 1.2, 0.2))
 	# the gap to the dock is flush with the T-head (x 3.5) — step across
+	B.box(self, Vector3(3.95, DECK_Y - 0.05, 108.75), Vector3(1.4, 0.1, 1.2), B.mat("wood_planks", Color(0.8, 0.75, 0.68), 1.0), {"surface": "wood"})
 	var leave := Interactable.make(boat, Vector3(0.4, DECK_Y + 1.0, 2.2), Vector3(0.8, 0.6, 0.6), "Start the engine and leave Vey Isle")
 	leave.used.connect(_on_leave)
 	leave.enabled = false

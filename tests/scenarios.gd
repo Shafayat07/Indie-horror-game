@@ -22,6 +22,31 @@ func run(name: String, lv: Node) -> bool:
 			await _ai()
 		"death":
 			await _death()
+		"walk_surface":
+			await _walk([Vector3(4.5, 0, 106), Vector3(1.5, 0, 110), Vector3(0, 0, 100), Vector3(0, 0, 80), Vector3(0, 0, 62),
+				Vector3(0, 0, 30), Vector3(-2, 0, 22), Vector3(-20, 0, 8), Vector3(-36, 0, -6), Vector3(-42.5, 0, -8)])
+		"walk_cliff":
+			var so: Vector3 = level.areas.station.ORIGIN
+			await _walk([so + Vector3(6.5, 0, 1.5), so + Vector3(12, 0, 1.8), so + Vector3(18, 0, 2.0), Vector3(-36, 0, -6), Vector3(-2, 0, 22), Vector3(20, 0, 18), Vector3(42, 0, 10), Vector3(52, 0, 2),
+				Vector3(62, 0, -4), Vector3(66, 0, -20), Vector3(66, 0, -44), Vector3(66, 0, -50.2)])
+			await wait(2.0)
+			expect(level.space == "caves", "walked into the cave mouth")
+		"walk_cave":
+			var c = level.areas.caves
+			await _walk([c._p(0, -34, 0), c._p(0, -38, 0), c._p(-1, -50, 0), c._p(0, -70, 0), c._p(0, -78, 0), c._p(1.2, -83, 0)])
+		"walk_cave_a":
+			var c = level.areas.caves
+			await _walk([c._p(0, -10, 0), c._p(-1, -20, 0), c._p(-6, -27, 0), c._p(-13, -31, 0), c._p(-4, -25, 0), c._p(0, -30, 0), c._p(0, -34, 0)])
+		"walk_return":
+			var C: Vector3 = level.areas.lighthouse.C
+			await _walk([C + Vector3(0, 0, 3.5), C + Vector3(0, 0, 7.5), Vector3(0, 0, -36.5), Vector3(0, 0, -30), Vector3(0, 0, 22),
+				Vector3(0, 0, 62), Vector3(0, 0, 80), Vector3(0, 0, 104), Vector3(1.5, 0, 108.75), Vector3(5.2, 0, 108.75)])
+		"walk_lighthouse":
+			var C: Vector3 = level.areas.lighthouse.C
+			var e: float = level.areas.lighthouse.S + 0.55
+			await _walk([C + Vector3(-2.8, 0, -0.5), C + Vector3(-2.8, 0, -e), C + Vector3(e, 3, -e), C + Vector3(e, 6, e),
+				C + Vector3(-e, 9, e), C + Vector3(-e, 12, -e), C + Vector3(-1.0, 12, -e), C + Vector3(1.5, 12, -1.5)])
+			expect(p.global_position.y > C.y + 11.5, "reached the control room floor (y=%.1f)" % (p.global_position.y - C.y))
 		"seal":
 			var caves = level.areas.caves
 			await tp(caves._p(0, -33.3, 0.3))
@@ -271,6 +296,42 @@ func _full(ending: String) -> void:
 	var scene_name := get_tree().current_scene.name if get_tree().current_scene else ""
 	expect(scene_name == "Ending", "ending scene reached (got '%s')" % scene_name)
 	expect(Game.ending_choice == ending, "ending choice recorded as " + ending)
+
+
+## Walk with real movement input toward each waypoint (xz). Doors on the
+## way are opened as a player would. Fails if progress stalls.
+func _walk(points: Array) -> void:
+	p.freeze(false)
+	for wp in points:
+		var target: Vector3 = wp
+		var limit: float = Vector2(p.global_position.x - target.x, p.global_position.z - target.z).length() / 2.0 + 6.0
+		var t := 0.0
+		var last := p.global_position
+		var still := 0.0
+		Input.action_press("move_forward")
+		while Vector2(p.global_position.x - target.x, p.global_position.z - target.z).length() > 0.8:
+			await get_tree().physics_frame
+			var d := 1.0 / Engine.physics_ticks_per_second
+			t += d
+			var to := target - p.global_position
+			p._yaw = atan2(-to.x, -to.z)
+			if p._focus is Door and not p._focus.is_open and p._focus.can_interact():
+				p._focus.interact(p)
+			if p.global_position.distance_to(last) < 0.02:
+				still += d
+			else:
+				still = 0.0
+			last = p.global_position
+			if still > 2.5 or t > limit:
+				failures.append("walk stalled at %s heading to %s" % [p.global_position, target])
+				for i in p.get_slide_collision_count():
+					var col = p.get_slide_collision(i)
+					var o = col.get_collider()
+					print("[scenario]   colliding: ", o, " ", o.get_parent().name if o else "", " at ", col.get_position(), " n=", col.get_normal())
+				Input.action_release("move_forward")
+				return
+		print("[scenario] ok: reached ", target, " in %.1fs" % t)
+	Input.action_release("move_forward")
 
 
 # ------------------------------------------------------------------ AI

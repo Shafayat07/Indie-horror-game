@@ -32,8 +32,6 @@ static func make(parent: Node3D, pos: Vector3, size: Vector3, prompt_text: Strin
 
 
 func get_prompt() -> String:
-	if require_flag != "" and not Game.has_flag(require_flag) and locked_text != "":
-		return prompt
 	return prompt
 
 

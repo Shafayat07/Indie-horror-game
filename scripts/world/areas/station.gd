@@ -423,4 +423,17 @@ func _process(delta: float) -> void:
 
 
 func on_spawn(_cp: String) -> void:
-	pass
+	level.player.flashlight_toggled.connect(_on_flashlight)
+
+
+## Turn your light off in the dark station and you hear your own switch click,
+## somewhere behind you. Once.
+func _on_flashlight(on: bool) -> void:
+	if on or Game.has_flag("flash_echo") or not Game.has_flag("reached_station"):
+		return
+	if level.player.global_position.distance_to(ORIGIN) > 12.0:
+		return
+	Game.set_flag("flash_echo")
+	await get_tree().create_timer(1.8).timeout
+	var p: Node3D = level.player
+	Sound.pre_echo("flashlight_echo", p.global_position + p.global_transform.basis.z * 3.0 + Vector3(0, 1.4, 0), "[the click of a flashlight switch — behind you]", 2.0)

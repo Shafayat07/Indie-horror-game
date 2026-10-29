@@ -56,7 +56,7 @@ func _hall() -> void:
 		var a := TAU * i / 8.0
 		var p := O + Vector3(sin(a) * (R - 0.4), 5.5, cos(a) * (R - 0.4))
 		B.box(self, p, Vector3(0.3, 0.2, 0.2), B.glow(Color(1.0, 0.12, 0.06), 2.5), {"collide": false})
-		var l := B.omni(self, p + Vector3(0, -0.3, 0), Color(1.0, 0.15, 0.08), 0.8, 9.0)
+		var l := B.omni(self, p + Vector3(0, -0.3, 0), Color(1.0, 0.18, 0.1), 1.5, 11.0)
 		_emergency.append(l)
 	# cables running from the walls to the transmitter
 	var cable := B.flat(Color(0.04, 0.04, 0.04), 0.5)
@@ -171,7 +171,7 @@ func _count() -> int:
 
 func _update_core() -> void:
 	var k := float(_count()) / 3.0
-	_core_light.light_energy = 2.0 + k * 4.0
+	_core_light.light_energy = 3.0 + k * 4.0
 	_core_mat.emission_energy_multiplier = 2.0 + k * 6.0
 
 

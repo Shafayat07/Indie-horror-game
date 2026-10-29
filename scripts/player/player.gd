@@ -4,6 +4,7 @@ extends CharacterBody3D
 ## footsteps that emit noise for The Listener, and the interaction ray.
 
 signal stepped(surface: String)
+signal flashlight_toggled(on: bool)
 
 const WALK := 2.7
 const SPRINT := 4.9
@@ -158,6 +159,8 @@ func toggle_flashlight(silent := false) -> void:
 		Sound.emit_noise(global_position, 2.5, "click")
 	var tw := create_tween()
 	tw.tween_property(flashlight, "light_energy", 2.6 if flashlight_on else 0.0, 0.06)
+	if not silent:
+		flashlight_toggled.emit(flashlight_on)
 
 
 func _physics_process(delta: float) -> void:
