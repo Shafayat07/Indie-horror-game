@@ -33,6 +33,8 @@ func _ready() -> void:
 	_build_scene()
 	_build_ui()
 	Sound.set_zone("menu")
+	if "--autostart" in OS.get_cmdline_user_args():
+		Game.new_game.call_deferred()   # used to smoke-test exported builds
 
 
 func _build_scene() -> void:

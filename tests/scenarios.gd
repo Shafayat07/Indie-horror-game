@@ -47,6 +47,27 @@ func run(name: String, lv: Node) -> bool:
 			await _walk([C + Vector3(-2.8, 0, -0.5), C + Vector3(-2.8, 0, -e), C + Vector3(e, 3, -e), C + Vector3(e, 6, e),
 				C + Vector3(-e, 9, e), C + Vector3(-e, 12, -e), C + Vector3(-1.0, 12, -e), C + Vector3(1.5, 12, -1.5)])
 			expect(p.global_position.y > C.y + 11.5, "reached the control room floor (y=%.1f)" % (p.global_position.y - C.y))
+		"menus":
+			var pm = level.pause_menu
+			pm.toggle()
+			await get_tree().process_frame
+			expect(get_tree().paused and pm.is_open, "pause menu pauses the game")
+			expect(Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "mouse released while paused")
+			pm._show_options()
+			await get_tree().process_frame
+			expect(pm._options != null and not pm._menu.visible, "options panel opens from pause")
+			Game.settings.mouse_sensitivity = 0.33
+			pm._options.closed.emit()
+			Game.save_settings()
+			await get_tree().process_frame
+			expect(pm._options == null and pm._menu.visible, "options panel closes back to the pause menu")
+			pm.toggle()
+			await get_tree().process_frame
+			expect(not get_tree().paused, "resume unpauses")
+			var cfg := ConfigFile.new()
+			expect(cfg.load(Game.SETTINGS_PATH) == OK and abs(float(cfg.get_value("settings", "mouse_sensitivity")) - 0.33) < 0.001, "settings persisted to disk")
+			Game.settings.mouse_sensitivity = 0.18
+			Game.save_settings()
 		"seal":
 			var caves = level.areas.caves
 			await tp(caves._p(0, -33.3, 0.3))

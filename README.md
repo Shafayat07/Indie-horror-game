@@ -16,8 +16,8 @@ island is listening.
 ## Running the game
 
 ### Option A — play the Windows build
-If `build/windows/TheTideRemembers.exe` is present (see *Building* below), run it.
-It is a single self-contained executable.
+Unzip `release/TheTideRemembers-windows.zip` and run `TheTideRemembers.exe`.
+It is a single self-contained executable (64-bit Windows, Vulkan-capable GPU).
 
 ### Option B — run the project in Godot
 1. Download **Godot 4.3 (standard, not .NET)** from https://godotengine.org/download/archive/4.3-stable/ (free).
@@ -120,3 +120,52 @@ See **Testing status** below for what has and has not been verified.
 See `docs/ASSET_MANIFEST.md`. All textures, sounds and models are original and
 procedurally generated for this project; fonts are Special Elite (Apache 2.0) and
 IBM Plex Mono (OFL 1.1).
+
+---
+
+## Testing status
+
+Everything below was run in a Linux cloud container **without a GPU, a sound
+card or a human player**. Rendering used Mesa's software OpenGL (Godot's
+Compatibility renderer) under Xvfb; the game itself targets Forward+.
+
+| Check | How | Result |
+|---|---|---|
+| Project imports, all scripts parse | `godot --headless --import` | ✅ no errors |
+| Level builds at every checkpoint | test driver, each checkpoint | ✅ (~2.7 s headless) |
+| Full playthrough → **Ending A (break)** | `full_break` scenario: every objective, puzzle, recording, replay lure, relay sequence incl. a wrong attempt + reset, tide, caves, seal, lighthouse, couplings, choice, return trip, boat, ending screen | ✅ |
+| Full playthrough → **Ending B (send)** | `full_send` scenario | ✅ |
+| Walking every critical route with real movement input (boat → dock → settlement → station; station → cliff path → shelf → cave mouth; caves entrance → bell → seal → gallery → stair; all four lighthouse stair flights; lighthouse → gate → dock → boat) | `walk_*` scenarios | ✅ (these found and fixed 4 real blockers) |
+| Listener AI: roam → hears loud noise → investigate; ignores a quiet far step; sees player → hunt; safe room → search; search timeout → return | `ai` scenario | ✅ |
+| Caught → death sequence → reload at checkpoint | `death` scenario | ✅ |
+| Replay echo lures The Listener toward the recording's origin | inside `full_*` | ✅ |
+| Pause menu: pause/resume, mouse release, options open/close, settings saved to disk | `menus` scenario | ✅ |
+| Main menu, HUD, notes, subtitles, all five areas render | screenshots (`tests/shoot.sh`) | ✅ visually checked |
+| Windows export | `--export-release "Windows Desktop"` | ✅ builds (`release/TheTideRemembers-windows.zip`) — **not executed** (no Windows here) |
+| Linux export of the same project | built and run headless with `--autostart` | ✅ loads all areas, no errors |
+
+**Not verified:** frame rate on real hardware (60 FPS target unmeasured), the
+Forward+ look (volumetric fog, shadows) on a GPU, audio mix levels by ear, menu
+clicks with a real mouse, and real-player pacing (estimated 20–30 minutes).
+
+## Known limitations
+
+- Spoken lines are shown as on-screen radio/tape text over distorted, deliberately
+  unintelligible synthetic "voice" audio. There is no recorded dialogue.
+- All models are procedural meshes built in code (no Blender was available), so
+  the look is stylised low-poly rather than sculpted.
+- Free asset libraries (Poly Haven, ambientCG, Kenney) were blocked by the build
+  environment's network policy, so every texture and sound is procedurally generated.
+- The Windows `.exe` is unsigned; Windows SmartScreen may warn on first launch
+  (*More info → Run anyway*).
+- If a GPU lacks Vulkan, run with `--rendering-driver opengl3`; volumetric fog is
+  then unavailable (Compatibility renderer).
+
+## Tools used (all free)
+
+| Tool | Version | Source | Purpose |
+|---|---|---|---|
+| Godot Engine | 4.3-stable | github.com/godotengine/godot releases (official) | engine, export |
+| Godot export templates | 4.3-stable | same release page | Windows/Linux builds |
+| Python 3 + numpy + Pillow | preinstalled | — | texture and audio generation |
+| Xvfb + Mesa llvmpipe | preinstalled | — | headless rendering for screenshots |

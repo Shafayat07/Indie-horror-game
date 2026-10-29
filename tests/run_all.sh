@@ -19,3 +19,4 @@ run walk_cave_a --cp=caves --flags=tide_out,found_caves --scenario=walk_cave_a -
 run walk_cave --cp=caves_gate --flags=tide_out,found_caves,seal_open,door_seal --scenario=walk_cave --wait=1
 run walk_lighthouse --cp=lighthouse --flags=tide_out,reached_lighthouse --scenario=walk_lighthouse --wait=1
 run walk_return --cp=aftermath --flags=tide_out,chose_break,lh_unbarred,gate_unchained,entered_settlement --scenario=walk_return --wait=1
+run menus --cp=settlement --flags=entered_settlement --scenario=menus --wait=1

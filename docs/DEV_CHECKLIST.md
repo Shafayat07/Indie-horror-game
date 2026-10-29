@@ -37,5 +37,14 @@ Legend: [x] done and verified · [~] done, partly verified · [ ] not done
 - [x] Headless parse/import of all scripts, no errors
 - [x] Level builds at every checkpoint
 - [x] Rendered screenshots of all areas (software GL under Xvfb)
-- [ ] Automated full playthrough, both endings (tests/scenarios.gd) — see README "Testing status"
-- [ ] Windows export (needs export templates)
+- [x] Automated full playthrough, both endings (tests/scenarios.gd)
+- [x] Walk tests with real movement input on every critical route
+- [x] AI state transitions, death/respawn tests
+- [x] Windows export built (release/TheTideRemembers-windows.zip) — not executed (no Windows in the build environment)
+- [x] Linux export built and smoke-tested headless
+- [ ] Real-hardware performance (60 FPS) and audio mix by ear — needs a human playtest
+
+## Possible next steps
+- Human playtest for pacing, difficulty of the chamber, audio levels
+- Replace the synthetic radio voice with recorded voice acting
+- Sculpted Blender model for The Listener

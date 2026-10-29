@@ -94,7 +94,7 @@ func get_stream(name: String) -> AudioStream:
 		s = s.duplicate()
 		s.loop_mode = AudioStreamWAV.LOOP_FORWARD
 		s.loop_begin = 0
-		s.loop_end = s.data.size() / 2
+		s.loop_end = int(round(s.get_length() * s.mix_rate))
 	_cache[name] = s
 	return s
 
