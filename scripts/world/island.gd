@@ -178,11 +178,16 @@ func _optimize() -> void:
 		if l is DirectionalLight3D or l in keep_lights:
 			continue
 		if (l is SpotLight3D and (l as SpotLight3D).spot_range > 40.0) or (l is OmniLight3D and (l as OmniLight3D).omni_range > 40.0):
-			continue   # the beacon and the tower floodlight carry across the island
+			l.shadow_enabled = false   # the beacon and the tower floodlight carry across the island
+			l.light_volumetric_fog_energy = min(l.light_volumetric_fog_energy, 1.2)
+			continue
+		# lamps light the room, not the fog, and cast no shadows: each shadowed
+		# lamp redraws the scene six times a frame
+		l.shadow_enabled = false
+		l.light_volumetric_fog_energy = 0.0
 		l.distance_fade_enabled = true
-		l.distance_fade_begin = 30.0
-		l.distance_fade_length = 8.0
-		l.distance_fade_shadow = 14.0
+		l.distance_fade_begin = 24.0
+		l.distance_fade_length = 6.0
 	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	moon.directional_shadow_max_distance = 55.0
 
@@ -219,7 +224,7 @@ func _atmosphere(delta: float) -> void:
 	env.fog_density = lerpf(env.fog_density, a[1], k)
 	env.volumetric_fog_density = lerpf(env.volumetric_fog_density, a[2] * 0.6, k)   # GPU fog reads thicker than the numbers suggest
 	env.volumetric_fog_albedo = env.volumetric_fog_albedo.lerp(a[3], k)
-	env.ambient_light_energy = lerpf(env.ambient_light_energy, a[4], k)
+	env.ambient_light_energy = lerpf(env.ambient_light_energy, a[4] * 1.2, k)
 
 
 func _process(delta: float) -> void:
@@ -314,9 +319,9 @@ func _build_environment() -> void:
 	env.volumetric_fog_length = 48.0
 	env.volumetric_fog_ambient_inject = 0.25
 	env.glow_enabled = true
-	env.glow_intensity = 0.7
-	env.glow_bloom = 0.04
-	env.glow_hdr_threshold = 0.9
+	env.glow_intensity = 0.45
+	env.glow_bloom = 0.0
+	env.glow_hdr_threshold = 1.15
 	env.adjustment_enabled = true
 	env.adjustment_saturation = 0.78
 	env.adjustment_contrast = 1.06
@@ -332,8 +337,10 @@ func _build_environment() -> void:
 	add_child(moon)
 	Game.settings_changed.connect(func():
 		env.volumetric_fog_enabled = Game.settings.get("volumetric_fog", true)
-		env.tonemap_exposure = 1.1 * float(Game.settings.get("brightness", 1.0)))
-	env.tonemap_exposure = 1.1 * float(Game.settings.get("brightness", 1.0))
+		env.tonemap_exposure = 1.22 * float(Game.settings.get("brightness", 1.0))
+		get_viewport().scaling_3d_scale = clampf(float(Game.settings.get("render_scale", 1.0)), 0.5, 1.0))
+	env.tonemap_exposure = 1.22 * float(Game.settings.get("brightness", 1.0))
+	get_viewport().scaling_3d_scale = clampf(float(Game.settings.get("render_scale", 1.0)), 0.5, 1.0)
 
 
 ## Surface vs. the spaces under the island: swap lighting so nothing leaks.

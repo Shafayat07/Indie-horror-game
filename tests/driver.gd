@@ -41,6 +41,12 @@ func _ready() -> void:
 	level = get_tree().current_scene
 	print("[driver] level built in %d ms" % (Time.get_ticks_msec() - t0))
 	await get_tree().create_timer(float(args.get("wait", "1.5"))).timeout
+	if args.has("capture"):   # --capture=t1,t2,...  seconds after start: save frames during a scenario
+		var out: String = args.get("out", "/tmp/tide_shots")
+		DirAccess.make_dir_recursive_absolute(out)
+		for t in str(args.capture).split(","):
+			get_tree().create_timer(float(t)).timeout.connect(func():
+				get_viewport().get_texture().get_image().save_png("%s/cap_%s.png" % [out, t]))
 	if args.has("scenario"):
 		var sc = load("res://tests/scenarios.gd").new()
 		add_child(sc)

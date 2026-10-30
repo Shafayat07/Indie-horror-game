@@ -276,29 +276,96 @@ func _lantern_ladder() -> void:
 
 ## THE LIGHT: love was the lure.
 func _suha_ending() -> void:
+	## A dream that sours: warm gold light, Suha with her back to you, her voice;
+	## then she turns, the gold drains to sea-green, her face is drowned, and the
+	## thing she was all along rises out of her and comes for you.
 	var p: Node = level.player
 	Game.set_flag("chose_suha")
 	p.freeze(true)
 	level.listener.deactivate()
 	await p.hud.fade_black(true, 1.0)
-	p.place(C + Vector3(1.8, TOP + 0.15, 0.0), 90.0)
+	p.hud.cutscene(true)
+	# up in the glass lantern room itself (its floor is the top of the lamp base),
+	# both on one side of the optic so nothing stands between you and her
+	var floor_y := TOP + 1.6
+	B.collider(self, C + Vector3(0, floor_y - 0.05, 0), Vector3(5.6, 0.1, 5.6))
+	p.place(C + Vector3(2.1, floor_y + 0.05, 1.2), 0.0)
 	set_space_surface_quiet()
-	var her: Node3D = level.horror.make_ghost(C + Vector3(-1.4, TOP, 0.0), 0.0, "suha")
-	her.rotation.y = -PI * 0.5     # her back to you, facing the glass
+	var her: Node3D = level.horror.make_ghost(C + Vector3(1.2, floor_y, -2.1), 0.0, "suha")
+	her.look_at(Vector3(C.x + 1.2 + 3.0, her.global_position.y, C.z - 2.1 - 1.5), Vector3.UP, true)   # her back to you, facing the glass
+	var sway := her.create_tween().set_loops()
+	sway.tween_property(her, "rotation:z", 0.03, 2.2).set_trans(Tween.TRANS_SINE)
+	sway.tween_property(her, "rotation:z", -0.03, 2.2).set_trans(Tween.TRANS_SINE)
+	# the dream: warm gold light and a soft bloom
+	var env: Environment = level.env
+	var glow0 := [env.glow_intensity, env.glow_bloom, env.adjustment_saturation]
+	var gold := B.omni(self, C + Vector3(1.4, floor_y + 2.4, -0.8), Color(1.0, 0.78, 0.5), 0.0, 6.0)
+	var cold := B.omni(self, C + Vector3(1.4, floor_y + 1.4, -1.6), Color(0.35, 0.75, 0.7), 0.0, 6.0)
+	var mood := create_tween().set_parallel()
+	mood.tween_property(gold, "light_energy", 2.6, 3.0)
+	mood.tween_property(env, "glow_intensity", 1.1, 3.0)
+	mood.tween_property(env, "glow_bloom", 0.25, 3.0)
+	mood.tween_property(env, "adjustment_saturation", 1.15, 3.0)
+	Sound.override_zone("silence")
 	await p.hud.fade_black(false, 2.0)
 	p.look_toward(her.global_position + Vector3(0, 1.5, 0), 1.5)
-	Sound.override_zone("silence")
-	p.hud.radio("ending_suha")
-	await get_tree().create_timer(17.0).timeout
-	# she turns
-	her.rotation.y = PI * 0.5
-	level.horror.jumpscare(p.head.global_position - p.camera.global_transform.basis.z * 0.8, 1)
-	_flare = 6.0
-	await get_tree().create_timer(14.0).timeout   # let the island finish speaking in her voice
+	# you drift toward her as she speaks
+	var drift := create_tween()
+	drift.tween_property(p, "global_position", p.global_position.lerp(Vector3(her.global_position.x, p.global_position.y, her.global_position.z), 0.4), 20.0).set_trans(Tween.TRANS_SINE)
+	await _line("ending_suha_0", 0.8)
+	Sound.say("ELIAS:  Suha... I'm so tired. Wake me up.", "elias", 3.5)
+	await get_tree().create_timer(3.6).timeout
+	await _line("ending_suha_2", 1.2)
+	# she turns, and the dream goes out of the room
+	Sound.say("(She turns around.)", "aside", 3.0)
+	sway.kill()
+	var turn := create_tween().set_parallel()
+	var face_you := atan2(p.global_position.x - her.global_position.x, p.global_position.z - her.global_position.z)
+	turn.tween_property(her, "rotation:y", face_you, 2.6).set_trans(Tween.TRANS_SINE)
+	turn.tween_property(her, "rotation:z", 0.18, 2.6)
+	turn.tween_property(gold, "light_energy", 0.0, 2.6)
+	turn.tween_property(cold, "light_energy", 2.2, 2.6)
+	turn.tween_property(env, "glow_bloom", glow0[1], 2.6)
+	turn.tween_property(env, "adjustment_saturation", 0.6, 2.6)
+	turn.tween_method(func(k: float): her.set_look(Color(1.0, 0.86, 0.74).lerp(Color(0.45, 0.62, 0.6), k), 0.85, k), 0.0, 1.0, 2.6)
+	drift.kill()
+	for i in 6:
+		get_tree().create_timer(0.4 * i).timeout.connect(func(): Sound.play_at("step_water_%d" % (i % 6), her.global_position, -6.0, {"unit_size": 2.0}))
+	await get_tree().create_timer(2.8).timeout
+	# her voice, still hers, telling you the truth; the thing she was rises out of her
+	var behind_her: Vector3 = (her.global_position - p.global_position) * Vector3(1, 0, 1)
+	behind_her = behind_her.normalized() * 0.5
+	var it: Node3D = level.horror.make_ghost(her.global_position - Vector3(0, 2.6, 0) + behind_her, face_you, "listener")
+	it.scale = Vector3.ONE * 0.85
+	var rise := create_tween().set_parallel()
+	rise.tween_property(it, "global_position", her.global_position + behind_her, 9.0).set_trans(Tween.TRANS_SINE)
+	rise.tween_property(it, "scale", Vector3.ONE * 1.05, 9.0)
+	rise.tween_method(func(a: float): her.set_look(Color(0.45, 0.62, 0.6), a, 1.0), 0.85, 0.0, 9.0)
+	get_tree().create_timer(1.5).timeout.connect(func(): Sound.play_at("door_creak_1", her.global_position + Vector3(0, 2, 0), 0.0, {"unit_size": 3.0}))
+	await _line("ending_suha_4", 0.4)
+	# and it comes for you
+	var lunge := create_tween().set_parallel()
+	lunge.tween_property(it, "global_position", p.head.global_position - p.camera.global_transform.basis.z * 0.7 - Vector3(0, 2.3, 0), 0.35).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	Sound.play_2d("ghost_scream", 2.0)
+	Sound.play_2d("sting_2", -2.0)
+	p.shake(1.4)
+	p.hud.set_dread(1.0)
+	await get_tree().create_timer(0.45).timeout
 	p.hud.white_flash()
 	Sound.play_2d("overload", -6.0)
 	await get_tree().create_timer(1.5).timeout
+	env.glow_intensity = glow0[0]
+	env.adjustment_saturation = glow0[2]
 	Game.finish_game("suha")
+
+
+## Plays one spoken line of the ending with its subtitle and waits it out.
+func _line(id: String, pad: float) -> void:
+	var parts := id.rsplit("_", true, 1)
+	var line: Array = Story.RADIO[parts[0]][int(parts[1])]
+	var d := Sound.voice(id)
+	Sound.say(line[0] + ":  " + line[1], "suha", max(d, float(line[2])) + 0.3)
+	await get_tree().create_timer(max(d, float(line[2])) + pad).timeout
 
 
 func set_space_surface_quiet() -> void:
@@ -372,5 +439,5 @@ func _process(delta: float) -> void:
 	if Game.has_flag("chose_break"):
 		e = 0.0
 	beam_light.light_energy = e
-	_beam_mesh.visible = e > 0.0
+	_beam_mesh.visible = e > 0.0 and level.player.global_position.distance_to(beacon.global_position) > 12.0   # never fill the screen with it
 	(_beam_mesh.material_override as StandardMaterial3D).albedo_color.a = 0.035 + _flare * 0.08 + (0.03 if Game.has_flag("chose_send") else 0.0)

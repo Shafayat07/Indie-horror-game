@@ -17,6 +17,7 @@ var once := false
 static func make(parent: Node3D, pos: Vector3, size: Vector3, prompt_text: String, cb: Callable = Callable()) -> Interactable:
 	var it := Interactable.new()
 	it.prompt = prompt_text
+	it.add_to_group("interactable")
 	it.collision_layer = B.LAYER_INTERACT
 	it.collision_mask = 0
 	var cs := CollisionShape3D.new()

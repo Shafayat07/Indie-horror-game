@@ -239,6 +239,7 @@ const RADIO := {
 	],
 	"suha_3": [
 		["RADIO — SUHA", "\"Elias. Listen to me. None of this is real. You fell asleep on the boat. You're dreaming.\"", 5.5],
+		["RADIO — SUHA", "\"I love you the most... Come to the top. Don't press it. Listen to me.\"", 5.5],
 		["RADIO — SUHA", "\"Don't touch that machine. Come up to the top of the lighthouse — to the light. I'm there. I'll wake you up.\"", 6.0],
 		["RADIO — SUHA", "\"Come home to me.\"", 3.5],
 	],

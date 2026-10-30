@@ -28,6 +28,7 @@ var settings := {
 	"hud_margin": 0.08,   # fraction of the screen kept clear at the edges
 	"nav_helper": true,   # objective marker, optional places, checkpoint line
 	"brightness": 1.0,
+	"render_scale": 1.0,   # 3D resolution; lower it on slower graphics cards
 }
 
 var state := {}

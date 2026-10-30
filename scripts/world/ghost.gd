@@ -12,20 +12,22 @@ func _ready() -> void:
 		_shader = Shader.new()
 		_shader.code = """
 shader_type spatial;
-render_mode blend_mix, cull_back, unshaded, depth_draw_opaque;
+render_mode blend_mix, cull_back, unshaded, depth_prepass_alpha;
 uniform vec4 tint : source_color = vec4(0.62, 0.7, 0.72, 1.0);
 uniform float alpha = 0.85;
+uniform float flicker = 1.0;   // 0 = a calm, dreamy glow (Suha)
 void fragment() {
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 2.2);
 	float n = fract(sin(dot(floor(UV * 40.0 + TIME * 3.0), vec2(12.9898, 78.233))) * 43758.5453);
-	ALBEDO = tint.rgb * (0.25 + rim * 1.4) + vec3(n * 0.03);
-	ALPHA = clamp(alpha * (0.45 + rim) * (0.92 + 0.08 * sin(TIME * 23.0)), 0.0, 1.0);
+	ALBEDO = tint.rgb * (0.25 + rim * 1.4) + vec3(n * 0.03 * flicker);
+	ALPHA = clamp(alpha * (0.55 + rim) * (1.0 - flicker * (0.08 - 0.08 * sin(TIME * 23.0))), 0.0, 1.0);
 }
 """
 	_mat = ShaderMaterial.new()
 	_mat.shader = _shader
 	if kind == "suha":
-		_mat.set_shader_parameter("tint", Color(1.0, 0.82, 0.68))
+		_mat.set_shader_parameter("tint", Color(1.0, 0.86, 0.74))
+		_mat.set_shader_parameter("flicker", 0.0)
 	var dark := B.flat(Color(0, 0, 0), 1.0)
 	var hair := B.flat(Color(0.02, 0.025, 0.025), 0.3)
 	var gore := B.flat(Color(0.25, 0.02, 0.02), 0.3)
@@ -56,6 +58,13 @@ void fragment() {
 	for c in get_children():
 		if c is GeometryInstance3D:
 			c.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## For cutscenes: shift the figure's colour / opacity / steadiness over time.
+func set_look(tint: Color, alpha: float, flicker: float) -> void:
+	_mat.set_shader_parameter("tint", tint)
+	_mat.set_shader_parameter("alpha", alpha)
+	_mat.set_shader_parameter("flicker", flicker)
 
 
 func _part(mesh_type, pos: Vector3, size: Vector3, m: Material, top := -1.0) -> MeshInstance3D:

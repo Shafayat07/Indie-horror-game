@@ -117,10 +117,15 @@
 	{
 		"id": "suha_3_1",
 		"speaker": "RADIO — SUHA",
-		"text": "\"Don't touch that machine. Come up to the top of the lighthouse — to the light. I'm there. I'll wake you up.\""
+		"text": "\"I love you the most... Come to the top. Don't press it. Listen to me.\""
 	},
 	{
 		"id": "suha_3_2",
+		"speaker": "RADIO — SUHA",
+		"text": "\"Don't touch that machine. Come up to the top of the lighthouse — to the light. I'm there. I'll wake you up.\""
+	},
+	{
+		"id": "suha_3_3",
 		"speaker": "RADIO — SUHA",
 		"text": "\"Come home to me.\""
 	},

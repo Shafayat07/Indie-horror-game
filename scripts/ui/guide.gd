@@ -52,7 +52,7 @@ func setup(lv: Node) -> void:
 
 func _index() -> void:
 	_nodes.clear()
-	for n in level.find_children("*", "Interactable", true, false):
+	for n in get_tree().get_nodes_in_group("interactable"):
 		_nodes[(n as Interactable).prompt] = n
 
 
@@ -152,7 +152,7 @@ func _process(delta: float) -> void:
 		_index()
 	var on: bool = Game.settings.get("nav_helper", true)
 	var hud: Node = level.hud
-	visible = on and not hud.reading and not get_tree().paused and hud.visible
+	visible = on and not hud.reading and not get_tree().paused and hud.visible and not hud.in_cutscene
 	if not visible:
 		return
 	var t := _objective_target()

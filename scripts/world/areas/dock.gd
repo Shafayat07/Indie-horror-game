@@ -232,7 +232,14 @@ func _on_player_step(surface: String) -> void:
 		Sound.play_at("step_wood_%d" % (randi() % 4), Vector3(behind.x, DECK_Y, behind.z), -2.0, {"bus": "PreEcho", "unit_size": 5.0}))
 
 
+var _boat_p: Node = null
+
+
 func _process(delta: float) -> void:
+	# on the boat the player's body is parked, so mouse look is applied here
+	if _boat_p and is_instance_valid(_boat_p):
+		_boat_p.rotation.y = _boat_p._yaw
+		_boat_p.head.rotation.x = _boat_p._pitch
 	if not _follow_active or level == null:
 		return
 	var moving: bool = Vector2(level.player.velocity.x, level.player.velocity.z).length() > 0.3
@@ -298,8 +305,10 @@ func _on_leave(p: Node) -> void:
 	## Final scene for both endings: the boat pulls away, the radio speaks.
 	p.freeze(true)
 	p.set_physics_process(false)
+	p.look_enabled = true      # you can look around the boat (and behind you)
+	_boat_p = p
 	var choice := "last" if Game.has_flag("chose_last") else ("break" if Game.has_flag("chose_break") else "send")
-	p.hud.hide_overlays()
+	p.hud.cutscene(true)
 	p.place(boat.global_position + Vector3(0, DECK_Y + 0.1, -2.0), 0.0)
 	p.reparent(boat)
 	Sound.play_2d("generator_start", -6.0)
@@ -312,4 +321,63 @@ func _on_leave(p: Node) -> void:
 	await get_tree().create_timer(1.0).timeout
 	p.hud.radio("ending_" + choice)
 	await get_tree().create_timer(13.0).timeout
+	await _stern(p)
 	Game.finish_game(choice)
+
+
+## The last thing on the boat: wings, a weight landing on the stern behind you.
+## Look round (or wait, and you will) and Kell is crouched there. He comes for you.
+func _stern(p: Node) -> void:
+	p.look_enabled = true
+	var back: Vector3 = p.global_transform.basis.z
+	back.y = 0.0
+	var k: Node3D = preload("res://scripts/enemy/kell_model.gd").new()
+	boat.add_child(k)
+	# crouched on the cabin roof behind you, looking down
+	k.global_position = p.global_position + back.normalized() * 2.0 + Vector3(0, 1.5, 0)
+	k.look_at(Vector3(p.global_position.x, k.global_position.y, p.global_position.z), Vector3.UP, true)
+	k.pose_fly()
+	var glow := OmniLight3D.new()
+	glow.light_color = Color(0.6, 0.75, 0.65)
+	glow.light_energy = 1.6
+	glow.omni_range = 4.0
+	k.add_child(glow)
+	glow.position = Vector3(0, 1.4, 1.0)
+	Game.set_flag("boat_kell")
+	Sound.play_at("wingbeat", k.global_position + Vector3(0, 2, 0), 4.0)
+	await get_tree().create_timer(0.5).timeout
+	Sound.play_at("wingbeat", k.global_position + Vector3(0, 1, 0), 2.0)
+	Sound.play_at("door_slam", k.global_position, -6.0, {"unit_size": 3.0})
+	p.shake(0.4)
+	Sound.say("[something heavy lands on the stern behind you]", "aside", 3.0)
+	var yaw0: float = p.rotation.y
+	var looked := false
+	for i in 50:
+		await get_tree().create_timer(0.1).timeout
+		var to: Vector3 = (k.global_position - p.camera.global_position).normalized()
+		if (-p.camera.global_transform.basis.z).dot(to) > 0.6:
+			looked = true
+			break
+	if not looked:
+		# turn him round (in the boat's frame: the boat itself has turned)
+		p.look_enabled = false
+		var to: Vector3 = boat.global_transform.basis.inverse() * (k.global_position + Vector3(0, 1.4, 0) - p.camera.global_position)
+		var yaw: float = p._yaw + wrapf(atan2(-to.x, -to.z) - p._yaw, -PI, PI)
+		var tw0 := create_tween().set_parallel()
+		tw0.tween_property(p, "_yaw", yaw, 0.9).set_trans(Tween.TRANS_SINE)
+		tw0.tween_property(p, "_pitch", atan2(to.y, Vector2(to.x, to.z).length()), 0.9).set_trans(Tween.TRANS_SINE)
+		await tw0.finished
+	# he has seen you see him
+	p.look_enabled = false
+	Sound.play_at("screech", k.global_position, 8.0, {"unit_size": 6.0})
+	p.shake(0.3)
+	await get_tree().create_timer(0.9).timeout
+	k.pose_dive()
+	var tw := k.create_tween()
+	tw.tween_property(k, "global_position", p.camera.global_position - p.camera.global_transform.basis.z * 0.5 - Vector3(0, 1.4, 0), 0.4).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	p.shake(1.5)
+	p.hud.set_dread(1.0)
+	await get_tree().create_timer(0.45).timeout
+	Sound.play_2d("sting_1", 0.0)
+	await p.hud.fade_black(true, 0.15)
+	await get_tree().create_timer(1.2).timeout

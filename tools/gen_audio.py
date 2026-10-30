@@ -676,6 +676,22 @@ def screech():
     return fade(reverb(x, 1.5, 0.35), 0.005, 0.3)
 
 
+def ghost_scream():
+    """A woman's scream through water: a pitch-gliding voice (sawtooth through
+    vowel formants), breath noise, a tremble, distortion and a wet tail."""
+    d = 1.9
+    t = t_axis(d)
+    f0 = 520 + 380 * np.exp(-t * 2.5) * np.sin(t * 3.0 + 0.4) + 140 * np.sin(2 * np.pi * 6.5 * t) * (t / d)
+    f0 = f0 * (1 - 0.35 * np.clip((t - 1.0) / 0.9, 0, 1))          # breaks downward at the end
+    ph = np.cumsum(f0) / SR
+    saw = 2.0 * (ph - np.floor(ph + 0.5))
+    voice = sum(bandpass(saw, fc * 0.82, fc * 1.18) * g for fc, g in [(900, 1.0), (1500, 0.7), (2900, 0.45), (4200, 0.25)])
+    breath = bandpass(noise(d), 1800, 7000) * 0.35
+    x = (voice + breath) * env_ad(len(t), 0.03, 1.2)
+    x = np.tanh(x * 3.0) * 0.6
+    return fade(reverb(x, 1.8, 0.4), 0.004, 0.35)
+
+
 def wingbeat():
     d = 0.5
     t = t_axis(d)
@@ -766,6 +782,7 @@ if __name__ == "__main__":
             write_if(only, f"sonar_{i}", lambda: sonar_clicks(50 + i), 0.8)
             write_if(only, f"sting_{i}", lambda: sting(i), 1.0)
         write_if(only, "screech", screech, 1.0)
+        write_if(only, "ghost_scream", ghost_scream, 1.0)
         write_if(only, "wingbeat", wingbeat, 0.8)
         write_if(only, "chapel_bell", chapel_bell, 1.0)
         write_if(only, "glass_break", glass_break, 0.9)

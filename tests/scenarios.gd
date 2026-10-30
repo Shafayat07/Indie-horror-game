@@ -157,7 +157,7 @@ func run(name: String, lv: Node) -> bool:
 			await level.travel(lc + Vector3(1.0, 12.2, 1.0), 0.0, "surface", "lighthouse")
 			await use("Climb to the light")
 			expect(Game.has_flag("chose_suha"), "followed her voice to the lantern room")
-			await wait(40.0)
+			await wait(52.0)   # the dream, the turn, the island's line, the lunge
 			expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "suha", "ending THE LIGHT (SUHA) reached")
 			expect(Game.has_save() and Game.load_save() and Game.state.checkpoint == "chamber" and not Game.has_flag("armed"), "after an ending, Continue returns to the chamber before the choice")
 		"voices":
@@ -193,6 +193,14 @@ func run(name: String, lv: Node) -> bool:
 			await level.travel(Vector3(0, 1.6, 98), 0.0, "surface", "dock")
 			await wait(1.5)
 			expect(det._last_scare == t1, "scares respect the quiet gap")
+		"boat":   # ending boat ride on its own (for looking at it)
+			Game.set_flag("chose_break")
+			Game.state.objective = "leave"
+			await tp(Vector3(5.6, 1.6, 108))
+			var leave := find_use("leave Vey Isle")
+			leave.interact(p)
+			await wait(34.0)
+			expect(Game.has_flag("boat_kell"), "Kell lands on the stern")
 		"optional":
 			await _optional()
 		"seal":
@@ -440,7 +448,8 @@ func _full(ending: String) -> void:
 	expect(leave != null and leave.enabled, "boat departure is available")
 	leave.interact(p)
 	print("[scenario] boat departing; waiting for ending scene")
-	await wait(22.0)
+	await wait(34.0)
+	expect(Game.has_flag("boat_kell"), "Kell lands on the stern at the end")
 	var scene_name := get_tree().current_scene.name if get_tree().current_scene else ""
 	expect(scene_name == "Ending", "ending scene reached (got '%s')" % scene_name)
 	expect(Game.ending_choice == ending, "ending choice recorded as " + ending)
@@ -553,7 +562,7 @@ func _optional() -> void:
 	var leave := find_use("leave Vey Isle")
 	expect(leave != null and leave.enabled, "boat departure available after the last recording")
 	leave.interact(p)
-	await wait(22.0)
+	await wait(34.0)
 	expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "last", "ending THE LAST RECORDING reached")
 
 

@@ -551,9 +551,10 @@ func _behind_you() -> void:
 		if not is_instance_valid(p) or p.dead:
 			break
 		if abs(wrapf(p.rotation.y - yaw0, -PI, PI)) > 2.2:
-			Sound.play_2d("sting_2", -2.0)
-			p.shake(0.4)
-			break
+			if is_instance_valid(g):
+				g.queue_free()
+			level.horror.jumpscare(p.head.global_position - p.global_transform.basis.z * 0.9, 2, "villager")
+			return
 	if is_instance_valid(g):
 		g.vanish()
 

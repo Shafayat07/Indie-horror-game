@@ -426,6 +426,19 @@ func _fade_out_later(l: Label, t: float) -> void:
 	tw.tween_callback(l.queue_free)
 
 
+var in_cutscene := false
+
+
+## Endings: no objective, marker, hints or recorder; drop any queued subtitles.
+func cutscene(on: bool) -> void:
+	in_cutscene = on
+	_objective.visible = not on
+	_hint.visible = not on
+	_queue.clear()
+	if on:
+		hide_overlays()
+
+
 func hide_overlays() -> void:
 	_rec_panel.visible = false
 	_prompt.text = ""

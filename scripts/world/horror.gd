@@ -21,6 +21,7 @@ const WHISPERS := [
 var level: Node
 var _still := 0.0
 var _cooldown := 60.0
+var _behind_t := 120.0
 var _lodger_running := false
 var _whisper_i := 0
 var _ghost_script := preload("res://scripts/world/ghost.gd")
@@ -45,6 +46,11 @@ func _process(delta: float) -> void:
 	if _still > LODGER_DELAY and _cooldown <= 0.0 and not _lodger_running:
 		_lodger()
 	_update_apparitions(delta)
+	_behind_t -= delta
+	if _behind_t <= 0.0 and not idle and _cooldown <= 0.0 and not _lodger_running and not p.dead \
+			and p.input_enabled and not level.listener.is_active() and level.space in ["surface", "caves", "annex"]:
+		_behind_t = randf_range(150.0, 260.0)
+		presence_behind()
 
 
 # ------------------------------------------------------------------ the Lodger
@@ -172,16 +178,57 @@ func _banish(g: Node3D, opts: Dictionary) -> void:
 
 
 ## A face that lunges into view for a moment: loud sting, shake, gone.
+## Something is right there: it lunges at you screaming, then is gone.
 func jumpscare(pos: Vector3, sting := 0, kind := "face") -> void:
 	var cam: Camera3D = level.player.camera
 	var g := make_ghost(pos - Vector3(0, 1.55, 0), 0.0, kind)
 	g.look_at(Vector3(cam.global_position.x, g.global_position.y, cam.global_position.z), Vector3.UP, true)
-	Sound.play_2d("sting_%d" % sting, 0.0)
+	Sound.play_at("ghost_scream", pos, 4.0, {"unit_size": 3.0})
+	Sound.play_2d("sting_%d" % sting, -3.0)
 	level.player.shake(1.2)
 	level.hud.set_dread(1.0)
-	await get_tree().create_timer(0.45).timeout
-	g.queue_free()
+	var toward: Vector3 = (cam.global_position - pos)
+	toward.y = 0.0
+	var tw := g.create_tween().set_parallel()
+	tw.tween_property(g, "global_position", g.global_position + toward.normalized() * 0.45, 0.22).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tw.tween_property(g, "scale", Vector3.ONE * 1.12, 0.22)
+	await get_tree().create_timer(0.75).timeout
+	if is_instance_valid(g):
+		g.vanish()
 	level.hud.set_dread(0.0)
+
+
+## Something follows you, breathing, close behind. Turn round in time and it is
+## right there, screaming; keep walking and it falls away.
+func presence_behind() -> void:
+	var p: Node3D = level.player
+	_lodger_running = true
+	var breath := AudioStreamPlayer3D.new()
+	breath.stream = Sound.get_stream("whisper_2")
+	breath.bus = "SFX"
+	breath.unit_size = 1.5
+	breath.volume_db = -8.0
+	add_child(breath)
+	breath.play()
+	var yaw0: float = p.rotation.y
+	var turned := false
+	for i in 30:
+		if not is_instance_valid(p) or p.dead or level.listener.is_active():
+			break
+		breath.global_position = p.head.global_position + p.global_transform.basis.z * 0.8
+		level.hud.set_dread(0.35)
+		if abs(wrapf(p.rotation.y - yaw0, -PI, PI)) > 2.0:
+			turned = true
+			break
+		yaw0 = lerp_angle(yaw0, p.rotation.y, 0.15)   # slow walking turns don't count; a look back does
+		await get_tree().create_timer(0.15).timeout
+	breath.queue_free()
+	level.hud.set_dread(0.0)
+	if turned and is_instance_valid(p) and not p.dead:
+		var at: Vector3 = p.head.global_position - p.global_transform.basis.z * 0.9
+		jumpscare(at, 2, "villager")
+	_cooldown = LODGER_COOLDOWN
+	_lodger_running = false
 
 
 ## The Listener stands in a doorway or at the end of a corridor — until the lights blink.
