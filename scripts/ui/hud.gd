@@ -254,7 +254,7 @@ func show_objective() -> void:
 	_obj_tween = create_tween()
 	_obj_tween.tween_property(_objective, "modulate:a", 1.0, 0.8)
 	_obj_tween.tween_interval(7.0)
-	_obj_tween.tween_property(_objective, "modulate:a", 0.0, 2.0)
+	_obj_tween.tween_property(_objective, "modulate:a", 0.8, 2.0)   # stays on screen
 
 
 func peek_objective() -> void:

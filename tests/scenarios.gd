@@ -139,6 +139,11 @@ func run(name: String, lv: Node) -> bool:
 			p.freeze(false)
 			level.hud.show_watch()
 			expect(":" in level.hud._watch.text, "watch shows the island clock")
+			var guide: Node = level.hud.get_node("Guide")
+			Game.state.objective = "find_key"
+			await wait(0.3)
+			expect(guide._target.size() == 2 and "teahouse" in guide._target[1], "objective marker points at the teahouse")
+			expect("Optional: Blackwood" in guide._panel.text, "optional places listed under the objective")
 			Game.mark_document("wren_customs")
 			await wait(0.2)
 			expect("j_curse" in Game.state.journal, "reading Wren's customs explains the old warning")

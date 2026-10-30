@@ -88,7 +88,12 @@ func _ready() -> void:
 	det.name = "Details"
 	add_child(det)
 	det.setup(self)
+	var guide := preload("res://scripts/ui/guide.gd").new()
+	guide.name = "Guide"
+	hud.add_child(guide)
+	guide.setup(self)
 	_bake_navigation()
+	_optimize()
 	pause_menu = preload("res://scripts/ui/pause_menu.gd").new()
 	add_child(pause_menu)
 	pause_menu.level = self
@@ -145,6 +150,51 @@ const ATMOS := {
 }
 
 
+## The island is thousands of small pieces. Things you can't see through the
+## fog are not drawn, tiny things cast no shadow, and lamps fade out with
+## distance (their shadows sooner), which keeps draw calls and shadow passes low.
+func _optimize() -> void:
+	var keep_lights := [player.flashlight]
+	for n in find_children("*", "GeometryInstance3D", true, false):
+		var gi := n as GeometryInstance3D
+		if gi is GPUParticles3D or gi.visibility_range_end > 0.0 or _in_ghost(gi):
+			continue
+		var aabb := gi.get_aabb()
+		var sc: Vector3 = gi.global_transform.basis.get_scale()
+		var size := (aabb.size * sc.abs()).length()
+		if size < 0.7:
+			gi.visibility_range_end = 22.0
+			gi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		elif size < 2.2:
+			gi.visibility_range_end = 40.0
+		elif size < 7.0:
+			gi.visibility_range_end = 85.0
+		elif size < 20.0:
+			gi.visibility_range_end = 160.0
+		if gi.visibility_range_end > 0.0:
+			gi.visibility_range_end_margin = 4.0
+	for n in find_children("*", "Light3D", true, false):
+		var l := n as Light3D
+		if l is DirectionalLight3D or l in keep_lights:
+			continue
+		if (l is SpotLight3D and (l as SpotLight3D).spot_range > 40.0) or (l is OmniLight3D and (l as OmniLight3D).omni_range > 40.0):
+			continue   # the beacon and the tower floodlight carry across the island
+		l.distance_fade_enabled = true
+		l.distance_fade_begin = 30.0
+		l.distance_fade_length = 8.0
+		l.distance_fade_shadow = 14.0
+	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	moon.directional_shadow_max_distance = 55.0
+
+
+func _in_ghost(n: Node) -> bool:
+	while n != null and n != self:
+		if n.has_method("vanish"):
+			return true
+		n = n.get_parent()
+	return false
+
+
 func _atmosphere_key() -> String:
 	var p: Vector3 = player.global_position
 	if p.distance_to(ANNEX_ORIGIN) < 70.0:
@@ -167,7 +217,7 @@ func _atmosphere(delta: float) -> void:
 	var k := clampf(delta * 0.6, 0.0, 1.0)
 	env.fog_light_color = env.fog_light_color.lerp(a[0], k)
 	env.fog_density = lerpf(env.fog_density, a[1], k)
-	env.volumetric_fog_density = lerpf(env.volumetric_fog_density, a[2], k)
+	env.volumetric_fog_density = lerpf(env.volumetric_fog_density, a[2] * 0.6, k)   # GPU fog reads thicker than the numbers suggest
 	env.volumetric_fog_albedo = env.volumetric_fog_albedo.lerp(a[3], k)
 	env.ambient_light_energy = lerpf(env.ambient_light_energy, a[4], k)
 
@@ -280,7 +330,10 @@ func _build_environment() -> void:
 	moon.directional_shadow_max_distance = 70.0
 	moon.rotation_degrees = Vector3(-38, 35, 0)
 	add_child(moon)
-	Game.settings_changed.connect(func(): env.volumetric_fog_enabled = Game.settings.get("volumetric_fog", true))
+	Game.settings_changed.connect(func():
+		env.volumetric_fog_enabled = Game.settings.get("volumetric_fog", true)
+		env.tonemap_exposure = 1.1 * float(Game.settings.get("brightness", 1.0)))
+	env.tonemap_exposure = 1.1 * float(Game.settings.get("brightness", 1.0))
 
 
 ## Surface vs. the spaces under the island: swap lighting so nothing leaks.

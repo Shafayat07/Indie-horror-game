@@ -86,4 +86,5 @@ func _shots(spec: String) -> void:
 		var img := get_viewport().get_texture().get_image()
 		img.save_png("%s/shot_%02d.png" % [out, i])
 		print("[driver] shot ", i)
+		print("[perf] shot %d draws=%d objects=%d prims=%dk lights=%d" % [i, Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME), Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME) / 1000, get_tree().root.find_children("*", "Light3D", true, false).filter(func(l): return l.visible and l.is_visible_in_tree()).size()])
 		i += 1

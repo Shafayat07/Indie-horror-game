@@ -86,6 +86,19 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
 
 ---
 
+## Finding your way
+
+- The current objective stays at the top left. Under it: optional places you've unlocked but not
+  visited yet (with directions) and your last checkpoint.
+- An amber marker shows where to go next, with the distance. When the target is behind you it
+  sits at the screen edge; when it's in another area (caves, chamber, annex) it points at the way in.
+- Grey markers show unvisited optional places nearby. Fingerposts in the village point to the
+  harbour, lighthouse, weather station, Blackwood and the ship graveyard.
+- Turn the helper off in **Options → Objective marker**. **Options → Brightness** lightens the night.
+- Where the optional places are: Blackwood (west of the village, through the gap in the fence),
+  the Ship Graveyard (west shore, below Blackwood), Low Vey (east shore — only after the station
+  transmission pulls the tide out), the Annex (an iron door in the tidal caves).
+
 ## Locations and chapters
 
 | # | Location | Main path? | What happens there |

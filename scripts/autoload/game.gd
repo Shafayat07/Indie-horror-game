@@ -25,6 +25,8 @@ var settings := {
 	"fullscreen": true,
 	"invert_y": false,
 	"hud_margin": 0.08,   # fraction of the screen kept clear at the edges
+	"nav_helper": true,   # objective marker, optional places, checkpoint line
+	"brightness": 1.0,
 }
 
 var state := {}

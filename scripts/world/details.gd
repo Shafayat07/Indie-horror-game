@@ -263,8 +263,28 @@ func _dock() -> void:
 	_distant_figure(Vector3(-2.5, -0.6, 121.0), PI, 22.0, "has_station_key")
 
 
+## A wooden fingerpost; each board points toward its place.
+func _fingerpost(x: float, z: float, places: Array) -> void:
+	var base := Vector3(x, _g(x, z), z)
+	var wood := B.mat("wood_dark", Color(0.85, 0.78, 0.7), 1.0)
+	B.box(self, base + Vector3(0, 1.35, 0), Vector3(0.14, 2.7, 0.14), wood, {})
+	for i in places.size():
+		var to: Vector3 = places[i][1]
+		var arm := Node3D.new()
+		add_child(arm)
+		arm.position = base + Vector3(0, 2.35 - i * 0.36, 0)
+		arm.rotation.y = atan2(-(to.z - z), to.x - x)
+		var board := B.mat("wood_painted", Color(0.85, 0.82, 0.74), 1.0)
+		B.box(arm, Vector3(0.75, 0, 0), Vector3(1.3, 0.26, 0.05), board, {"collide": false})
+		B.box(arm, Vector3(1.45, 0, 0), Vector3(0.18, 0.18, 0.05), board, {"collide": false}).rotation_degrees.z = 45
+		for side in [1, -1]:
+			B.label(arm, Vector3(0.72, 0, 0.03 * side), places[i][0], 15, Color(0.1, 0.09, 0.08), Vector3(0, 0 if side > 0 else 180, 0))
+
+
 # ------------------------------------------------------------------ the settlement
 func _settlement() -> void:
+	_fingerpost(4.4, 60.5, [["HARBOUR", Vector3(0, 0, 95)], ["LIGHTHOUSE", Vector3(0, 0, -82)], ["WEATHER STATION", Vector3(-60, 0, -10)]])
+	_fingerpost(-4.7, 49.5, [["BLACKWOOD", Vector3(-57, 0, 33)], ["SHIP GRAVEYARD", Vector3(-98, 0, 46)], ["THE SQUARE", Vector3(-4, 0, 26)]])
 	for spec in [[0.4, 30.0, 1.1], [-0.8, 38.0, 0.7], [1.0, 45.0, 1.4], [-0.5, 53.0, 0.9], [-3.5, 27.5, 1.2], [2.0, 58.0, 0.8]]:
 		_puddle(spec[0], spec[1], spec[2])
 	# a bicycle against the teahouse, a handcart by the square, a lamp that died
