@@ -14,10 +14,46 @@ static var _rock_shapes := {}
 
 
 ## Triplanar PBR material from one of the generated texture sets.
-static func mat(tex: String, tint := Color.WHITE, scale := 0.35, extra := {}) -> StandardMaterial3D:
+## Weathering defaults per texture set: [grime, moss, wet]. Override with
+## extra {"grime", "moss", "wet"}; extra {"world": false} keeps the plain
+## StandardMaterial3D (object-space, for creature skins and moving models).
+const WEATHER := {
+	"stone_blocks": [0.6, 0.55, 0.35], "whitewash": [0.6, 0.35, 0.25], "cliff": [0.5, 0.6, 0.45],
+	"stone_wet": [0.5, 0.5, 0.8], "rock_cave": [0.45, 0.0, 0.85], "concrete": [0.65, 0.3, 0.3],
+	"plaster_white": [0.55, 0.0, 0.15], "roof": [0.5, 0.6, 0.3], "slate": [0.5, 0.55, 0.35],
+	"wood_planks": [0.6, 0.2, 0.4], "wood_dark": [0.5, 0.0, 0.15], "wood_painted": [0.55, 0.1, 0.2],
+	"metal_rust": [0.55, 0.0, 0.35], "metal_green": [0.5, 0.0, 0.3], "metal_red": [0.5, 0.0, 0.25],
+	"cobble": [0.55, 0.35, 0.6], "gravel": [0.5, 0.2, 0.4], "sand_wet": [0.4, 0.0, 0.7],
+	"bark": [0.5, 0.4, 0.2], "rope": [0.45, 0.0, 0.4], "wallpaper": [0.6, 0.0, 0.1],
+}
+static var _surface: Shader
+
+
+static func mat(tex: String, tint := Color.WHITE, scale := 0.35, extra := {}) -> Material:
 	var key := "%s|%s|%s|%s" % [tex, tint, scale, extra]
 	if _mats.has(key):
 		return _mats[key]
+	if extra.get("world", true) and WEATHER.has(tex):
+		if _surface == null:
+			_surface = load("res://assets/shaders/surface.gdshader")
+		var w: Array = WEATHER[tex]
+		var sm := ShaderMaterial.new()
+		sm.shader = _surface
+		sm.set_shader_parameter("tint", tint)
+		sm.set_shader_parameter("tex_albedo", load(TEX + tex + "_albedo.png"))
+		sm.set_shader_parameter("tex_normal", load(TEX + tex + "_normal.png"))
+		sm.set_shader_parameter("tex_rough", load(TEX + tex + "_rough.png"))
+		sm.set_shader_parameter("tex_macro", load(TEX + "macro.png"))
+		sm.set_shader_parameter("tex_moss", load(TEX + "moss_albedo.png"))
+		sm.set_shader_parameter("uv_scale", scale)
+		sm.set_shader_parameter("normal_scale", extra.get("normal", 1.0))
+		sm.set_shader_parameter("roughness", extra.get("roughness", 1.0))
+		sm.set_shader_parameter("metallic", extra.get("metallic", 0.0))
+		sm.set_shader_parameter("grime", extra.get("grime", w[0]))
+		sm.set_shader_parameter("moss", extra.get("moss", w[1]))
+		sm.set_shader_parameter("wet", extra.get("wet", w[2]))
+		_mats[key] = sm
+		return sm
 	var m := StandardMaterial3D.new()
 	m.albedo_texture = load(TEX + tex + "_albedo.png")
 	m.albedo_color = tint

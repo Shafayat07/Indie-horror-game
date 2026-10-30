@@ -202,6 +202,22 @@ Automated scenarios (`tests/run_all.sh`), all run on the final code:
 | voices | every spoken line has a voice file and it plays on the Voice bus | ✅ |
 | walk_* (7 routes) | real movement input over every main and forest route | ✅ |
 
+## Visual and horror pass
+
+- Every textured surface uses `assets/shaders/surface.gdshader`: triplanar PBR plus world-space
+  grime variation (no visible tiling), moss on sky-facing stone, roofs and timber, and wet patches.
+- Each place has its own air (fog colour/density, volumetric fog, ambient), blended as you walk:
+  cold dock, warmer village, choking green Blackwood, drowned blue-green Low Vey, rust-dark chamber.
+- `scripts/world/details.gd` adds props and storytelling details to every location (anchors, rope
+  coils, fish crates, drifting debris, puddles, a bicycle and handcart, moving curtains, swinging
+  bulbs, fallen logs and mushrooms, a lifeboat, timber props and stalactites in the caves, a gurney
+  and debris in the annex, the keeper's things in the lighthouse) and one-time scripted scares:
+  knocking under the dock, a light in the empty boat, a figure past the pier, someone walking past
+  the teahouse window, a falling cup, a chair turning to face you, a hanging body that creaks
+  overhead, a figure sprinting across the forest path, a face at the Pelagic's porthole, drowned
+  figures in Low Vey's houses and one right behind you after the silence, a covered body that moves
+  in the annex, something crossing the top of the lighthouse stairs. A quiet gap separates scares.
+
 ## Known limitations
 
 - If HUD text is cut off at the screen edges in fullscreen (some TVs/monitors crop the

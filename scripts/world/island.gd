@@ -84,6 +84,10 @@ func _ready() -> void:
 	imm.name = "Immersion"
 	add_child(imm)
 	imm.setup(self)
+	var det := preload("res://scripts/world/details.gd").new()
+	det.name = "Details"
+	add_child(det)
+	det.setup(self)
 	_bake_navigation()
 	pause_menu = preload("res://scripts/ui/pause_menu.gd").new()
 	add_child(pause_menu)
@@ -124,7 +128,53 @@ func chapter(flag: String) -> void:
 			hud.chapter(c[1], c[2], c[3])
 
 
+## Each place has its own air: [fog colour, fog density, volumetric density, volumetric albedo, ambient energy]
+const ATMOS := {
+	"default": [Color(0.1, 0.12, 0.145), 0.022, 0.018, Color(0.55, 0.6, 0.65), 0.75],
+	"dock": [Color(0.085, 0.115, 0.155), 0.027, 0.022, Color(0.55, 0.63, 0.72), 0.68],
+	"settlement": [Color(0.125, 0.115, 0.105), 0.02, 0.016, Color(0.64, 0.59, 0.52), 0.78],
+	"interior": [Color(0.1, 0.09, 0.08), 0.012, 0.007, Color(0.6, 0.55, 0.5), 0.6],
+	"station": [Color(0.1, 0.11, 0.115), 0.02, 0.015, Color(0.58, 0.6, 0.6), 0.72],
+	"forest": [Color(0.05, 0.07, 0.06), 0.032, 0.026, Color(0.48, 0.58, 0.5), 0.62],
+	"caves": [Color(0.025, 0.045, 0.05), 0.034, 0.02, Color(0.35, 0.5, 0.5), 0.45],
+	"lighthouse": [Color(0.095, 0.1, 0.12), 0.016, 0.012, Color(0.6, 0.62, 0.66), 0.72],
+	"chamber": [Color(0.08, 0.05, 0.035), 0.03, 0.026, Color(0.62, 0.42, 0.3), 0.5],
+	"lowvey": [Color(0.04, 0.1, 0.09), 0.034, 0.034, Color(0.36, 0.62, 0.56), 0.7],
+	"graveyard": [Color(0.07, 0.1, 0.115), 0.035, 0.03, Color(0.5, 0.6, 0.64), 0.6],
+	"annex": [Color(0.075, 0.1, 0.09), 0.02, 0.012, Color(0.6, 0.72, 0.66), 0.55],
+}
+
+
+func _atmosphere_key() -> String:
+	var p: Vector3 = player.global_position
+	if p.distance_to(ANNEX_ORIGIN) < 70.0:
+		return "annex"
+	if space == "surface":
+		if Vector2(p.x - 67, p.z + 20).length() < 30.0 and Game.has_flag("tide_out"):
+			return "lowvey"
+		if Vector2(p.x + 98, p.z - 46).length() < 30.0:
+			return "graveyard"
+	var z: String = Sound._zone
+	match z:
+		"boat", "dock", "cliffs": return "dock"
+		"station_in": return "station"
+		"silence": return "default"
+	return z if ATMOS.has(z) else "default"
+
+
+func _atmosphere(delta: float) -> void:
+	var a: Array = ATMOS[_atmosphere_key()]
+	var k := clampf(delta * 0.6, 0.0, 1.0)
+	env.fog_light_color = env.fog_light_color.lerp(a[0], k)
+	env.fog_density = lerpf(env.fog_density, a[1], k)
+	env.volumetric_fog_density = lerpf(env.volumetric_fog_density, a[2], k)
+	env.volumetric_fog_albedo = env.volumetric_fog_albedo.lerp(a[3], k)
+	env.ambient_light_energy = lerpf(env.ambient_light_energy, a[4], k)
+
+
 func _process(delta: float) -> void:
+	if player and env:
+		_atmosphere(delta)
 	# the island clock; the square's bell strikes every hour (and is heard a little early)
 	Game.state.clock = float(Game.state.get("clock", 0.0)) + delta * Game.CLOCK_SPEED
 	var hour := Game.clock_seconds() / 3600

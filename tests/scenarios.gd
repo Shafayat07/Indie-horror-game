@@ -160,6 +160,33 @@ func run(name: String, lv: Node) -> bool:
 				var d := Sound.voice(id)
 				expect(d > 0.8, "voice line %s plays (%.1fs)" % [id, d])
 			expect(Sound.voice("boat_arrival_2") == 0.0, "narration lines stay text-only")
+		"scares":
+			level.listener.hunt_enabled = false
+			var det: Node = level.get_node("Details")
+			var fired := func(): return det._last_scare > 0.0
+			# the dock: knocking under the boards
+			await level.travel(Vector3(0, 1.6, 98), 0.0, "surface", "dock")
+			await wait(1.5)
+			expect(fired.call(), "dock: something knocks under the boards")
+			var t0: float = det._last_scare
+			await wait(2.0)
+			expect(det._last_scare == t0, "the same scare does not repeat")
+			# the annex: the body on the gurney moves
+			det._last_scare = -999.0
+			await level.travel(Vector3(213, -199.8, -9), 0.0, "annex", "station_in")
+			await wait(1.5)
+			expect(fired.call(), "annex: the covered body moves")
+			await wait(4.5)
+			# Blackwood: a figure runs across the path
+			det._last_scare = -999.0
+			await level.travel(Vector3(-40, Terrain.height(-40, 46) + 0.2, 46), 90.0, "surface", "forest")
+			await wait(1.5)
+			expect(fired.call(), "Blackwood: a figure crosses the path")
+			# quiet gap: nothing else fires straight after
+			var t1: float = det._last_scare
+			await level.travel(Vector3(0, 1.6, 98), 0.0, "surface", "dock")
+			await wait(1.5)
+			expect(det._last_scare == t1, "scares respect the quiet gap")
 		"optional":
 			await _optional()
 		"seal":

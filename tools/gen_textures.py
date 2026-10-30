@@ -461,6 +461,18 @@ def moss(name, seed=16):
     save(name, alb, t, 0.9, 3.0)
 
 
+def macro(name, seed=20):
+    """Large-scale variation for the surface shader: R = patchy grime,
+    G = wet/moss patches, B = fine speckle. Sampled in world space."""
+    from PIL import Image
+    r = norm01(warp(fbm(3, 6, 0.55, seed), 0.6, 3, seed + 1))
+    g = norm01(fbm(5, 6, 0.6, seed + 2))
+    b = norm01(fbm(32, 3, 0.5, seed + 3))
+    img = np.stack([r, g, b], -1)
+    Image.fromarray((img * 255).astype(np.uint8), "RGB").save(os.path.join(OUT, name + ".png"))
+    print("macro", name)
+
+
 SETS = {
     "wood_planks": lambda: planks("wood_planks", (0.42, 0.39, 0.34), (0.11, 0.09, 0.075), 6, 11),
     "wood_dark": lambda: planks("wood_dark", (0.32, 0.23, 0.16), (0.07, 0.05, 0.035), 8, 21),
@@ -488,6 +500,7 @@ SETS = {
     "skin": lambda: skin("skin", 171),
     "membrane": lambda: membrane("membrane", 181),
     "moss": lambda: moss("moss", 191),
+    "macro": lambda: macro("macro", 201),
 }
 
 if __name__ == "__main__":
