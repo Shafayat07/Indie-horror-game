@@ -47,6 +47,7 @@ var _bell_caption_cd := 0.0
 func build(lv: Node) -> void:
 	level = lv
 	add_to_group("navsrc_caves")
+	add_to_group("replay_hint")
 	_noise.seed = 9
 	_noise.frequency = 0.15
 	level.checkpoints["caves"] = [_p(0, 0, 0.3), 180.0, "caves"]
@@ -278,7 +279,7 @@ func _puzzle() -> void:
 	bell.rotation_degrees = Vector3(70, 30, 0)
 	Recordable.make(self, _p(BELL.x, BELL.y, 0.5), "bell", "bell_drowned", {"listen_only": true, "radius": 5.0, "interval": 8.0, "volume": 2.0, "unit_size": 4.0})
 	var bell_it := Interactable.make(self, _p(BELL.x, BELL.y, 0.2), Vector3(1.0, 0.6, 1.0), "Drowned bell")
-	bell_it.used.connect(func(p): p.hud.toast("A ship's bell, half under water. It's perfectly still. Listen to it.  [Q]"))
+	bell_it.used.connect(func(p): p.hud.toast("A ship's bell, half under water, perfectly still.  Press [Q] to listen, then [R] and [Left Mouse] to record it.", 5.0))
 	# the resonance seal
 	var iron := B.mat("metal_rust", Color(0.75, 0.7, 0.65), 0.8, {"metallic": 0.5})
 	var gz := -36.5
@@ -426,6 +427,21 @@ func on_spawn(cp: String) -> void:
 		_activate_listener()
 	if Game.has_flag("seal_open"):
 		_seal._set_open_instant()
+
+
+## Shown by the recorder when you're at the seal with the bell recorded.
+func replay_hint(p: Node3D) -> String:
+	if level.space != "caves" or Game.has_flag("seal_open") or not Game.has_recording("bell"):
+		return ""
+	if p.global_position.distance_to(_horn_pos) > 5.0:
+		return ""
+	if not p.recorder.panel_open:
+		return "Play the drowned bell into the horn:  press [R] to open the recorder."
+	var recs: Array = Game.state.recordings
+	var sel: int = p.recorder.selected
+	if sel == 0 or sel > recs.size() or recs[sel - 1].id != "bell":
+		return "Choose \"Drowned bell\" with the mouse wheel or [Tab], then press [Left Mouse]."
+	return "Press [Left Mouse] to play the drowned bell into the horn."
 
 
 func _process(delta: float) -> void:

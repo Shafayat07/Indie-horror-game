@@ -99,6 +99,11 @@ func set_listening(on: bool) -> void:
 
 func set_panel(on: bool) -> void:
 	panel_open = on
+	# opening the recorder next to something new: be ready to record it, not to replay
+	if on:
+		var s := _find_source()
+		if s and not Game.has_recording(s.id):
+			selected = 0
 	Sound.play_2d("rec_button", -8.0, "UI")
 	if not on:
 		recording_progress = -1.0
@@ -123,7 +128,14 @@ func _refresh() -> void:
 		player.hud.update_recorder(panel_open, selected, recording_progress, cooldown, listening)
 
 
+var _hint_t := 0.0
+
+
 func _process(delta: float) -> void:
+	_hint_t -= delta
+	if _hint_t <= 0.0 and has_recorder and player.hud:
+		_hint_t = 0.2
+		player.hud.hint(_context_hint())
 	if cooldown > 0.0:
 		cooldown = max(cooldown - delta, 0.0)
 		_refresh()
@@ -156,11 +168,27 @@ func _find_source() -> Node3D:
 	return best
 
 
-func nearby_hint() -> String:
-	## Used by the HUD: is there something here worth recording?
+## What the recorder can do right here, in plain words (shown bottom-left).
+func _context_hint() -> String:
+	if recording_progress >= 0.0:
+		return "Recording...  stay close."
+	for n in get_tree().get_nodes_in_group("replay_hint"):
+		var t: String = n.replay_hint(player)
+		if t != "":
+			return t
 	var s := _find_source()
 	if s and not Game.has_recording(s.id):
-		return "Something here can be recorded."
+		var what: String = Story.RECORDINGS[s.id].name
+		if not panel_open:
+			return "Something here can be recorded (%s).  Press [R] to open the recorder." % what
+		if selected != 0:
+			return "Choose RECORD with the mouse wheel or [Tab], then press [Left Mouse]."
+		return "Press [Left Mouse] to record:  %s" % what
+	if not listening:
+		for r in get_tree().get_nodes_in_group("recordable"):
+			if r.listen_only and r.is_active() and not Game.has_recording(r.id) \
+					and player.global_position.distance_to(r.global_position) <= r.radius:
+				return "There's a sound here you can't hear yet.  Press [Q] to listen."
 	return ""
 
 

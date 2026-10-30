@@ -84,8 +84,8 @@ void fragment(){
 	_objective.modulate.a = 0.0
 	root.add_child(_objective)
 
-	_hint = UITheme.lbl("", 15, UITheme.DIM)
-	_safe(_hint, Vector2(0, 1), Rect2(0, -30, 700, 30))
+	_hint = UITheme.lbl("", 17, UITheme.AMBER)
+	_safe(_hint, Vector2(0, 1), Rect2(0, -34, 1000, 30))
 	root.add_child(_hint)
 
 	_sub_box = VBoxContainer.new()
