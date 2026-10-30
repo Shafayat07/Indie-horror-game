@@ -145,8 +145,9 @@ See **Testing status** below for what has and has not been verified.
 
 ## Voices
 Every spoken line is real synthesized speech (Kokoro TTS, Apache 2.0), generated offline by `tools/gen_voice.py`:
-Elias (a calm British voice), Suha (soft and warm), and the radio and tape voices, each with its own radio,
-tape or whisper treatment. Speech is always subtitled; captions for sound effects are optional
+Suha (a soft, dreamy voice: a blend of two Kokoro voices with drifting chorus, breath and a long reverb),
+and the radio and tape voices, each with its own radio, tape or whisper treatment. Elias's own thoughts are
+subtitles only. Speech is always subtitled; captions for sound effects are optional
 (Options → "Captions for sound effects", off by default).
 
 ## Credits and licenses

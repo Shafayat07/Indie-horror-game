@@ -155,7 +155,8 @@ func run(name: String, lv: Node) -> bool:
 			await wait(40.0)
 			expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "suha", "ending THE LIGHT (SUHA) reached")
 		"voices":
-			for id in ["elias_arrive", "suha_line_0", "boat_arrival_1", "suha_3_0", "ending_suha_4", "lodger_0", "rec_mayday", "teahouse_0"]:
+			expect(Sound.voice("elias_arrive") == 0.0, "Elias's thoughts are subtitles only")
+			for id in ["suha_line_0", "suha_line_1", "boat_arrival_1", "suha_3_0", "ending_suha_4", "lodger_0", "rec_mayday", "teahouse_0"]:
 				var d := Sound.voice(id)
 				expect(d > 0.8, "voice line %s plays (%.1fs)" % [id, d])
 			expect(Sound.voice("boat_arrival_2") == 0.0, "narration lines stay text-only")

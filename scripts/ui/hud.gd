@@ -515,8 +515,9 @@ func elias(id: String, delay := 0.0) -> void:
 	if delay > 0.0:
 		await get_tree().create_timer(delay).timeout
 	if Story.ELIAS.has(id):
-		var d := Sound.voice("elias_" + id, Vector3.INF, -2.0)
-		_on_caption("ELIAS:  " + Story.ELIAS[id], "elias", max(4.0, d + 0.6))
+		# Elias's thoughts are subtitles only; hold long enough to read
+		var text: String = Story.ELIAS[id]
+		_on_caption("ELIAS:  " + text, "elias", clampf(text.length() * 0.065, 3.5, 9.0))
 
 
 ## Opening briefing: black cards that tell you who you are and why you're here.

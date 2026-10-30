@@ -25,15 +25,16 @@ OUT = os.path.join(ROOT, "assets", "audio", "voice")
 SR = 24000
 rng = np.random.default_rng(3)
 
-# speaker -> (kokoro voice, language, speed, treatment)
+# speaker -> (kokoro voice or blend, language, speed, treatment)
+# Elias's own thoughts are subtitles only (no "ELIAS" entry on purpose).
+SUHA_VOICE = {"af_heart": 0.55, "af_nicole": 0.45}   # warm + breathy = dreamy
 VOICES = {
-    "ELIAS": ("bm_george", "en-gb", 0.95, "close"),
     "RADIO — YOUR VOICE": ("bm_george", "en-gb", 0.95, "radio"),
     "TAPE — YOUR VOICE": ("bm_george", "en-gb", 0.92, "tape"),
     "RADIO — VERY QUIET": ("bm_george", "en-gb", 0.85, "whisper"),
     "WHISPER": ("bm_george", "en-gb", 0.8, "whisper"),
-    "SUHA": ("af_heart", "en-us", 0.82, "suha"),
-    "RADIO — SUHA": ("af_heart", "en-us", 0.84, "suha_radio"),
+    "SUHA": (SUHA_VOICE, "en-us", 0.76, "suha"),
+    "RADIO — SUHA": (SUHA_VOICE, "en-us", 0.78, "suha_radio"),
     "THE ISLAND — IN HER VOICE": ("af_heart", "en-us", 0.78, "island"),
     "RADIO — A WOMAN": ("bf_emma", "en-gb", 0.95, "radio"),
     "VOICES — FROM THE BLUE HOUSE": ("bf_emma", "en-gb", 0.95, "muffled"),
@@ -52,7 +53,7 @@ def spoken_text(text):
     t = text.strip()
     if t.startswith("("):
         return ""
-    quoted = re.findall(r'"([^"]+)"', t) or re.findall(r":\s*'(.+)'", t) or re.findall(r"'([^']{6,})'", t)
+    quoted = re.findall(r'"([^"]+)"', t) or re.findall(r":\s*'(.+)'", t) or re.findall(r"(?<![A-Za-z])'([^']{6,}?)'(?![A-Za-z])", t)
     if quoted:
         t = " ".join(quoted)
     t = re.sub(r"\[[^\]]*\]", "", t)
@@ -84,6 +85,28 @@ def envelope(x, ms=15):
     return np.convolve(np.abs(x), np.ones(k) / k, mode="same")
 
 
+def chorus(x, depth_ms=6.0, base_ms=14.0, rate=0.23):
+    """Two slowly drifting copies: a soft, floating doubling."""
+    t = np.arange(len(x)) / SR
+    out = x.copy()
+    for ph in (0.0, 2.1):
+        d = (base_ms + depth_ms * np.sin(2 * np.pi * rate * t + ph)) * SR / 1000
+        out += np.interp(np.arange(len(x)) - d, np.arange(len(x)), x, left=0) * 0.45
+    return out / 1.9
+
+
+def dreamy(x, lo, hi, room, mix):
+    y = chorus(fft_filter(x, lo, hi))
+    env = envelope(y, 25)
+    y = y + fft_filter(rng.standard_normal(len(y)), 2500, 9000) * env * 0.5   # breath
+    t = np.arange(len(y)) / SR
+    y = y * (0.88 + 0.12 * np.sin(2 * np.pi * 0.31 * t))                       # slow swell
+    pre = np.zeros(int(0.03 * SR))
+    wet = reverb(np.concatenate([pre, y]), room, 1.0)
+    dry = np.concatenate([y, np.zeros(len(wet) - len(y))])
+    return dry * (1 - mix) + wet * mix * 1.6
+
+
 def treat(x, kind):
     if kind == "close":
         return reverb(x, 0.35, 0.08)
@@ -105,11 +128,10 @@ def treat(x, kind):
         y = fft_filter(x, 900, 7000) * 0.35 + breath
         return reverb(y, 0.6, 0.2)
     if kind == "suha":
-        y = fft_filter(x, 90, 7500)
-        return reverb(y, 1.1, 0.16)
+        return dreamy(x, 110, 6000, 2.6, 0.42)
     if kind == "suha_radio":
-        y = fft_filter(x, 250, 4500)
-        return reverb(y, 0.8, 0.12) + fft_filter(rng.standard_normal(len(y) + int(0.8 * SR)), 2000, 6000)[: len(y) + int(0.8 * SR)] * 0.006
+        y = dreamy(x, 220, 4800, 2.0, 0.34)
+        return y + fft_filter(rng.standard_normal(len(y)), 2000, 6000) * 0.005
     if kind == "island":
         idx = np.arange(0, len(x), 0.86)
         y = np.interp(idx, np.arange(len(x)), x)
@@ -137,7 +159,10 @@ def main():
         if not text or spec is None:
             continue
         voice, lang, speed, kind = spec
-        audio, sr = k.create(text, voice=voice, speed=speed, lang=lang)
+        if isinstance(voice, dict):
+            voice = sum(k.get_voice_style(v) * w for v, w in voice.items())
+        pause = 0.55 if kind.startswith("suha") else 0.25
+        audio, sr = k.create(text, voice=voice, speed=speed, lang=lang, sentence_pause=pause)
         assert sr == SR
         y = treat(np.asarray(audio, dtype=float), kind)
         pad = np.zeros(int(0.12 * SR))

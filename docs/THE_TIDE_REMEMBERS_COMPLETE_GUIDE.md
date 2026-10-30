@@ -61,7 +61,7 @@ and netting, hinting that the vanished became part of it.
 
 | Character | Role |
 |---|---|
-| **Elias Vale** | The player. Maintenance technician for Northern Maritime Services. Calm, tired, speaks in short thoughts (spoken + subtitled). The island has been "expecting" him: his voice is on radios and tapes before he speaks. |
+| **Elias Vale** | The player. Maintenance technician for Northern Maritime Services. Calm, tired, his thoughts appear as subtitles (not voiced). The island has been "expecting" him: his voice is on radios and tapes before he speaks. |
 | **Suha** | Elias's love on the mainland. Her voice reaches him on radios that cannot reach that far, and as soft whispers close to his ear. She says it's only a dream and asks him to come up to the light. In truth **the island learned her voice from Elias's memory** and uses it as a lure (Ending "The Light"). |
 | **The Listener** | The main threat. Tall humanoid shape of wet rope, netting, mineral shards and maritime fragments (a split buoy on one shoulder), a caged head of iron bands with no face. Hears noise and pre-echoes; sees poorly; never passes a doorway; will not enter a room with a **white ring** painted on its door. |
 | **Tomas Kell** | Station radio operator, Morrow's Subject 12. Now the **bat-man boss** in Blackwood: hangs asleep in his roost; emerges for ten minutes after each hourly bell; hunts by sonar clicks; light hurts him. Left diaries and his "last recording". |
@@ -243,7 +243,7 @@ jumpscare stings used sparingly; Suha's warm presence.
 **Story delivery.** Opening briefing cards; ten chapter title cards; **Elias's journal [J]** that fills in plain
 language as he learns things (why he is here, pre-echoes, the recorder, the Listener, the key, Pelagic, the
 tide, Low Vey, Morrow, Kell, the missing ships, the last recording, Suha, what is happening, the choice);
-Elias's spoken thoughts at key moments; examine points with his comments; documents (notes, logs, letters,
+Elias's thoughts (subtitles) at key moments; examine points with his comments; documents (notes, logs, letters,
 diaries) read in a paper overlay; radio and tape scenes, all **voiced** and subtitled.
 
 **Checkpoints & saving.** Progress (flags, objective, recordings, journal, clock) saves automatically at
@@ -252,7 +252,7 @@ checkpoints; Continue on the main menu. Death reloads the last checkpoint.
 **Sound.** Zone-based ambience (sea, wind, interior, caves, woods, drone, the lighthouse signal), rain with
 occasional thunder, a distant foghorn, surface-aware heel-and-toe footsteps, spatial 3D audio, separate
 buses for ambience, effects, pre-echoes, voices and the listen-only layer. Speech is generated offline with
-Kokoro TTS (Elias, Suha, radio/tape voices) and always subtitled; captions for sound effects are optional.
+Kokoro TTS (Suha in a soft, dreamy voice; radio and tape voices) and always subtitled; Elias's own thoughts are text-only; captions for sound effects are optional.
 
 ---
 
