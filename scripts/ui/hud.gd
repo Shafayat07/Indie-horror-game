@@ -73,13 +73,19 @@ void fragment(){
 	root.add_child(_prompt)
 
 	_objective = UITheme.lbl("", 19, UITheme.BONE, true)
-	_safe(_objective, Vector2(0.06, 0.07), Rect2(0, 0, 640, 90))
+	_objective.custom_minimum_size = Vector2(0, 0)
+	var obg := StyleBoxFlat.new()
+	obg.bg_color = Color(0, 0, 0, 0.5)
+	obg.set_content_margin_all(8)
+	obg.set_corner_radius_all(3)
+	_objective.add_theme_stylebox_override("normal", obg)
+	_safe(_objective, Vector2(0, 0), Rect2(0, 0, 600, 0))
 	_objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_objective.modulate.a = 0.0
 	root.add_child(_objective)
 
 	_hint = UITheme.lbl("", 15, UITheme.DIM)
-	_safe(_hint, Vector2(0.06, 0.93), Rect2(0, -30, 700, 30))
+	_safe(_hint, Vector2(0, 1), Rect2(0, -30, 700, 30))
 	root.add_child(_hint)
 
 	_sub_box = VBoxContainer.new()
@@ -116,6 +122,7 @@ void fragment(){
 
 	_build_extras(root)
 	Game.objective_changed.connect(func(_id): show_objective())
+	Game.settings_changed.connect(_reflow_safe)
 	Game.journal_added.connect(func(_id): toast("Journal updated  [J]", 2.5))
 	Sound.caption.connect(_on_caption)
 	show_objective()
@@ -137,20 +144,38 @@ func _fx_rect(root: Control, code: String) -> ColorRect:
 ## Pins a corner element inside the screen's safe area (a fraction of the
 ## screen in from each edge), so TVs and monitors that crop the edges of a
 ## fullscreen picture never cut it off. rect is relative to that anchor point.
-func _safe(c: Control, anchor: Vector2, rect: Rect2) -> void:
-	c.anchor_left = anchor.x
-	c.anchor_right = anchor.x
-	c.anchor_top = anchor.y
-	c.anchor_bottom = anchor.y
+## corner is which screen corner (0 or 1 on each axis); the margin is the
+## player's "Screen edge margin" option.
+var _safe_items: Array = []
+
+
+func _safe(c: Control, corner: Vector2, rect: Rect2) -> void:
+	_safe_items.append([c, corner, rect])
+	_place_safe(c, corner, rect)
+
+
+func _place_safe(c: Control, corner: Vector2, rect: Rect2) -> void:
+	var m := clampf(float(Game.settings.get("hud_margin", 0.08)), 0.0, 0.25)
+	var ax := m if corner.x < 0.5 else 1.0 - m
+	var ay := m * 1.2 if corner.y < 0.5 else 1.0 - m * 1.2
+	c.anchor_left = ax
+	c.anchor_right = ax
+	c.anchor_top = ay
+	c.anchor_bottom = ay
 	c.offset_left = rect.position.x
 	c.offset_top = rect.position.y
 	c.offset_right = rect.position.x + rect.size.x
 	c.offset_bottom = rect.position.y + rect.size.y
 
 
+func _reflow_safe() -> void:
+	for it in _safe_items:
+		_place_safe(it[0], it[1], it[2])
+
+
 func _build_recorder(root: Control) -> void:
 	_rec_panel = PanelContainer.new()
-	_safe(_rec_panel, Vector2(0.95, 0.93), Rect2(-340, -270, 340, 0))
+	_safe(_rec_panel, Vector2(1, 1), Rect2(-340, -270, 340, 0))
 	_rec_panel.custom_minimum_size = Vector2(340, 0)
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.04, 0.07, 0.06, 0.88)
@@ -460,7 +485,7 @@ func _build_extras(root: Control) -> void:
 	_chapter_sub.modulate.a = 0
 	root.add_child(_chapter_sub)
 	_watch = UITheme.lbl("", 26, UITheme.AMBER, true)
-	_safe(_watch, Vector2(0.94, 0.07), Rect2(-200, 0, 200, 40))
+	_safe(_watch, Vector2(1, 0), Rect2(-200, 0, 200, 40))
 	_watch.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_watch.modulate.a = 0
 	root.add_child(_watch)

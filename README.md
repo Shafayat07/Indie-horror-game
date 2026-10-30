@@ -81,6 +81,7 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
 - **The old rules** — never answer a voice from the water after the bell rings; if the
   bell rings by itself, go indoors; if it rings thirteen times, bar the door; never follow
   anyone who calls your name from the dark.
+- Old photographs in the houses are never quite still — don't stare at them for long.
 - If you are caught, you return to the last checkpoint. Progress is saved automatically.
 
 ---
@@ -202,6 +203,9 @@ Automated scenarios (`tests/run_all.sh`), all run on the final code:
 | walk_* (7 routes) | real movement input over every main and forest route | ✅ |
 
 ## Known limitations
+
+- If HUD text is cut off at the screen edges in fullscreen (some TVs/monitors crop the
+  picture), raise **Options → Screen edge margin**.
 
 - Models are procedural (built in code or by a Blender script), so the look is
   stylised low-poly rather than sculpted.

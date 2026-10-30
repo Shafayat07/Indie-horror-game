@@ -97,6 +97,8 @@ func _teahouse() -> void:
 	P.shelf(r, Vector3(2.75, 0, -1.6), -90, 1.2)
 	P.stove(r, Vector3(-2.4, 0, 1.7), 0)
 	P.note(r, Vector3(0.6, 0.8, -0.75), "tea_room", -15)
+	PhotoFrame.make(r, Vector3(-2.97, 1.65, -1.6), 90.0, "couple", 0.36)   # above the chair turned to the wall
+	PhotoFrame.make(r, Vector3(-0.8, 1.7, -2.47), 0.0, "lighthouse", 0.3)
 	var radio := P.radio_set(r, Vector3(-0.2, 0.8, -0.85), 0)
 	var radio_pos: Vector3 = radio.global_position
 	Sound.attach_loop(radio, "amb_static", -28.0, {"unit_size": 2.0, "max_distance": 14.0})
@@ -140,9 +142,9 @@ func _blue_house() -> void:
 	P.note(r, Vector3(2.0, 0.62, 0.3), "halloran_letter", 30)
 	# photographs on the wall: the father came back three nights; they didn't open
 	var dark := B.mat("wood_dark", Color(0.7, 0.6, 0.5), 1.0)
-	for i in 3:
-		B.box(r, Vector3(-0.2 + i * 0.55, 1.55 + (i % 2) * 0.12, 2.46), Vector3(0.38, 0.3, 0.03), dark, {"collide": false})
-		B.box(r, Vector3(-0.2 + i * 0.55, 1.55 + (i % 2) * 0.12, 2.44), Vector3(0.3, 0.22, 0.01), B.flat(Color(0.42, 0.36, 0.28), 0.9), {"collide": false})
+	PhotoFrame.make(r, Vector3(-0.25, 1.62, 2.47), 180.0, "family", 0.3)
+	PhotoFrame.make(r, Vector3(0.4, 1.7, 2.47), 180.0, "child", 0.34)
+	PhotoFrame.make(r, Vector3(0.95, 1.58, 2.47), 180.0, "portrait", 0.3)
 	P.examine(r, Vector3(0.35, 1.6, 2.3), Vector3(1.6, 0.6, 0.3), "family_photo")
 	# Nell's wardrobe: a child knocks from inside until you open it
 	var wardrobe := Node3D.new()
@@ -221,6 +223,7 @@ func _office() -> void:
 	P.shelf(r, Vector3(-2.3, 0, 0.6), 90, 1.4)
 	P.note(r, Vector3(-0.6, 0.8, -1.1), "marrow_echo", 5)
 	P.note(r, Vector3(-1.35, 0.8, -0.85), "wren_customs", -12)
+	PhotoFrame.make(r, Vector3(0.0, 1.7, 1.97), 180.0, "crew", 0.32)
 	B.box(r, Vector3(-2.27, 0.42, 1.55), Vector3(0.12, 0.84, 0.12), _plaster, {"collide": false})
 	B.box(r, Vector3(-2.25, 0.88, 1.55), Vector3(0.42, 0.12, 0.5), B.mat("metal_green", Color(0.85, 0.9, 0.88), 1.0), {})
 	HauntedMirror.make(r, Vector3(-2.47, 1.6, 1.55), 90.0, level, "office_scare")

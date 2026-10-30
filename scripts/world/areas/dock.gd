@@ -141,7 +141,7 @@ func _build_shed() -> void:
 		level.objective("try_listen")
 		level.hud.elias("recorder", 1.0))
 	P.examine(shed, Vector3(-1.8, 1.6, 0.5), Vector3(0.2, 0.6, 0.8), "shed_photo")
-	B.box(shed, Vector3(-1.88, 1.6, 0.5), Vector3(0.02, 0.4, 0.55), B.flat(Color(0.5, 0.48, 0.42), 0.9), {"collide": false})
+	PhotoFrame.make(shed, Vector3(-1.96, 1.6, 0.5), 90.0, "crew", 0.36)
 	if Game.has_flag("has_recorder"):
 		rec_model.queue_free()
 		take.queue_free()

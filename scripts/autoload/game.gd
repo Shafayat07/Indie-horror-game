@@ -24,6 +24,7 @@ var settings := {
 	"volumetric_fog": true,
 	"fullscreen": true,
 	"invert_y": false,
+	"hud_margin": 0.08,   # fraction of the screen kept clear at the edges
 }
 
 var state := {}

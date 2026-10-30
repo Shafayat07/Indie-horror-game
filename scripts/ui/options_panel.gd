@@ -15,6 +15,7 @@ func _ready() -> void:
 	_slider(v, "Mouse sensitivity", "mouse_sensitivity", 0.03, 0.6, 0.01)
 	_slider(v, "Master volume", "master_volume", 0.0, 1.0, 0.01)
 	_slider(v, "Field of view", "fov", 60.0, 95.0, 1.0)
+	_slider(v, "Screen edge margin (raise if text is cut off)", "hud_margin", 0.02, 0.2, 0.01)
 	_check(v, "Invert mouse Y", "invert_y")
 	_check(v, "Captions for sound effects (speech is always subtitled)", "sfx_captions")
 	_check(v, "Reduced screen effects (less shake, bob and flashes)", "reduced_effects")
