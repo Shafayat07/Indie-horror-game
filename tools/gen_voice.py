@@ -41,6 +41,7 @@ VOICES = {
     "RADIO — A MAN": ("bm_lewis", "en-gb", 0.95, "radio"),
     "RADIO": ("am_michael", "en-us", 0.95, "radio"),
     "RADIO — MAINLAND": ("am_michael", "en-us", 0.95, "radio"),
+    "A VOICE — UNDER THE DOCK": ("bf_isabella", "en-gb", 0.8, "drowned"),
     "TRANSMITTER": ("am_onyx", "en-us", 0.9, "machine"),
     "REC_morrow_tape": ("bm_daniel", "en-gb", 0.9, "tape"),
     "REC_mayday": ("am_eric", "en-us", 1.0, "radio"),
@@ -137,6 +138,13 @@ def treat(x, kind):
         y = np.interp(idx, np.arange(len(x)), x)
         y = np.tanh(y * 3.0) * 0.5 + y * 0.5
         return reverb(y, 2.4, 0.45)
+    if kind == "drowned":
+        idx = np.arange(0, len(x), 0.9)                       # a little lower, slower
+        y = np.interp(idx, np.arange(len(x)), x)
+        t = np.arange(len(y)) / SR
+        y = fft_filter(y, 140, 1800) * (0.8 + 0.2 * np.sin(2 * np.pi * 6.5 * t))   # under water
+        y += fft_filter(rng.standard_normal(len(y)), 200, 900) * envelope(y) * 0.6  # bubbling
+        return reverb(y, 1.6, 0.45)
     if kind == "muffled":
         return reverb(fft_filter(x, 200, 1200), 0.8, 0.3)
     if kind == "machine":

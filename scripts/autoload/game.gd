@@ -223,6 +223,7 @@ func has_recording(id: String) -> bool:
 func mark_document(id: String) -> void:
 	if not id in state.documents:
 		state.documents.append(id)
+	set_flag("read_" + id)
 
 
 # ------------------------------------------------------------------ save / checkpoints

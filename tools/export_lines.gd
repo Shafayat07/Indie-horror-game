@@ -13,10 +13,6 @@ func _init() -> void:
 		out.append({"id": "elias_" + id, "speaker": "ELIAS", "text": Story.ELIAS[id]})
 	var horror = load("res://scripts/world/horror.gd")
 	var i := 0
-	for l in horror.SUHA_LINES:
-		out.append({"id": "suha_line_%d" % i, "speaker": "SUHA", "text": l})
-		i += 1
-	i = 0
 	for l in horror.WHISPERS:
 		out.append({"id": "lodger_%d" % i, "speaker": "WHISPER", "text": l})
 		i += 1

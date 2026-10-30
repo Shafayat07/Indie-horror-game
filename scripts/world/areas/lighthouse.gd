@@ -128,6 +128,17 @@ func _stairs_and_floors() -> void:
 		B.sphere(self, C + Vector3(0, y + 0.1, 0), 0.12, B.glow(Color(1.0, 0.72, 0.42), 3.0))
 
 
+## Footsteps climb the spiral stair, all the way up, before Elias has moved.
+func _stair_steps() -> void:
+	await get_tree().create_timer(7.0).timeout
+	level.hud.elias("stairs", 1.0)
+	for i in 22:
+		var a := -PI * 0.5 + i * 0.32
+		var pos := C + Vector3(cos(a) * (R_IN - 0.9), 0.4 + i * 0.55, sin(a) * (R_IN - 0.9))
+		Sound.play_at("step_metal_%d" % (i % 6), pos, -2.0, {"unit_size": 5.0})
+		await get_tree().create_timer(0.42).timeout
+
+
 func _ground_floor() -> void:
 	# the grate you came up through, and the sealed hatch to the lower level
 	var iron := B.mat("metal_rust", Color(0.6, 0.6, 0.6), 1.0, {"metallic": 0.5})
@@ -149,7 +160,8 @@ func _ground_floor() -> void:
 	Zone.make(self, C + Vector3(0, 1.5, 0), Vector3(6, 3, 6), {"once": true, "block": "lh_line", "on_enter": func(_b):
 		Game.set_flag("lh_line")
 		level.chapter("ch_lighthouse")
-		level.hud.elias("lighthouse", 2.0)})
+		level.hud.elias("lighthouse", 2.0)
+		_stair_steps()})
 	# on the stairs: The Listener, on the landing above, for a moment
 	Zone.make(self, C + Vector3(S + 0.55, 4.5, 0), Vector3(1.4, 3, 4), {"once": true, "block": "lh_glimpse", "on_enter": func(_b):
 		Game.set_flag("lh_glimpse")

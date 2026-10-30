@@ -112,6 +112,34 @@ func _trees() -> void:
 	var notice_pos := Vector3(-33, _g(-33, 47) + 1.5, 47)
 	B.box(self, notice_pos + Vector3(0, -0.6, -0.1), Vector3(0.15, 2.6, 0.15), B.mat("wood_dark", Color.WHITE, 1.0), {})
 	P.note(self, notice_pos, "woods_notice", 90, true)
+	_missing(Vector3(-34.5, 0, 50.5))
+	_shelter(HUT + Vector3(7.0, 0, -9.0))
+
+
+func _missing(at: Vector3) -> void:
+	var pos := at + Vector3(0, _g(at.x, at.z), 0)
+	var post := B.mat("wood_dark", Color.WHITE, 1.0)
+	B.box(self, pos + Vector3(0, 1.0, 0), Vector3(0.12, 2.0, 0.12), post, {})
+	B.box(self, pos + Vector3(0, 1.45, 0.07), Vector3(0.9, 0.8, 0.04), post, {"collide": false})
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 71
+	for i in 7:
+		var paper := B.box(self, pos + Vector3(rng.randf_range(-0.32, 0.32), rng.randf_range(1.15, 1.75), 0.1 + i * 0.002), Vector3(0.2, 0.26, 0.005), B.flat(Color(0.78, 0.75, 0.66), 0.9), {"collide": false})
+		paper.rotation_degrees.z = rng.randf_range(-12, 12)
+	P.examine(self, pos + Vector3(0, 1.45, 0.3), Vector3(1.0, 0.9, 0.4), "missing_board")
+	P.note(self, pos + Vector3(0.0, 0.05, 0.6), "missing_notice", 30)
+
+
+func _shelter(at: Vector3) -> void:
+	var pos := at + Vector3(0, _g(at.x, at.z), 0)
+	var wood := B.mat("wood_dark", Color(0.8, 0.75, 0.7), 1.0)
+	var roof := B.box(self, pos + Vector3(0, 0.9, 0), Vector3(2.2, 0.06, 2.0), B.mat("rope", Color(0.5, 0.45, 0.35), 2.0), {"collide": false})
+	roof.rotation_degrees.x = 35
+	for x in [-1.0, 1.0]:
+		B.box(self, pos + Vector3(x, 0.65, -0.55), Vector3(0.08, 1.3, 0.08), wood, {})
+	B.box(self, pos + Vector3(0, 0.05, -0.1), Vector3(0.8, 0.1, 1.6), B.flat(Color(0.25, 0.28, 0.22), 0.9), {"collide": false})
+	P.examine(self, pos + Vector3(0, 0.5, 0), Vector3(1.8, 1.0, 1.6), "shelter")
+	P.note(self, pos + Vector3(0.6, 0.12, 0.5), "shelter_note", 40)
 
 
 # ------------------------------------------------------------------ tower & hut

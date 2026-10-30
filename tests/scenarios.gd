@@ -139,9 +139,9 @@ func run(name: String, lv: Node) -> bool:
 			p.freeze(false)
 			level.hud.show_watch()
 			expect(":" in level.hud._watch.text, "watch shows the island clock")
-			h.suha_presence()
-			await wait(0.5)
-			expect(h._suha_i > 0 and h._apparitions.size() > 0, "Suha whispers and appears at a distance")
+			Game.mark_document("wren_customs")
+			await wait(0.2)
+			expect("j_curse" in Game.state.journal, "reading Wren's customs explains the old warning")
 		"suha":
 			level.listener.hunt_enabled = false
 			for i in 3:
@@ -156,7 +156,7 @@ func run(name: String, lv: Node) -> bool:
 			expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "suha", "ending THE LIGHT (SUHA) reached")
 		"voices":
 			expect(Sound.voice("elias_arrive") == 0.0, "Elias's thoughts are subtitles only")
-			for id in ["suha_line_0", "suha_line_1", "boat_arrival_1", "suha_3_0", "ending_suha_4", "lodger_0", "rec_mayday", "teahouse_0"]:
+			for id in ["suha_1_0", "suha_2_0", "dock_name_1", "boat_arrival_1", "suha_3_0", "ending_suha_4", "lodger_0", "rec_mayday", "teahouse_0"]:
 				var d := Sound.voice(id)
 				expect(d > 0.8, "voice line %s plays (%.1fs)" % [id, d])
 			expect(Sound.voice("boat_arrival_2") == 0.0, "narration lines stay text-only")

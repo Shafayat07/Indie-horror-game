@@ -37,7 +37,7 @@
 	{
 		"id": "station_reply_0",
 		"speaker": "RADIO",
-		"text": "Diagnostic report received. Mainland copies, Vey."
+		"text": "Report received. Mainland copies, Vey."
 	},
 	{
 		"id": "station_reply_1",
@@ -92,22 +92,22 @@
 	{
 		"id": "suha_1_0",
 		"speaker": "RADIO — SUHA",
-		"text": "\"Elias? It's Suha. Call me the second you land. I hate it when you go out there.\""
+		"text": "\"Elias? It's me. Did you land yet? You forgot your scarf again. I'm wearing it, so it's mine now.\""
 	},
 	{
 		"id": "suha_1_1",
 		"speaker": "",
-		"text": "(Suha. Home is a long way from here.)"
+		"text": "(Suha. The radio shouldn't reach that far.)"
 	},
 	{
 		"id": "suha_2_0",
 		"speaker": "RADIO — SUHA",
-		"text": "\"Love, I can hear the sea behind you. I can hear you breathing. Why aren't you answering?\""
+		"text": "\"Hey, it's me again. Remember the ferry, when the lights went out and you said you weren't scared?\""
 	},
 	{
 		"id": "suha_2_1",
 		"speaker": "RADIO — SUHA",
-		"text": "\"I'll keep the light on for you. I always do.\""
+		"text": "\"Be careful out there. Come home soon.\""
 	},
 	{
 		"id": "suha_3_0",
@@ -190,6 +190,16 @@
 		"text": "\"—it's on the boat.\""
 	},
 	{
+		"id": "dock_name_0",
+		"speaker": "A VOICE — UNDER THE DOCK",
+		"text": "\"...Elias...\""
+	},
+	{
+		"id": "dock_name_1",
+		"speaker": "A VOICE — UNDER THE DOCK",
+		"text": "\"...Elias, it's cold down here...\""
+	},
+	{
 		"id": "elias_arrive",
 		"speaker": "ELIAS",
 		"text": "That was my voice. I haven't said that yet."
@@ -237,7 +247,7 @@
 	{
 		"id": "elias_station",
 		"speaker": "ELIAS",
-		"text": "Project Pelagic. Let's get the lights on and get out."
+		"text": "The weather station. Lights on, report sent, then I'm gone."
 	},
 	{
 		"id": "elias_tide_out",
@@ -252,7 +262,7 @@
 	{
 		"id": "elias_cabin",
 		"speaker": "ELIAS",
-		"text": "The radio tower hut. Kell's. Tally marks on every wall — hours."
+		"text": "Kell's hut. Tally marks on every wall — hours."
 	},
 	{
 		"id": "elias_roost",
@@ -302,7 +312,7 @@
 	{
 		"id": "elias_exam",
 		"speaker": "ELIAS",
-		"text": "They were cutting into people's ears. To make them hear better."
+		"text": "They cut into people's ears. To make them hear the island."
 	},
 	{
 		"id": "elias_lighthouse",
@@ -312,7 +322,7 @@
 	{
 		"id": "elias_chamber",
 		"speaker": "ELIAS",
-		"text": "This is it. This is what's been listening."
+		"text": "This is it. This is what's been calling."
 	},
 	{
 		"id": "elias_lodger",
@@ -320,39 +330,34 @@
 		"text": "...Who's there?"
 	},
 	{
-		"id": "suha_line_0",
-		"speaker": "SUHA",
-		"text": "Wake up, love. It's only a dream."
+		"id": "elias_dock_name",
+		"speaker": "ELIAS",
+		"text": "Someone just said my name. From under the dock."
 	},
 	{
-		"id": "suha_line_1",
-		"speaker": "SUHA",
-		"text": "You're asleep on the boat. I'm right here, holding your hand."
+		"id": "elias_wardrobe",
+		"speaker": "ELIAS",
+		"text": "Knocking. From inside. It's a child's knock."
 	},
 	{
-		"id": "suha_line_2",
-		"speaker": "SUHA",
-		"text": "I left the light on for you. Like always."
+		"id": "elias_mirror",
+		"speaker": "ELIAS",
+		"text": "There was someone behind me in the mirror. There's no one here."
 	},
 	{
-		"id": "suha_line_3",
-		"speaker": "SUHA",
-		"text": "Don't be scared. Just follow my voice."
+		"id": "elias_stairs",
+		"speaker": "ELIAS",
+		"text": "Someone's climbing the stairs. I haven't moved."
 	},
 	{
-		"id": "suha_line_4",
-		"speaker": "SUHA",
-		"text": "None of this is real, Elias. Only us."
+		"id": "elias_sea_bell",
+		"speaker": "ELIAS",
+		"text": "A bell. Out there, under the water."
 	},
 	{
-		"id": "suha_line_5",
-		"speaker": "SUHA",
-		"text": "Come up to the light. I'll be waiting at the top."
-	},
-	{
-		"id": "suha_line_6",
-		"speaker": "SUHA",
-		"text": "Shh. I can hear your heart. Come home."
+		"id": "elias_thirteen",
+		"speaker": "ELIAS",
+		"text": "Thirteen. It rang thirteen times."
 	},
 	{
 		"id": "lodger_0",
@@ -402,7 +407,7 @@
 	{
 		"id": "rec_kell_tape",
 		"speaker": "REC_kell_tape",
-		"text": "[Kell, in a human voice for the last time: 'If you play all three into the transmitter, it will hear itself. Then it will stop listening to us.']"
+		"text": "[Kell, in a human voice for the last time: 'If you play all three into the transmitter, it will hear its own silence. Then it will stop calling us.']"
 	},
 	{
 		"id": "dock_whisper",

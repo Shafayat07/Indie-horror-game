@@ -26,19 +26,8 @@ var _whisper_i := 0
 var _ghost_script := preload("res://scripts/world/ghost.gd")
 var _apparitions: Array = []
 var silenced := false
-var _suha_t := 240.0
-var _suha_i := 0
 
 ## Suha, between the scares: soft, loving, always asking him to wake up.
-const SUHA_LINES := [
-	"Wake up, love. It's only a dream.",
-	"You're asleep on the boat. I'm right here, holding your hand.",
-	"I left the light on for you. Like always.",
-	"Don't be scared. Just follow my voice.",
-	"None of this is real, Elias. Only us.",
-	"Come up to the light. I'll be waiting at the top.",
-	"Shh. I can hear your heart. Come home.",
-]
 
 
 func setup(lv: Node) -> void:
@@ -56,11 +45,6 @@ func _process(delta: float) -> void:
 	if _still > LODGER_DELAY and _cooldown <= 0.0 and not _lodger_running:
 		_lodger()
 	_update_apparitions(delta)
-	# now and then, when it's quiet, she is there
-	_suha_t -= delta
-	if _suha_t <= 0.0 and idle == false and not level.listener.is_active() and not p.dead and level.space != "chamber" and not Game.has_flag("chose_suha"):
-		_suha_t = randf_range(260.0, 420.0)
-		suha_presence()
 
 
 # ------------------------------------------------------------------ the Lodger
@@ -107,23 +91,6 @@ func _lodger() -> void:
 	_still = 0.0
 	_cooldown = LODGER_COOLDOWN
 	_lodger_running = false
-
-
-# ------------------------------------------------------------------ Suha
-func suha_presence(show := true) -> void:
-	var p: Node3D = level.player
-	var si := _suha_i % SUHA_LINES.size()
-	var line: String = SUHA_LINES[si]
-	_suha_i += 1
-	var d := Sound.voice("suha_line_%d" % si, p.head.global_position + p.global_transform.basis.x * 0.35 + p.global_transform.basis.z * 0.2, 1.0)
-	Sound.say("SUHA (softly, close to your ear):  \"" + line + "\"", "suha", max(5.0, d + 0.8))
-	if show and level.space == "surface":
-		# a warm figure, far off, that is gone when you look straight at her
-		var fwd: Vector3 = -p.global_transform.basis.z
-		var side: Vector3 = p.global_transform.basis.x * (1.0 if randf() < 0.5 else -1.0)
-		var pos: Vector3 = p.global_position + fwd * 16.0 + side * 9.0
-		pos.y = Terrain.height(pos.x, pos.z)
-		apparition(pos, 0.0, {"kind": "suha", "range": 40.0, "caption": "[a woman in a pale dress, smiling at you — and gone]"})
 
 
 # ------------------------------------------------------------------ ghosts

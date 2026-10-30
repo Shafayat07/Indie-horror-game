@@ -278,6 +278,20 @@ func _on_recorded(id: String) -> void:
 		level.objective("go_inland")
 		level.player.hud.toast("Recordings can be replayed: open the recorder and select one.", 4.0)
 		level.checkpoint("dock_recorder")
+		_voice_under_dock()
+
+
+func _voice_under_dock() -> void:
+	if Game.has_flag("dock_name"):
+		return
+	Game.set_flag("dock_name")
+	await get_tree().create_timer(9.0).timeout
+	var under := Vector3(0.6, DECK_Y - 1.2, 90)   # the gap in the boards
+	for i in 2:
+		var d := Sound.voice("dock_name_%d" % i, under, 8.0)
+		Sound.say("A VOICE, UNDER THE DOCK:  " + Story.RADIO["dock_name"][i][1], "radio", d + 0.5)
+		await get_tree().create_timer(d + 1.5).timeout
+	level.hud.elias("dock_name", 0.5)
 
 
 func _on_leave(p: Node) -> void:

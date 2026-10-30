@@ -138,6 +138,21 @@ func _blue_house() -> void:
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"ambience": "interior", "safe": true, "reverb": 0.15})
 	P.examine(r, Vector3(2.3, 0.6, 1.2), Vector3(1.0, 0.6, 2.0), "blue_bed")
 	P.note(r, Vector3(2.0, 0.62, 0.3), "halloran_letter", 30)
+	# photographs on the wall: the father came back three nights; they didn't open
+	var dark := B.mat("wood_dark", Color(0.7, 0.6, 0.5), 1.0)
+	for i in 3:
+		B.box(r, Vector3(-0.2 + i * 0.55, 1.55 + (i % 2) * 0.12, 2.46), Vector3(0.38, 0.3, 0.03), dark, {"collide": false})
+		B.box(r, Vector3(-0.2 + i * 0.55, 1.55 + (i % 2) * 0.12, 2.44), Vector3(0.3, 0.22, 0.01), B.flat(Color(0.42, 0.36, 0.28), 0.9), {"collide": false})
+	P.examine(r, Vector3(0.35, 1.6, 2.3), Vector3(1.6, 0.6, 0.3), "family_photo")
+	# Nell's wardrobe: a child knocks from inside until you open it
+	var wardrobe := Node3D.new()
+	r.add_child(wardrobe)
+	wardrobe.position = Vector3(-1.9, 0, -2.15)
+	B.box(wardrobe, Vector3(0, 1.0, 0), Vector3(1.0, 2.0, 0.6), dark, {"surface": "wood"})
+	B.box(wardrobe, Vector3(0, 1.0, 0.31), Vector3(0.02, 1.8, 0.02), B.flat(Color(0.05, 0.04, 0.03)), {"collide": false})
+	var wex := P.examine(r, Vector3(-1.9, 1.0, -1.75), Vector3(1.0, 1.8, 0.3), "wardrobe")
+	wex.used.connect(func(_p): Sound.play_at("door_creak_0", wardrobe.global_position + Vector3(0, 1, 0), -6.0))
+	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"on_enter": func(_b): _knock_wardrobe(wardrobe)})
 	# a face at the window behind you while you're at the clock
 	level.horror.apparition(r.to_global(Vector3(-size.x * 0.5 - 0.6, 0, 1.6)), 0.0, {"kind": "face", "range": 12.0, "scare": true, "sting": 1, "flag": "window_face", "require": "has_station_key"})
 	# the clock that runs backwards, holding the station key
@@ -176,6 +191,25 @@ func _blue_house() -> void:
 		mi.rotation_degrees.y = -100
 
 
+var _knocking := false
+
+
+func _knock_wardrobe(w: Node3D) -> void:
+	if _knocking or Game.has_flag("examined_wardrobe"):
+		return
+	_knocking = true
+	await get_tree().create_timer(3.0).timeout
+	var first := true
+	while not Game.has_flag("examined_wardrobe") and is_instance_valid(level.player) \
+			and level.player.global_position.distance_to(w.global_position) < 6.0:
+		Sound.play_at("knock3", w.global_position + Vector3(0, 0.6, 0), -8.0, {"unit_size": 2.0})
+		if first:
+			first = false
+			level.hud.elias("wardrobe", 1.5)
+		await get_tree().create_timer(randf_range(5.0, 8.0)).timeout
+	_knocking = false
+
+
 func _office() -> void:
 	var size := Vector3(5, 2.7, 4)
 	var r := _house(Vector3(-9, 4.2, 34), size, "e", 0.6, _plaster, [["e", -1.2], ["n", 0.8]], true)
@@ -186,6 +220,11 @@ func _office() -> void:
 	P.chair(r, Vector3(-0.8, 0, -0.4), 180)
 	P.shelf(r, Vector3(-2.3, 0, 0.6), 90, 1.4)
 	P.note(r, Vector3(-0.6, 0.8, -1.1), "marrow_echo", 5)
+	P.note(r, Vector3(-1.35, 0.8, -0.85), "wren_customs", -12)
+	B.box(r, Vector3(-2.27, 0.42, 1.55), Vector3(0.12, 0.84, 0.12), _plaster, {"collide": false})
+	B.box(r, Vector3(-2.25, 0.88, 1.55), Vector3(0.42, 0.12, 0.5), B.mat("metal_green", Color(0.85, 0.9, 0.88), 1.0), {})
+	HauntedMirror.make(r, Vector3(-2.47, 1.6, 1.55), 90.0, level, "office_scare")
+	P.examine(r, Vector3(-2.35, 1.6, 1.55), Vector3(0.2, 0.7, 0.6), "mirror")
 	P.radio_set(r, Vector3(-1.4, 0.8, -1.2), 0, false)
 	B.label(r, Vector3(size.x * 0.5 + 0.24, 2.35, 0.6), "HARBOURMASTER", 30, Color(0.8, 0.75, 0.6), Vector3(0, 90, 0))
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(4.8, 2.4, 3.8), {"ambience": "interior", "reverb": 0.12})
@@ -322,9 +361,17 @@ func _dressing() -> void:
 
 
 # ------------------------------------------------------------------ events
-func on_hour(_h: int) -> void:
+func on_hour(h: int) -> void:
 	Sound.play_at("bell", bell.global_position + Vector3(0, 2.7, 0), 4.0, {"unit_size": 25.0, "max_distance": 260.0})
 	Sound.say("[the bell in the square strikes the hour — %s]" % Game.clock_text(), "sfx", 3.0)
+	if h % 24 == 3 and not Game.has_flag("bell_thirteen"):
+		# the old warning: if it rings thirteen times, bar the door
+		Game.set_flag("bell_thirteen")
+		for i in 12:
+			await get_tree().create_timer(1.6).timeout
+			Sound.play_at("bell", bell.global_position + Vector3(0, 2.7, 0), 2.0, {"unit_size": 25.0, "max_distance": 260.0})
+		Sound.say("[the bell strikes thirteen]", "preecho", 4.0)
+		level.hud.elias("thirteen", 0.5)
 
 
 func on_spawn(cp: String) -> void:

@@ -1,11 +1,12 @@
 # THE TIDE REMEMBERS
 
-*A first-person psychological horror game about an island that hears the future.*
+*A first-person supernatural horror game. The sea never forgets the people it takes.*
 
-You are Elias Vale, a maintenance technician sent to Vey Isle to restore a dead
-weather station and transmit its final diagnostic report. On Vey Isle, some
-sounds arrive **before** the things that make them — and something on the
-island is listening.
+You are Elias Vale, a technician sent to Vey Isle to restore a dead weather station
+that has been calling for help for six years with no power. The old fishermen said
+the sea remembers everyone it drowns and sometimes gives their voices back. On Vey
+Isle, footsteps walk on after you stop, the dead call you by name, some sounds
+arrive **before** the things that make them — and something on the island is listening.
 
 - Engine: **Godot 4.3** (GDScript, Forward+ renderer)
 - Length: roughly 60–90 minutes with the optional chapters; four endings
@@ -77,6 +78,9 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
   happened yet. It sees only at short range; your flashlight makes you easier to see.
   It never passes through a doorway, and it will not enter a room marked with a
   **white ring** on the door.
+- **The old rules** — never answer a voice from the water after the bell rings; if the
+  bell rings by itself, go indoors; if it rings thirteen times, bar the door; never follow
+  anyone who calls your name from the dark.
 - If you are caught, you return to the last checkpoint. Progress is saved automatically.
 
 ---
@@ -97,9 +101,9 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
 | X | Transmitter chamber | yes | three couplings, the final choice |
 
 **Endings**
-- **Break the Signal** — overload the transmitter.
-- **Send the Warning** — transmit the report.
-- **The Light (Suha)** — Suha, Elias's love, calls him on the radio through the night in a soft, loving voice, and whispers to him between the scares ("wake up, love, it's only a dream"); now and then a warm figure in a pale dress stands far off and smiles. After the transmitter is armed she begs him to come up to the lantern room: "it's only a dream". Follow her voice (the ladder in the control room) and learn what the island did with it.
+- **Break the Signal** — overload the transmitter. The sea goes silent — for a while.
+- **Send the Warning** — transmit the report. The warning leaves the island; the voices go with it.
+- **The Light (Suha)** — Suha, Elias's love, calls twice through the night, ordinary and warm (his scarf, a memory of a ferry). After the transmitter is armed she calls once more: it's only a dream, come up to the top of the lighthouse. Follow her voice (the ladder in the control room) and learn what the island did with it.
 - **The Last Recording** (secret) — collect the three optional recordings (Morrow's tape in the Annex, the Pelagic mayday at the Ship Graveyard, Kell's tape from his roost) and a third option appears at the transmitter console. No extra puzzle is needed.
 
 See `docs/STORY.md` for the story bible, and `docs/THE_TIDE_REMEMBERS_COMPLETE_GUIDE.md` (also as `.pdf`)

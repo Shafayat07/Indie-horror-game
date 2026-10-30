@@ -8,32 +8,37 @@ can understand the whole game without playing it.
 
 ## 1. One-paragraph summary
 
-**The Tide Remembers** is a first-person psychological horror game (Godot 4.3, no combat).
-Maintenance technician **Elias Vale** is sent at night to **Vey Isle**, a remote North Atlantic island
-removed from the charts in 1972, to restore a dead weather station that has been sending a distress
-call for six years without power, and to transmit its final report. On Vey Isle **some sounds arrive
-before the things that make them** ("pre-echoes"). Elias hears his own footsteps before he walks, his
-own voice on the radio saying words he hasn't said yet. Something called **The Listener** walks the
-island, drawn to sounds — even sounds that haven't happened. Through the night Elias uncovers two
-secret 1960s programmes, **Project Pelagic** and **Project Morrow**, learns that a transmitter beneath
-the lighthouse heard "thirteen seconds of silence" and that **something answered**, and finally must
-choose what the island says next. Meanwhile **Suha**, the woman he loves, keeps calling him on the radio,
-softly telling him it is only a dream and asking him to come up to the light.
+**The Tide Remembers** is a first-person supernatural horror game (Godot 4.3, no combat) about an
+**ancient curse on a remote island, where the sea remembers the voices of the people it has taken.**
+Technician **Elias Vale** is sent at night to **Vey Isle**, removed from the charts in 1972, to restore a
+dead weather station that has been sending a distress call for six years without power. He finds an
+empty harbour, a silent village and a lighthouse that should have gone dark. Footsteps follow him and
+keep walking after he stops. A radio plays his own voice. A drowned voice calls his name from under the
+dock. In the records of the missing, his name is already written, with a time of death: **03:12**.
+Something on the island has been waiting for him. He gradually learns, without ever being told
+everything, that the old villagers feared the sea because it **called them by name**, that researchers
+in the 1960s disturbed whatever lives beneath the island, and that the lighthouse now calls ships in
+with the voices of people they love. At the end he must decide what the island says next.
+
+**The mystery in five lines:** People drowned. Their voices remained. Something beneath the island
+learned to imitate them. The warning bell was supposed to keep people away. The researchers disturbed
+it — and now Elias has arrived, and the island is calling again.
 
 ---
 
-## 2. The central idea: PRE-ECHO
+## 2. The rules of the curse (what the player learns)
 
-- Normally a sound follows its cause. On Vey Isle, some sounds come **before** their cause.
-- Pre-echoes have a recognisable signature in the game: a faint reversed swell, then the sound with a
-  long dark tail (a dedicated audio bus with reverb).
-- Examples in the game: Elias's footsteps follow him down the dock and take three more steps after he
-  stops; a radio announces a conversation that he then overhears from another house; the settlement
-  bell rings while it hangs motionless; a hatch in the lighthouse is heard grinding open before he
-  pulls the release (pulling it is then silent); splashes in still cave pools; his own running
-  footsteps coming down a cave gallery before he runs; the click of his own flashlight behind him.
-- **The Listener hears pre-echoes too**: it walks toward where a sound *will* happen. That is the
-  core of the stealth: hearing your future sound means the Listener is already heading there.
+1. **The sea remembers.** It keeps the sounds of the people it takes — voices, cries, footsteps, last words — and sometimes gives them back.
+2. **Never answer the dead.** Voices that call from the shore, caves or empty rooms are not to be trusted.
+3. **The bell is a warning.** When the bell rings by itself, the island is not safe. If it rings **thirteen** times, bar the door. (The square's bell also strikes every in-game hour — Kell's signal.)
+4. **Sound attracts the Listener.** It hears ordinary sounds and **pre-echoes** — sounds that arrive before the thing that makes them, the supernatural signature of the curse — and walks to where a sound *will* happen.
+5. **White rings offer protection.** An old island custom: the drowned do not cross a white-ringed threshold. The Listener never enters such a room (and never passes a doorway).
+6. **Some voices should never be followed.** (This is the heart of Suha's ending.)
+
+Pre-echo examples: Elias's footsteps take three more steps after he stops; a radio announces a
+conversation he then overhears from another house; the bell rings while hanging still; the lighthouse
+hatch is heard opening before he pulls the lever; footsteps climb the lighthouse stairs before he moves;
+his own running footsteps come down a cave gallery toward him.
 
 ---
 
@@ -41,36 +46,37 @@ softly telling him it is only a dream and asking him to come up to the light.
 
 | When | What happened |
 |---|---|
-| 14 Nov 1923, 02:58 | Lighthouse keeper **Aldo Wren** logs that every sound on the island stopped for **thirteen seconds** (sea, wind, fog signal, his own heart). |
-| 15 Nov 1923 | A storm drowns **Low Vey**, the lower fishing village on the east shore, in one tide. Survivors rebuild higher up as **Vey** (the settlement). |
-| 1968–71 | **Project Pelagic**: Admiralty-funded early-warning research led by **Dr. Ruth Marrow**. Goal: predict storms and shipwrecks by detecting "pre-acoustic" signals that arrive before their causes. Weather station + a transmitter built beneath the lighthouse. Research ship **MV Pelagic**. Rule: never run the transmitter at full gain. |
-| c. 1970–71 | **Project Morrow**: the medical arm under **Dr. Edwin Morrow**, in an annex beneath the tidal caves. Twelve volunteers receive cochlear grafts tuned to the transmitter so humans can hear pre-echoes. All twelve hear them. Eleven vanish. |
-| 1971 | The transmitter at full gain hears the thirteen seconds again — the island going silent — **and something answers**. **The Listener** appears. Residents vanish over a week; tea is left on tables. **MV Pelagic** sails toward the light because the island is "asking them to come closer"; her crew are taken below and "collected" by Morrow's people (ears removed). Other boats that come looking are wrecked on the west shore. |
-| 1971–72 | **Tomas Kell**, the station's radio operator and Morrow's **Subject 12**, adapts physically: long arms, wings of skin, echolocation. He becomes a bat-like man who roosts in a rock cave near his old radio tower and comes out only when the bell strikes the hour. Before he lost himself he kept a diary and made a last recording, which now lies in his nest. Vey is removed from the charts. |
-| Six years before the game | The dead weather station starts transmitting a distress call on 2.182 MHz with no power. |
-| The game's night | Elias Vale arrives at 23:40. Morrow's subject list already names **Subject 13: E. VALE — "arrives by sea. He always does."** The parish-style register of the drowned and vanished includes his death time: **03:12**. |
+| Before 1923 | Fishermen believe the sea remembers everyone it takes; the dead are heard calling from the shoreline, crewmates from beneath boats. Rule: never answer a voice from the sea after the warning bell rings. White rings are painted on doors. |
+| 14 Nov 1923, 02:58 | Keeper **Aldo Wren** logs that every sound stopped for **thirteen seconds** — then a bell rang **under the water**. |
+| 15 Nov 1923 | A tide drowns **Low Vey**, the lower village. Survivors rebuild higher up as **Vey**. Wren keeps the light for the rest of his life. |
+| 1968 | **Project Pelagic** (lead **Dr. Ruth Marrow**) arrives to study the voices and the sounds that come too early. Research ship **MV Pelagic**. Wren refuses to help. |
+| c. 1970 | **Project Morrow**: **Dr. Edwin Morrow**, in an annex beneath the caves, operates on twelve volunteers who hear the voices, to make them hear more clearly. Eleven walk into the sea. **Tomas Kell** — the radio operator, who joined to find missing sailors including his brother — is Subject 12. |
+| 1971 | Marrow tunes the lighthouse transmitter to the note of the drowned bell and runs it at full power. The thirteen-second silence returns. **Something answers. The Listener appears.** Residents vanish; the voices call everyone by name. The **MV Pelagic** hears a voice calling and sails in; her crew are taken. Boats that come looking are wrecked beside her. |
+| 1972 | Vey is removed from the charts. Kell has become a bat-like creature roosting by his old radio tower. |
+| Six years ago | The dead weather station starts transmitting a distress call with no power. |
+| Tonight | Elias arrives at 23:40. Morrow's list names **Subject 13: E. VALE — "arrives by sea"**. |
 
-**The Listener's origin is deliberately left partly unexplained.** Marrow's final note says it was
-"here before Low Vey drowned"; the transmitter gave it a way to hear. It is built from what the sea
-took: soaked rope, fishing net, mineral growths, old ship parts. The annex holds a body grown into rope
-and netting, hinting that the vanished became part of it.
+**The Listener stays mysterious.** Wet rope, fishing net, mineral shards and old ship parts; an iron
+cage for a head. Village stories describe something like it long before the researchers. The player
+can wonder whether it is a guardian of the drowned, something living beneath the island, a creature
+formed from the missing, or an ancient presence that imitates voices. Marrow's last note: "It was here
+before Low Vey drowned. Before the village. We only gave it a louder voice."
 
 ---
 
-## 4. Characters
+## 4. Characters (simple motivations)
 
-| Character | Role |
+| Character | Motivation / role |
 |---|---|
-| **Elias Vale** | The player. Maintenance technician for Northern Maritime Services. Calm, tired, his thoughts appear as subtitles (not voiced). The island has been "expecting" him: his voice is on radios and tapes before he speaks. |
-| **Suha** | Elias's love on the mainland. Her voice reaches him on radios that cannot reach that far, and as soft whispers close to his ear. She says it's only a dream and asks him to come up to the light. In truth **the island learned her voice from Elias's memory** and uses it as a lure (Ending "The Light"). |
-| **The Listener** | The main threat. Tall humanoid shape of wet rope, netting, mineral shards and maritime fragments (a split buoy on one shoulder), a caged head of iron bands with no face. Hears noise and pre-echoes; sees poorly; never passes a doorway; will not enter a room with a **white ring** painted on its door. |
-| **Tomas Kell** | Station radio operator, Morrow's Subject 12. Now the **bat-man boss** in Blackwood: hangs asleep in his roost; emerges for ten minutes after each hourly bell; hunts by sonar clicks; light hurts him. Left diaries and his "last recording". |
-| **Dr. Ruth Marrow** | Lead scientist of Project Pelagic. Her notes explain the truth: "We were never listening to the future. The future was listening to us — and it learned to answer." |
-| **Dr. Edwin Morrow** | Medical director of Project Morrow. Clinical, chilling. His tape is part 1 of the last recording. |
-| **Aldo Wren** | Harbourmaster and lighthouse keeper. Logged the 1923 silence; nailed warnings ("White ring = safe", "no one in the woods when the bell strikes"). |
-| **Ines Halloran** | Research assistant. Mother of **Nell** (7). Her letter: "Mummy has gone down to the water with the others... Keep the white ring on the door." |
-| **The Lodger** | Not a named character: if Elias stands still too long, something comes up behind him and whispers his own future words into his ear. |
-| **Drowned villagers** | Pale, wet apparitions (Low Vey's dead, the Pelagic crew) that only stand where you aren't looking. |
+| **Elias Vale** | The player; technician sent to restore the station. Speaks sparingly (subtitles only, not voiced). |
+| **Aldo Wren** | Keeper who witnessed 1923; kept the light and the old customs; wrote the warnings. |
+| **Dr. Ruth Marrow** | Wanted to understand the voices; grew frightened; tuned the light to the drowned bell and woke what answered. |
+| **Dr. Edwin Morrow** | Professional and cold; tried to make people hear the island; destroyed them. |
+| **Ines & Nell Halloran** | Mother and daughter. Ines heard her name and went to the water; she told Nell never to open the door, "not even if they sound like me". |
+| **Tomas Kell** | Radio operator who joined to find his missing brother; heard a voice like his own; became the creature in Blackwood. Left his diary and his last recording. |
+| **Suha** | Elias's love on the mainland. Optional and secondary: two ordinary, personal radio calls, then a final call asking him to come to the top of the lighthouse. The island learned her voice from his memory. |
+| **The Listener** | The main threat (see above). |
+| **The Lodger / the drowned** | If Elias stands still, something whispers in his ear from behind. Drowned figures stand only where he isn't looking. |
 
 ---
 
@@ -199,10 +205,7 @@ All endings finish with the boat scene at the dock (except The Light), then an e
    someone to keep the light." Card: ships still pick up a calm man on 2.182 MHz asking Suha to come up
    to the light. Theme: love used as a lure; betrayal.
 
-Suha's presence through the game foreshadows ending 4: radio calls on the boat, at the station and in the
-chamber; soft whispers close to Elias's ear at story beats and occasionally while exploring ("Wake up, love.
-It's only a dream", "I left the light on for you", "Come up to the light. I'll be waiting at the top");
-and a warm figure in a pale dress that appears far off and smiles, then is gone when looked at.
+Suha is kept secondary: an ordinary call when Elias lands (his scarf), another at the station (a memory of a ferry), and the final call after the transmitter is armed. Her voice is soft and dreamy; Elias's thoughts are text only.
 
 ---
 
@@ -238,7 +241,12 @@ in his face stuns him; the radio-tower floodlight kills him during the chase.
 turning round in time shows a face); apparitions that exist only out of view; first-entry house scares
 (the chair that becomes occupied in the teahouse, the harbourmaster's door slamming and lights dying, a face
 at the blue house window, a figure at the station window); Listener glimpses; the thirteen-second silence;
-jumpscare stings used sparingly; Suha's warm presence.
+jumpscare stings used sparingly. Curse set-pieces: a drowned voice calls Elias's name from under the dock;
+a child knocks from inside the empty wardrobe in Nell's room; in Wren's office mirror a drowned figure stands
+behind Elias but not in the room (a real mirror camera with a ghost layer only it can see); footsteps climb the
+lighthouse stairs before he moves; after Low Vey's silence the bell rings under the sea; at 03:00 the bell
+strikes thirteen; missing-person notices and an abandoned shelter in Blackwood; a deckhand's bunk and unsent
+letter on the Pelagic; a cave wall of names of everyone who followed a voice inside — the newest is E. VALE.
 
 **Story delivery.** Opening briefing cards; ten chapter title cards; **Elias's journal [J]** that fills in plain
 language as he learns things (why he is here, pre-echoes, the recorder, the Listener, the key, Pelagic, the

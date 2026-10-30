@@ -16,7 +16,7 @@ const TEXT := {
 	],
 	"send": [
 		"ENDING — SEND THE WARNING",
-		"The mainland received the Vey Isle report at 03:12.\nIt warned of a storm that had not yet formed\nand a ferry that had not yet left port.\nThe ferry stayed in harbour. The storm came exactly as described.\n\nThe lighthouse on Vey Isle is still transmitting.\n\nSince that night, radio operators along the northern coast\nhave reported hearing their own voices on 2.182 MHz,\nreading messages they have not written yet.",
+		"The mainland received the Vey Isle report at 03:12.\nFor the first time in fifty years, someone outside the island\nknew what the sea around it does.\n\nVey was marked on the charts again: a red circle,\nand two words in the notes: DO NOT ANSWER.\n\nThe warning left the island. The voices did not.\n\nSince that night, radio operators along the northern coast\nsometimes hear a calm man on 2.182 MHz, reading a report\nthey have already received — and, under it, the sea\nsaying their names.",
 	],
 }
 

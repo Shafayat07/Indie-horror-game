@@ -122,7 +122,7 @@ func _build_ui() -> void:
 	root.add_child(_menu)
 	var title := UITheme.lbl("THE TIDE\nREMEMBERS", 64, UITheme.BONE, true)
 	_menu.add_child(title)
-	_menu.add_child(UITheme.lbl("The island doesn't remember the past.", 17, UITheme.DIM))
+	_menu.add_child(UITheme.lbl("The sea never forgets the people it takes.", 17, UITheme.DIM))
 	var spacer := Control.new()
 	spacer.custom_minimum_size = Vector2(0, 30)
 	_menu.add_child(spacer)

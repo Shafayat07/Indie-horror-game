@@ -193,6 +193,9 @@ func _p(x: float, z: float, up := 0.0) -> Vector3:
 
 
 func _dress() -> void:
+	var names := "J. ENNIS 1923   M. ENNIS\nP. MALLORY '71   R. BOYD\nT. KELL   I. HALLORAN\nA. W—\n\nE. VALE"
+	B.label(self, _p(1.45, -9.0, 1.5), names, 18, Color(0.75, 0.74, 0.68, 0.8), Vector3(0, -90, 0))
+	P.examine(self, _p(1.2, -9.0, 1.4), Vector3(0.5, 1.2, 2.0), "cave_names")
 	var mineral := B.glow(Color(0.35, 0.75, 0.7), 1.6)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 33

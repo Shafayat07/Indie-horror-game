@@ -73,15 +73,13 @@ void fragment(){
 	root.add_child(_prompt)
 
 	_objective = UITheme.lbl("", 19, UITheme.BONE, true)
-	_objective.position = Vector2(36, 28)
-	_objective.size = Vector2(620, 60)
+	_safe(_objective, Vector2(0.06, 0.07), Rect2(0, 0, 640, 90))
 	_objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_objective.modulate.a = 0.0
 	root.add_child(_objective)
 
 	_hint = UITheme.lbl("", 15, UITheme.DIM)
-	_hint.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_hint.position = Vector2(36, -60)
+	_safe(_hint, Vector2(0.06, 0.93), Rect2(0, -30, 700, 30))
 	root.add_child(_hint)
 
 	_sub_box = VBoxContainer.new()
@@ -136,10 +134,23 @@ func _fx_rect(root: Control, code: String) -> ColorRect:
 	return r
 
 
+## Pins a corner element inside the screen's safe area (a fraction of the
+## screen in from each edge), so TVs and monitors that crop the edges of a
+## fullscreen picture never cut it off. rect is relative to that anchor point.
+func _safe(c: Control, anchor: Vector2, rect: Rect2) -> void:
+	c.anchor_left = anchor.x
+	c.anchor_right = anchor.x
+	c.anchor_top = anchor.y
+	c.anchor_bottom = anchor.y
+	c.offset_left = rect.position.x
+	c.offset_top = rect.position.y
+	c.offset_right = rect.position.x + rect.size.x
+	c.offset_bottom = rect.position.y + rect.size.y
+
+
 func _build_recorder(root: Control) -> void:
 	_rec_panel = PanelContainer.new()
-	_rec_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	_rec_panel.position = Vector2(-370, -300)
+	_safe(_rec_panel, Vector2(0.95, 0.93), Rect2(-340, -270, 340, 0))
 	_rec_panel.custom_minimum_size = Vector2(340, 0)
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.04, 0.07, 0.06, 0.88)
@@ -449,9 +460,7 @@ func _build_extras(root: Control) -> void:
 	_chapter_sub.modulate.a = 0
 	root.add_child(_chapter_sub)
 	_watch = UITheme.lbl("", 26, UITheme.AMBER, true)
-	_watch.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_watch.position = Vector2(-220, 28)
-	_watch.size = Vector2(190, 40)
+	_safe(_watch, Vector2(0.94, 0.07), Rect2(-200, 0, 200, 40))
 	_watch.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_watch.modulate.a = 0
 	root.add_child(_watch)
@@ -526,6 +535,7 @@ func intro() -> void:
 	_flash.color = Color(0, 0, 0, 1)
 	var cards := [
 		"Vey Isle. North Atlantic.\nRemoved from the charts in 1972.",
+		"The fishermen used to say the sea remembers\neveryone it takes.\nSometimes it gives their voices back.",
 		"For six years a dead weather station on the island\nhas been transmitting a distress call.\nIt has no power.",
 		"You are Elias Vale, maintenance technician.\nRestore the station. Send its final report. Leave before dawn.",
 		"Arrival: 23:40.",

@@ -58,6 +58,10 @@ func _hulk(base: Vector3) -> void:
 	P.crate(ship, Vector3(1.8, 0, -5.5), 12)
 	P.crate(ship, Vector3(1.6, 0.8, -5.4), 30, 0.6)
 	P.barrel(ship, Vector3(2.2, 0, 5.4))
+	P.bed(ship, Vector3(-2.2, 0, 4.0), 0)
+	P.examine(ship, Vector3(-2.2, 0.6, 4.0), Vector3(1.0, 0.6, 2.0), "bunk")
+	P.note(ship, Vector3(-2.1, 0.62, 3.4), "sailor_letter", 15)
+	B.box(ship, Vector3(-2.95, 1.3, 4.0), Vector3(0.02, 0.18, 0.13), B.flat(Color(0.5, 0.45, 0.35), 0.9), {"collide": false})
 	P.note(ship, Vector3(1.5, 1.0, 5.0), "mayday_log", 0)
 	P.table(ship, Vector3(1.6, 0, 5.2), 0, Vector2(1.2, 0.7))
 	# the radio: switches itself on as you approach, screams, then gives up the mayday

@@ -13,6 +13,7 @@ const JOURNAL_FLAGS := {
 	"left_boat": "j_arrival", "dock_echo": "j_preecho", "has_station_key": "j_key", "reached_station": "j_station",
 	"tide_out": "j_tide", "lowvey_silence": "j_lowvey", "annex_list": "j_morrow", "read_kell": "j_kell",
 	"graveyard_radio": "j_pelagic", "reached_chamber": "j_truth", "armed": "j_choice", "listener_seen": "j_listener",
+	"read_wren_customs": "j_curse", "read_wren_1923": "j_curse",
 }
 
 ## Checkpoint id -> [position, yaw degrees, space]
@@ -121,10 +122,6 @@ func chapter(flag: String) -> void:
 	for c in Story.CHAPTERS:
 		if c[0] == flag:
 			hud.chapter(c[1], c[2], c[3])
-	if flag in ["ch_settlement", "ch_forest", "ch_lowvey", "ch_caves", "ch_lighthouse"]:
-		await get_tree().create_timer(25.0).timeout
-		if is_instance_valid(horror) and not Game.has_flag("chose_suha"):
-			horror.suha_presence(flag != "ch_caves")
 
 
 func _process(delta: float) -> void:
