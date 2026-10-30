@@ -59,6 +59,7 @@ A Linux preset is also included (`--export-release "Linux" build/linux/TheTideRe
 | J | Elias's journal: what he has worked out so far, in plain words |
 | T | Check your watch (the bell strikes the hour; Kell hunts for ten minutes after it) |
 | Esc | Pause (options, restart from checkpoint, main menu) |
+| F11 / Alt+Enter | Toggle fullscreen (also in Options) |
 
 Mouse sensitivity, master volume, FOV, invert-Y, subtitles, reduced screen
 effects and volumetric fog can be changed in **Options** (main menu or pause).

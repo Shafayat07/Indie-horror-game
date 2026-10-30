@@ -22,6 +22,7 @@ var settings := {
 	"subtitles": true,
 	"fov": 72.0,
 	"volumetric_fog": true,
+	"fullscreen": true,
 	"invert_y": false,
 }
 
@@ -38,6 +39,7 @@ func _ready() -> void:
 	debug_ai = "--debug-ai" in OS.get_cmdline_user_args() or "--debug-ai" in OS.get_cmdline_args()
 	_setup_input()
 	load_settings()
+	_apply_window_mode.call_deferred()   # again once the window exists
 	_fade_layer = CanvasLayer.new()
 	_fade_layer.layer = 100
 	add_child(_fade_layer)
@@ -94,9 +96,32 @@ func save_settings() -> void:
 
 
 func apply_settings() -> void:
+	_apply_window_mode()
 	var bus := AudioServer.get_bus_index("Master")
 	AudioServer.set_bus_volume_db(bus, linear_to_db(max(settings.master_volume, 0.0001)))
 	settings_changed.emit()
+
+
+# ------------------------------------------------------------------ fullscreen
+func _apply_window_mode() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	var want := DisplayServer.WINDOW_MODE_FULLSCREEN if settings.get("fullscreen", true) else DisplayServer.WINDOW_MODE_WINDOWED
+	if DisplayServer.window_get_mode() != want:
+		DisplayServer.window_set_mode(want)
+
+
+func toggle_fullscreen() -> void:
+	settings.fullscreen = not settings.get("fullscreen", true)
+	save_settings()
+
+
+## F11 or Alt+Enter, anywhere in the game (menus and pause included).
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F11 or (event.keycode == KEY_ENTER and event.alt_pressed) or (event.keycode == KEY_KP_ENTER and event.alt_pressed):
+			toggle_fullscreen()
+			get_viewport().set_input_as_handled()
 
 
 # ------------------------------------------------------------------ state

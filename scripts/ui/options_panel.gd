@@ -19,6 +19,7 @@ func _ready() -> void:
 	_check(v, "Subtitles for sound effects", "subtitles")
 	_check(v, "Reduced screen effects (less shake, bob and flashes)", "reduced_effects")
 	_check(v, "Volumetric fog (turn off for performance)", "volumetric_fog")
+	_check(v, "Fullscreen  (F11 or Alt+Enter)", "fullscreen")
 	v.add_child(HSeparator.new())
 	v.add_child(UITheme.lbl("CONTROLS", 22, UITheme.BONE, true))
 	var c := UITheme.lbl(
