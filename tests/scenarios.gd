@@ -455,9 +455,12 @@ func _walk(points: Array) -> void:
 		var t := 0.0
 		var last := p.global_position
 		var still := 0.0
+		var space0: String = level.space
 		Input.action_press("move_forward")
 		while Vector2(p.global_position.x - target.x, p.global_position.z - target.z).length() > 0.8:
 			await get_tree().physics_frame
+			if level.space != space0:
+				break   # a doorway/zone carried us on to the next area: that is arriving
 			var d := 1.0 / Engine.physics_ticks_per_second
 			t += d
 			var to := target - p.global_position
