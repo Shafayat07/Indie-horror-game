@@ -12,6 +12,15 @@ arrive **before** the things that make them — and something on the island is l
 - Length: roughly 60–90 minutes with the optional chapters; four endings
 - No combat. Sound is how you survive.
 
+## Screenshots
+
+| | |
+|---|---|
+| ![The lighthouse](docs/screenshots/01_lighthouse.jpg) | ![The Listener](docs/screenshots/02_the_listener.jpg) |
+| ![The village at night](docs/screenshots/03_village_at_night.jpg) | ![The Listener in the lane](docs/screenshots/04_listener_in_the_lane.jpg) |
+| ![Haunted photographs](docs/screenshots/05_haunted_photographs.jpg) | ![The transmitter chamber](docs/screenshots/06_transmitter_chamber.jpg) |
+| ![The flooded dock](docs/screenshots/07_flooded_dock.jpg) | |
+
 ---
 
 ## Running the game

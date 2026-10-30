@@ -53,7 +53,7 @@ func _ready() -> void:
 
 
 func _shots(spec: String) -> void:
-	var out: String = args.get("out", "/tmp/claude-0/shots")
+	var out: String = args.get("out", "/tmp/tide_shots")
 	DirAccess.make_dir_recursive_absolute(out)
 	var i := 0
 	var p: Node3D = level.player

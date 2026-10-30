@@ -6,5 +6,5 @@ func _ready() -> void:
 	await get_tree().process_frame
 	get_tree().change_scene_to_file.call_deferred("res://scenes/main_menu.tscn")
 	await get_tree().create_timer(4.0).timeout
-	get_viewport().get_texture().get_image().save_png("/tmp/claude-0/shots/menu.png")
+	get_viewport().get_texture().get_image().save_png("/tmp/tide_shots/menu.png")
 	get_tree().quit()
