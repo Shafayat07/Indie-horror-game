@@ -58,6 +58,7 @@ func build(lv: Node) -> void:
 	_gallery()
 	_exit()
 	_surface_mouth()
+	_annex_door()
 	Zone.make(self, O + Vector3(0, 2, -45), Vector3(64, 14, 110), {"ambience": "caves", "reverb": 0.45})
 
 
@@ -367,6 +368,19 @@ func _exit() -> void:
 		level.travel(Vector3(65.5, Terrain.height(65.5, -46.0) + 0.3, -46.0), 180.0, "surface", "cliffs"))
 
 
+func _annex_door() -> void:
+	## an iron door in the gallery's west pocket: Project Morrow's annex
+	var iron := B.mat("metal_rust", Color(0.6, 0.6, 0.6), 1.0, {"metallic": 0.5})
+	var p := _p(-7.6, -48.6, 1.1)
+	B.box(self, p, Vector3(0.2, 2.2, 1.3), iron, {}).rotation_degrees.y = -60
+	B.label(self, p + Vector3(0.25, 0.9, 0.1), "MORROW", 26, Color(0.8, 0.75, 0.6), Vector3(0, 30, 0))
+	var it := Interactable.make(self, p + Vector3(0.4, 0, 0.2), Vector3(1.0, 2.0, 1.4), "Iron door — PROJECT MORROW")
+	it.used.connect(func(_p):
+		level.listener.deactivate()
+		var cp: Array = level.checkpoints["annex"]
+		level.travel(cp[0], cp[1], "annex", "station_in"))
+
+
 func _surface_mouth() -> void:
 	## The cave mouth on the exposed tidal shelf, at the foot of the east cliffs.
 	var mouth := Node3D.new()
@@ -389,6 +403,8 @@ func _surface_mouth() -> void:
 		if not Game.has_flag("found_caves"):
 			Game.set_flag("found_caves")
 			level.objective("open_gate")
+			level.chapter("ch_caves")
+			level.hud.elias("caves", 3.0)
 			Game.state.checkpoint = "caves"
 			level.checkpoint("caves")
 		var cp: Array = level.checkpoints["caves"]

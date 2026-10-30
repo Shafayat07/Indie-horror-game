@@ -5,7 +5,7 @@ extends StaticBody3D
 ## blended shader and collided with a HeightMapShape3D.
 
 const CELL := 2.0
-const MIN_X := -130.0
+const MIN_X := -150.0
 const MAX_X := 130.0
 const MIN_Z := -140.0
 const MAX_Z := 150.0
@@ -23,6 +23,9 @@ const PADS := [
 	[-56.0, -8.0, 22.0, 6.5, 10.0],  # weather station
 	[0.0, -82.0, 13.0, 16.5, 8.0],   # lighthouse
 	[42.0, 10.0, 6.0, 4.6, 6.0],     # cliff top lookout
+	[-61.0, 38.0, 9.0, 5.2, 8.0],    # radio tower clearing (Blackwood)
+	[-72.0, 64.0, 7.0, 5.0, 6.0],    # Kell's roost outcrop
+	[-98.0, 46.0, 11.0, 0.9, 8.0],   # ship graveyard beach
 ]
 
 ## Paths: [ax, az, bx, bz, half_width, height_a, height_b] (NAN = keep terrain)
@@ -36,6 +39,11 @@ const PATHS := [
 	[2.0, 24.0, 42.0, 10.0, 2.0, 4.4, 4.6],
 	[42.0, 10.0, 52.0, 2.0, 1.6, 4.6, 2.0],
 	[52.0, 2.0, 62.0, -4.0, 1.6, 2.0, -0.9],
+	[-4.0, 40.0, -35.0, 44.0, 1.8, 4.2, 5.0],
+	[-35.0, 44.0, -58.0, 40.0, 1.6, 5.0, 5.2],
+	[-58.0, 40.0, -70.0, 60.0, 1.4, 5.2, 5.0],
+	[-62.0, 42.0, -88.0, 46.0, 1.5, 5.2, 1.4],
+	[-88.0, 46.0, -96.0, 46.0, 1.5, 1.4, 0.9],
 ]
 
 
@@ -62,7 +70,11 @@ static func _base(x: float, z: float) -> float:
 	var n := _noise.get_noise_2d(x, z)
 	# Island silhouette: an ellipse, pushed outward in the north for the headland.
 	var rz := 88.0 if z > -5.0 else 102.0
-	var d := Vector2(x / 96.0, (z + 5.0) / rz).length() + n * 0.10
+	# Blackwood and the ship-graveyard shore widen the island to the south-west
+	var sw := _smooth(-20.0, -60.0, x) * _smooth(-5.0, 15.0, z)
+	var rx := 96.0 + 40.0 * sw
+	rz += 20.0 * sw
+	var d := Vector2(x / rx, (z + 5.0) / rz).length() + n * 0.10
 	var land := 1.0 - _smooth(0.86, 1.0, d)
 	var h := 3.6 + n * 2.2 + _detail.get_noise_2d(x, z) * 0.35
 	# the lighthouse headland

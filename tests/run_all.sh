@@ -4,7 +4,11 @@ cd "$(dirname "$0")/.."
 run() {
 	local name=$1; shift
 	local log=/tmp/tide_test_$name.log
-	timeout 600 godot --headless --path . res://tests/driver.tscn -- "$@" > "$log" 2>&1
+	if [ "$name" = mouselook ]; then  # needs a real window to capture the mouse
+		timeout 600 xvfb-run -a -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --audio-driver Dummy --path . res://tests/driver.tscn -- "$@" > "$log" 2>&1
+	else
+		timeout 600 godot --headless --path . res://tests/driver.tscn -- "$@" > "$log" 2>&1
+	fi
 	local res=$(grep -oE "scenario [a-z_]+: (PASS|FAIL)" "$log" | tail -1)
 	echo "${res:-scenario $name: CRASH/TIMEOUT}"
 	grep -E "FAIL:|SCRIPT ERROR" "$log" | head -10
@@ -21,3 +25,7 @@ run walk_lighthouse --cp=lighthouse --flags=tide_out,reached_lighthouse --scenar
 run walk_return --cp=aftermath --flags=tide_out,chose_break,lh_unbarred,gate_unchained,entered_settlement --scenario=walk_return --wait=1
 run menus --cp=settlement --flags=entered_settlement --scenario=menus --wait=1
 run mouselook --cp=settlement --flags=entered_settlement --scenario=mouselook --wait=1
+run optional --cp=graveyard --flags=tide_out,entered_settlement,has_recorder,reached_chamber --scenario=optional --wait=1
+run kell_hunt --cp=forest --flags=entered_settlement --scenario=kell_hunt --wait=1
+run horror --cp=settlement --flags=entered_settlement --scenario=horror --wait=1
+run walk_forest --cp=settlement --flags=entered_settlement --scenario=walk_forest --wait=1

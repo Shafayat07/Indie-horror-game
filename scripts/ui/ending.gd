@@ -2,6 +2,10 @@ extends Control
 ## Ending card + credits after the final boat scene. Text differs per choice.
 
 const TEXT := {
+	"last": [
+		"ENDING — THE LAST RECORDING",
+		"At 03:12 the Vey transmitter played Morrow's tape, the Pelagic's mayday\nand Tomas Kell's last message into itself — and listened.\n\nThe Listener was found at dawn: a heap of wet rope and old net\nbeside the transmitter, facing it.\n\nThe island has been silent since. Not the thirteen seconds.\nJust ordinary silence.\n\nElias Vale's recorder still holds one file. It is thirteen seconds long.\nHe has never played it.",
+	],
 	"break": [
 		"ENDING — BREAK THE SIGNAL",
 		"Vey Isle went silent at 03:12.\nThe tide came back before dawn and covered the caves again.\n\nNorthern Maritime Services logged the distress carrier as ended.\nThe report was never received.\n\nFor eleven days, nothing on the island made a sound before it happened.\n\nOn the twelfth, a fishing boat passing the headland\nheard a man's footsteps on an empty dock.\nThree of them.",
@@ -21,7 +25,7 @@ func _ready() -> void:
 	bg.color = Color(0.01, 0.012, 0.015)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
-	Sound.set_zone("aftermath_break" if Game.ending_choice == "break" else "aftermath_send")
+	Sound.set_zone("aftermath_send" if Game.ending_choice == "send" else "aftermath_break")
 	var data: Array = TEXT.get(Game.ending_choice, TEXT["break"])
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)

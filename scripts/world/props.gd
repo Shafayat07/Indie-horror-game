@@ -156,3 +156,84 @@ static func note(parent: Node3D, pos: Vector3, doc_id: String, yaw := 0.0, uprig
 
 static func pillar_rock(parent: Node3D, pos: Vector3, h: float, m: Material) -> void:
 	B.rock(parent, pos + Vector3(0, h * 0.4, 0), Vector3(1.4, h * 0.6, 1.3), randi() % 5, m, true, randf() * TAU)
+
+
+## Something Elias can look at and comment on (story in small doses).
+static func examine(parent: Node3D, pos: Vector3, size: Vector3, id: String) -> Interactable:
+	var e: Array = Story.EXAMINE[id]
+	var it := Interactable.make(parent, pos, size, e[0])
+	it.used.connect(func(p):
+		Game.set_flag("examined_" + id)
+		Sound.say("ELIAS:  " + e[1], "elias", 5.0))
+	return it
+
+
+# ------------------------------------------------------------------ body horror
+static func _skin() -> Material:
+	return B.flat(Color(0.42, 0.44, 0.43), 0.6)
+
+
+static func blood(parent: Node3D, pos: Vector3, size: Vector2, yaw := 0.0) -> MeshInstance3D:
+	var mi := B.box(parent, pos + Vector3(0, 0.012, 0), Vector3(size.x, 0.01, size.y), B.flat(Color(0.13, 0.01, 0.01), 0.12, 0.1), {"collide": false, "shadow": false})
+	mi.rotation_degrees.y = yaw
+	return mi
+
+
+static func smear(parent: Node3D, pos: Vector3, size: Vector2, yaw := 0.0) -> MeshInstance3D:
+	## vertical blood on a wall
+	var mi := B.box(parent, pos, Vector3(size.x, size.y, 0.01), B.flat(Color(0.16, 0.015, 0.012), 0.2), {"collide": false, "shadow": false})
+	mi.rotation_degrees.y = yaw
+	return mi
+
+
+## A body: lying (pose "lie"), slumped sitting ("sit"), or wrapped in net and hung ("hung").
+static func corpse(parent: Node3D, pos: Vector3, yaw := 0.0, pose := "lie", earless := true) -> Node3D:
+	var r := _root(parent, pos, yaw)
+	var sk := _skin()
+	var cloth := B.flat(Color(0.12, 0.13, 0.14), 0.9)
+	var red := B.flat(Color(0.2, 0.015, 0.012), 0.2)
+	var parts := []
+	match pose:
+		"lie":
+			parts = [[Vector3(0, 0.15, 0), Vector3(0.36, 0.22, 0.75), cloth], [Vector3(0, 0.16, 0.52), Vector3(0.2, 0.2, 0.24), sk],
+				[Vector3(-0.1, 0.1, -0.6), Vector3(0.12, 0.12, 0.6), cloth], [Vector3(0.12, 0.1, -0.62), Vector3(0.12, 0.12, 0.6), cloth],
+				[Vector3(0.3, 0.1, 0.15), Vector3(0.1, 0.1, 0.55), sk], [Vector3(-0.32, 0.1, 0.1), Vector3(0.1, 0.1, 0.5), sk]]
+		"sit":
+			parts = [[Vector3(0, 0.6, 0), Vector3(0.36, 0.6, 0.24), cloth], [Vector3(0, 1.0, 0.08), Vector3(0.2, 0.22, 0.22), sk],
+				[Vector3(-0.1, 0.25, 0.3), Vector3(0.12, 0.12, 0.5), cloth], [Vector3(0.1, 0.25, 0.3), Vector3(0.12, 0.12, 0.5), cloth],
+				[Vector3(0.25, 0.5, 0.1), Vector3(0.09, 0.5, 0.09), sk], [Vector3(-0.25, 0.5, 0.1), Vector3(0.09, 0.5, 0.09), sk]]
+		"hung":
+			parts = [[Vector3(0, 0.9, 0), Vector3(0.45, 1.4, 0.4), B.mat("rope", Color.WHITE, 2.0)], [Vector3(0, 1.75, 0.02), Vector3(0.2, 0.22, 0.22), sk],
+				[Vector3(0, 0.1, 0), Vector3(0.14, 0.3, 0.14), sk]]
+	for pdef in parts:
+		var mi := B.sphere(r, pdef[0], 0.5, pdef[2])
+		mi.scale = pdef[1]
+	if earless:
+		# where the ears were taken
+		var head_pos: Vector3 = parts[1][0]
+		for sx in [-1, 1]:
+			var w := B.sphere(r, head_pos + Vector3(sx * 0.1, 0.0, 0.0), 0.03, red)
+	if pose == "lie":
+		blood(parent, pos + Vector3(0, 0.0, 0), Vector2(1.1, 1.6), yaw + 15)
+	B.collider(r, Vector3(0, 0.3, 0), Vector3(0.6, 0.6, 1.4) if pose == "lie" else Vector3(0.5, 1.2, 0.5))
+	return r
+
+
+## A body under a stained sheet.
+static func covered(parent: Node3D, pos: Vector3, yaw := 0.0) -> Node3D:
+	var r := _root(parent, pos, yaw)
+	var sheet := B.sphere(r, Vector3(0, 0.12, 0), 0.5, B.flat(Color(0.62, 0.6, 0.55), 0.95))
+	sheet.scale = Vector3(0.6, 0.28, 1.8)
+	var head := B.sphere(r, Vector3(0, 0.16, 0.75), 0.5, B.flat(Color(0.62, 0.6, 0.55), 0.95))
+	head.scale = Vector3(0.28, 0.26, 0.3)
+	var stain := B.sphere(r, Vector3(0.05, 0.24, 0.2), 0.5, B.flat(Color(0.25, 0.02, 0.02), 0.4))
+	stain.scale = Vector3(0.35, 0.06, 0.5)
+	var stain2 := B.sphere(r, Vector3(0, 0.25, 0.75), 0.5, B.flat(Color(0.3, 0.02, 0.02), 0.4))
+	stain2.scale = Vector3(0.22, 0.05, 0.22)
+	return r
+
+
+static func ear_jar(parent: Node3D, pos: Vector3) -> void:
+	B.cyl(parent, pos + Vector3(0, 0.12, 0), 0.08, 0.24, B.glass(Color(0.75, 0.8, 0.55, 0.35)), {"collide": false})
+	var ear := B.sphere(parent, pos + Vector3(0, 0.11, 0), 0.04, B.flat(Color(0.75, 0.62, 0.55), 0.4))
+	ear.scale = Vector3(0.6, 1.3, 0.35)

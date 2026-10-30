@@ -102,6 +102,10 @@ func _teahouse() -> void:
 	Sound.attach_loop(radio, "amb_static", -16.0, {"unit_size": 2.0, "max_distance": 14.0})
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"ambience": "interior", "reverb": 0.15})
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"once": true, "block": "heard_teahouse", "on_enter": func(_b): _teahouse_radio(radio_pos)})
+	P.examine(r, Vector3(0.1, 0.9, -0.5), Vector3(0.3, 0.3, 0.3), "teahouse_cup")
+	P.examine(r, Vector3(-2.3, 0.6, -1.6), Vector3(0.6, 1.0, 0.6), "teahouse_chair")
+	# first entry: look back at the chair facing the wall and someone is sitting in it
+	level.horror.apparition(r.to_global(Vector3(-2.3, 0, -1.55)), r.rotation.y, {"range": 9.0, "scare": true, "sting": 0, "flag": "tea_ghost", "require": "heard_teahouse"})
 	# three knocks from inside the west wall (there's nothing behind it)
 	Recordable.make(r, Vector3(-3.1, 1.4, 0.5), "knocks", "knock3", {"radius": 5.0, "interval": 11.0, "volume": -2.0, "unit_size": 3.0})
 
@@ -134,6 +138,10 @@ func _blue_house() -> void:
 	P.note(r, Vector3(-0.6, 0.8, 1.5), "child_drawing", 10)
 	P.stove(r, Vector3(2.5, 0, -1.9), 0)
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"ambience": "interior", "safe": true, "reverb": 0.15})
+	P.examine(r, Vector3(2.3, 0.6, 1.2), Vector3(1.0, 0.6, 2.0), "blue_bed")
+	P.note(r, Vector3(2.0, 0.62, 0.3), "halloran_letter", 30)
+	# a face at the window behind you while you're at the clock
+	level.horror.apparition(r.to_global(Vector3(-size.x * 0.5 - 0.6, 0, 1.6)), 0.0, {"kind": "face", "range": 12.0, "scare": true, "sting": 1, "flag": "window_face", "require": "has_station_key"})
 	# the clock that runs backwards, holding the station key
 	var clock := Node3D.new()
 	r.add_child(clock)
@@ -162,6 +170,7 @@ func _blue_house() -> void:
 			p.hud.toast("The case is empty. The hands keep turning back.")
 			return
 		Game.set_flag("has_station_key")
+		level.hud.elias("key", 3.0)
 		Sound.play_2d("pickup", -4.0)
 		p.hud.open_note("wren_key")
 		p.hud.toast("Took the weather station key.")
@@ -190,6 +199,25 @@ func _office() -> void:
 	P.radio_set(r, Vector3(-1.4, 0.8, -1.2), 0, false)
 	B.label(r, Vector3(size.x * 0.5 + 0.24, 2.35, 0.6), "HARBOURMASTER", 30, Color(0.8, 0.75, 0.6), Vector3(0, 90, 0))
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(4.8, 2.4, 3.8), {"ambience": "interior", "reverb": 0.12})
+	P.examine(r, Vector3(1.0, 1.6, -1.95), Vector3(1.4, 1.0, 0.2), "office_map")
+	B.box(r, Vector3(1.0, 1.6, -1.98), Vector3(1.3, 0.9, 0.02), B.flat(Color(0.55, 0.52, 0.42), 0.9), {"collide": false})
+	var olamp := B.omni(r, Vector3(0, 2.2, 0.5), Color(1.0, 0.62, 0.3), 0.0, 1.0)
+	# first entry: the door slams behind you, the lights die, and something is in the corner
+	Zone.make(r, Vector3(0, 1.3, -0.5), Vector3(3.5, 2.4, 2.0), {"once": true, "block": "office_scare", "on_enter": func(_b):
+		Game.set_flag("office_scare")
+		await get_tree().create_timer(1.2).timeout
+		for door in r.get_children():
+			if door is Door and door.is_open:
+				door.interact(level.player)
+		Sound.play_at("door_slam", r.global_position, 2.0)
+		var lights := r.find_children("*", "OmniLight3D", false, false)
+		for l in lights:
+			l.visible = false
+		await get_tree().create_timer(1.4).timeout
+		level.horror.jumpscare(r.to_global(Vector3(-1.9, 1.6, -1.5)), 0)
+		await get_tree().create_timer(0.6).timeout
+		for l in lights:
+			l.visible = true})
 
 
 func _collapsed() -> void:
@@ -272,7 +300,7 @@ func _dressing() -> void:
 	var post := B.mat("wood_dark", Color(0.7, 0.7, 0.7), 0.8)
 	for z in range(24, 62, 3):
 		for x in [-3.2, 3.2]:
-			if rng.randf() < 0.75:
+			if rng.randf() < 0.75 and not (x < 0.0 and z > 35 and z < 47):   # gap where the Blackwood path leaves
 				var g := Terrain.height(x, z)
 				var p := B.box(self, Vector3(x, g + 0.5, z), Vector3(0.12, 1.0, 0.12), post, {})
 				p.rotation_degrees.z = rng.randf_range(-12, 12)
@@ -304,7 +332,13 @@ func _dressing() -> void:
 
 
 # ------------------------------------------------------------------ events
+func on_hour(_h: int) -> void:
+	Sound.play_at("bell", bell.global_position + Vector3(0, 2.7, 0), 4.0, {"unit_size": 25.0, "max_distance": 260.0})
+	Sound.say("[the bell in the square strikes the hour — %s]" % Game.clock_text(), "sfx", 3.0)
+
+
 func on_spawn(cp: String) -> void:
+	add_to_group("hourly")
 	Zone.make(self, Vector3(0, 6, 62), Vector3(8, 6, 3), {"once": true, "block": "entered_settlement", "on_enter": func(_b): _enter()})
 	Zone.make(self, Vector3(0, 6, 24), Vector3(12, 6, 6), {"once": true, "require": "chose_send", "on_enter": func(_b):
 		Sound.pre_echo("radio_voice_elias", Vector3(-9, 5.2, 50), "[every radio in Vey is playing your voice]", 2.0)
@@ -317,6 +351,8 @@ func on_spawn(cp: String) -> void:
 
 func _enter() -> void:
 	Game.set_flag("entered_settlement")
+	level.chapter("ch_settlement")
+	level.hud.elias("settlement", 5.0)
 	if Game.state.objective in ["go_inland", "find_shed", "leave_boat", "take_recorder", "try_listen", "record_echo"]:
 		level.objective("find_key")
 	level.checkpoint("settlement")
@@ -336,6 +372,8 @@ func _process(delta: float) -> void:
 
 func _vanish() -> void:
 	silhouette.visible = false
+	Game.set_flag("listener_seen")
+	level.hud.elias("listener_first", 0.8)
 	var e := _sil_lamp.light_energy
 	_sil_lamp.light_energy = 0.0
 	await get_tree().create_timer(0.5).timeout

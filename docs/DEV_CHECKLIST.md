@@ -48,3 +48,17 @@ Legend: [x] done and verified · [~] done, partly verified · [ ] not done
 - Human playtest for pacing, difficulty of the chamber, audio levels
 - Replace the synthetic radio voice with recorded voice acting
 - Sculpted Blender model for The Listener
+
+## Final development phase
+- [x] Backup tag `backup-before-final` before changes
+- [x] Textures regenerated at 1024 px (+ masonry, whitewash, bark, slate, pine, skin, membrane, moss, cobble, painted wood)
+- [x] Footsteps rebuilt (heel/toe, 6 variants per surface); rain, thunder, sonar, screech, stings, wingbeats
+- [x] Blender models: lighthouse exterior, trees, Kell creature (tools/blender/build_models.py)
+- [x] Story clarity: opening briefing, 10 chapter cards, journal [J], Elias's spoken thoughts, examine points
+- [x] Horror: the Lodger (idle whisper), apparitions, house-entry scares (teahouse chair, office slam, blue-house window, station window), Listener glimpses, thirteen-second silence, jumpscare stings
+- [x] Optional chapters: Blackwood + Old Radio Tower + Roost (Kell boss, hourly bell, sonar rule, floodlight), Ship Graveyard (Pelagic hold, radio incident), Low Vey (silence), Research Annex (Morrow, chase)
+- [x] Body-horror scenes: annex exam room & containment, Pelagic cargo hold, Blackwood remains, Low Vey supper, Kell's nest
+- [x] Third ending: The Last Recording (three optional recordings, no new puzzle)
+- [x] Island clock, watch [T], rain and lightning
+- [x] Existing puzzles untouched; both original full playthroughs still pass
+- [x] Commits authored only by Shafayat07 (GitHub noreply address)

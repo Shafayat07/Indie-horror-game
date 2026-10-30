@@ -22,28 +22,38 @@ python3 tools/gen_audio.py
 
 License: these files were created for this project and may be used under the same terms as the project itself.
 
-### Textures (`assets/textures/`, 512×512 tileable PBR sets: albedo, normal, roughness)
+### Textures (`assets/textures/`, 1024×1024 tileable PBR sets: albedo with baked cavity, normal, roughness)
 
-| Set | Generator function |
+| Set | Generator |
 |---|---|
+| bark | tools/gen_textures.py |
 | cliff | tools/gen_textures.py |
+| cobble | tools/gen_textures.py |
 | concrete | tools/gen_textures.py |
 | grass_coastal | tools/gen_textures.py |
 | gravel | tools/gen_textures.py |
+| membrane | tools/gen_textures.py |
 | metal_green | tools/gen_textures.py |
 | metal_red | tools/gen_textures.py |
 | metal_rust | tools/gen_textures.py |
+| moss | tools/gen_textures.py |
+| pine | tools/gen_textures.py |
 | plaster_white | tools/gen_textures.py |
 | rock_cave | tools/gen_textures.py |
 | roof | tools/gen_textures.py |
 | rope | tools/gen_textures.py |
 | sand_wet | tools/gen_textures.py |
+| skin | tools/gen_textures.py |
+| slate | tools/gen_textures.py |
+| stone_blocks | tools/gen_textures.py |
 | stone_wet | tools/gen_textures.py |
 | wallpaper | tools/gen_textures.py |
+| whitewash | tools/gen_textures.py |
 | wood_dark | tools/gen_textures.py |
+| wood_painted | tools/gen_textures.py |
 | wood_planks | tools/gen_textures.py |
 
-### Audio (`assets/audio/`, 22.05 kHz mono WAV)
+### Audio (`assets/audio/`, 22.05 kHz mono WAV, imported as QOA)
 
 | File | Description |
 |---|---|
@@ -51,15 +61,19 @@ License: these files were created for this project and may be used under the sam
 | amb_drone.wav | ambience loop |
 | amb_generator.wav | ambience loop |
 | amb_interior.wav | ambience loop |
+| amb_rain.wav | ambience loop |
 | amb_sea.wav | ambience loop |
 | amb_signal.wav | ambience loop |
 | amb_static.wav | ambience loop |
 | amb_tape.wav | ambience loop |
 | amb_wind.wav | ambience loop |
+| amb_woods.wav | ambience loop |
 | bell.wav | sound effect |
 | bell_drowned.wav | sound effect |
 | calibration_tape.wav | sound effect |
+| chapel_bell.wav | sound effect |
 | coupling.wav | sound effect |
+| crystal_hum.wav | sound effect |
 | death_sting.wav | sound effect |
 | door_creak_0.wav | sound effect |
 | door_creak_1.wav | sound effect |
@@ -72,6 +86,7 @@ License: these files were created for this project and may be used under the sam
 | flashlight.wav | sound effect |
 | flashlight_echo.wav | sound effect |
 | generator_start.wav | sound effect |
+| glass_break.wav | sound effect |
 | hatch_open.wav | sound effect |
 | heartbeat.wav | sound effect |
 | knock3.wav | sound effect |
@@ -89,44 +104,74 @@ License: these files were created for this project and may be used under the sam
 | radio_voice_a.wav | distorted, deliberately unintelligible formant 'voice' (subtitled) |
 | radio_voice_b.wav | distorted, deliberately unintelligible formant 'voice' (subtitled) |
 | radio_voice_c.wav | distorted, deliberately unintelligible formant 'voice' (subtitled) |
+| radio_voice_d.wav | distorted, deliberately unintelligible formant 'voice' (subtitled) |
 | radio_voice_elias.wav | distorted, deliberately unintelligible formant 'voice' (subtitled) |
 | rec_button.wav | sound effect |
 | relay_0.wav | relay calibration tone |
 | relay_1.wav | relay calibration tone |
 | relay_2.wav | relay calibration tone |
 | relay_wrong.wav | relay calibration tone |
+| screech.wav | sound effect |
+| sonar_0.wav | Kell's echolocation clicks |
+| sonar_1.wav | Kell's echolocation clicks |
+| sonar_2.wav | Kell's echolocation clicks |
 | splash.wav | sound effect |
-| step_grass_0.wav | footstep |
-| step_grass_1.wav | footstep |
-| step_grass_2.wav | footstep |
-| step_grass_3.wav | footstep |
-| step_gravel_0.wav | footstep |
-| step_gravel_1.wav | footstep |
-| step_gravel_2.wav | footstep |
-| step_gravel_3.wav | footstep |
-| step_metal_0.wav | footstep |
-| step_metal_1.wav | footstep |
-| step_metal_2.wav | footstep |
-| step_metal_3.wav | footstep |
-| step_stone_0.wav | footstep |
-| step_stone_1.wav | footstep |
-| step_stone_2.wav | footstep |
-| step_stone_3.wav | footstep |
-| step_water_0.wav | footstep |
-| step_water_1.wav | footstep |
-| step_water_2.wav | footstep |
-| step_water_3.wav | footstep |
-| step_wood_0.wav | footstep |
-| step_wood_1.wav | footstep |
-| step_wood_2.wav | footstep |
-| step_wood_3.wav | footstep |
+| step_grass_0.wav | footstep (heel + toe) |
+| step_grass_1.wav | footstep (heel + toe) |
+| step_grass_2.wav | footstep (heel + toe) |
+| step_grass_3.wav | footstep (heel + toe) |
+| step_grass_4.wav | footstep (heel + toe) |
+| step_grass_5.wav | footstep (heel + toe) |
+| step_gravel_0.wav | footstep (heel + toe) |
+| step_gravel_1.wav | footstep (heel + toe) |
+| step_gravel_2.wav | footstep (heel + toe) |
+| step_gravel_3.wav | footstep (heel + toe) |
+| step_gravel_4.wav | footstep (heel + toe) |
+| step_gravel_5.wav | footstep (heel + toe) |
+| step_metal_0.wav | footstep (heel + toe) |
+| step_metal_1.wav | footstep (heel + toe) |
+| step_metal_2.wav | footstep (heel + toe) |
+| step_metal_3.wav | footstep (heel + toe) |
+| step_metal_4.wav | footstep (heel + toe) |
+| step_metal_5.wav | footstep (heel + toe) |
+| step_stone_0.wav | footstep (heel + toe) |
+| step_stone_1.wav | footstep (heel + toe) |
+| step_stone_2.wav | footstep (heel + toe) |
+| step_stone_3.wav | footstep (heel + toe) |
+| step_stone_4.wav | footstep (heel + toe) |
+| step_stone_5.wav | footstep (heel + toe) |
+| step_water_0.wav | footstep (heel + toe) |
+| step_water_1.wav | footstep (heel + toe) |
+| step_water_2.wav | footstep (heel + toe) |
+| step_water_3.wav | footstep (heel + toe) |
+| step_water_4.wav | footstep (heel + toe) |
+| step_water_5.wav | footstep (heel + toe) |
+| step_wood_0.wav | footstep (heel + toe) |
+| step_wood_1.wav | footstep (heel + toe) |
+| step_wood_2.wav | footstep (heel + toe) |
+| step_wood_3.wav | footstep (heel + toe) |
+| step_wood_4.wav | footstep (heel + toe) |
+| step_wood_5.wav | footstep (heel + toe) |
+| sting_0.wav | jumpscare sting |
+| sting_1.wav | jumpscare sting |
+| sting_2.wav | jumpscare sting |
+| switch_clunk.wav | sound effect |
 | tape_start.wav | sound effect |
 | tape_stop.wav | sound effect |
+| thunder_0.wav | thunder |
+| thunder_1.wav | thunder |
+| thunder_2.wav | thunder |
 | transmit_surge.wav | sound effect |
 | ui_click.wav | sound effect |
 | whisper_0.wav | breathy formant whisper |
 | whisper_1.wav | breathy formant whisper |
+| whisper_2.wav | breathy formant whisper |
+| wingbeat.wav | sound effect |
 
 ### Models
 
-All 3D models (The Listener, field recorder, transmitter, lighthouse, boat, buildings, furniture, rocks, cave) are generated at runtime from code in `scripts/` (procedural meshes and primitives). No model files are imported.
+- `assets/models/lighthouse.glb`, `trees.glb`, `kell.glb`, `chapel.glb` — original models made with **Blender 5.2.3**
+  (the official `bpy` package from PyPI) by `tools/blender/build_models.py`. Re-create with
+  `pip install bpy==5.2.3 && python tools/blender/build_models.py`. (`chapel.glb` is built but unused.)
+- Everything else (The Listener, ghosts, field recorder, transmitter, boat, buildings, ships, furniture,
+  rocks, caves, bodies) is generated at runtime from code in `scripts/`.

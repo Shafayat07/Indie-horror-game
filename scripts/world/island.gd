@@ -5,6 +5,15 @@ extends Node3D
 
 const CAVE_ORIGIN := Vector3(0, -200, 0)
 const CHAMBER_ORIGIN := Vector3(0, -200, -260)
+const ROOST_ORIGIN := Vector3(0, -200, 220)
+const ANNEX_ORIGIN := Vector3(220, -200, 0)
+
+## flag that unlocks each journal entry
+const JOURNAL_FLAGS := {
+	"left_boat": "j_arrival", "dock_echo": "j_preecho", "has_station_key": "j_key", "reached_station": "j_station",
+	"tide_out": "j_tide", "lowvey_silence": "j_lowvey", "annex_list": "j_morrow", "read_kell": "j_kell",
+	"graveyard_radio": "j_pelagic", "reached_chamber": "j_truth", "armed": "j_choice", "listener_seen": "j_listener",
+}
 
 ## Checkpoint id -> [position, yaw degrees, space]
 var checkpoints := {}
@@ -21,6 +30,11 @@ var pause_menu: Node
 var areas := {}
 var nav_regions := {}
 var space := "surface"
+var horror: Node3D
+var _last_hour := -1
+var _rain: GPUParticles3D
+var _rain_snd: AudioStreamPlayer
+var _thunder_t := 20.0
 
 
 func _ready() -> void:
@@ -51,7 +65,11 @@ func _ready() -> void:
 	add_child(listener)
 	listener.level = self
 
-	for area_name in ["dock", "settlement", "station", "caves", "lighthouse", "chamber"]:
+	horror = preload("res://scripts/world/horror.gd").new()
+	horror.name = "Horror"
+	add_child(horror)
+	horror.setup(self)
+	for area_name in ["dock", "settlement", "station", "caves", "lighthouse", "chamber", "forest", "graveyard", "lowvey", "annex"]:
 		var t0 := Time.get_ticks_msec()
 		var a: Node3D = load("res://scripts/world/areas/%s.gd" % area_name).new()
 		a.name = area_name.capitalize()
@@ -72,8 +90,92 @@ func _ready() -> void:
 	for a in areas.values():
 		if a.has_method("on_spawn"):
 			a.on_spawn(Game.state.checkpoint)
+	_build_weather()
+	Game.flag_set.connect(_on_flag)
+	Game.recordings_changed.connect(func():
+		if Game.has_recording("dock_steps"):
+			Game.add_journal("j_replay")
+		if Game.last_recording_complete():
+			Game.add_journal("j_last"))
+	_last_hour = Game.clock_seconds() / 3600
+	if Game.state.checkpoint == "dock_start" and not Game.has_flag("intro_seen"):
+		Game.set_flag("intro_seen")
+		hud.intro()
 	if Game.debug_ai:
 		print("[debug] checkpoint ", Game.state.checkpoint, " flags ", Game.state.flags.keys())
+
+
+func _on_flag(f: String) -> void:
+	if JOURNAL_FLAGS.has(f):
+		Game.add_journal(JOURNAL_FLAGS[f])
+
+
+func chapter(flag: String) -> void:
+	if Game.has_flag(flag):
+		return
+	Game.set_flag(flag)
+	for c in Story.CHAPTERS:
+		if c[0] == flag:
+			hud.chapter(c[1], c[2], c[3])
+
+
+func _process(delta: float) -> void:
+	# the island clock; the square's bell strikes every hour (and is heard a little early)
+	Game.state.clock = float(Game.state.get("clock", 0.0)) + delta * Game.CLOCK_SPEED
+	var hour := Game.clock_seconds() / 3600
+	if hour != _last_hour:
+		_last_hour = hour
+		get_tree().call_group("hourly", "on_hour", hour)
+	if _rain:
+		_rain.global_position = player.global_position + Vector3(0, 9, 0)
+		_rain.emitting = space == "surface"
+		_rain_snd.volume_db = lerp(_rain_snd.volume_db, -14.0 if space == "surface" else -80.0, delta * 2.0)
+		_thunder_t -= delta
+		if _thunder_t <= 0.0 and space == "surface":
+			_thunder_t = randf_range(35.0, 80.0)
+			_lightning()
+
+
+func _build_weather() -> void:
+	_rain = GPUParticles3D.new()
+	_rain.amount = 1400
+	_rain.lifetime = 1.2
+	_rain.visibility_aabb = AABB(Vector3(-20, -20, -20), Vector3(40, 30, 40))
+	var pm := ParticleProcessMaterial.new()
+	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	pm.emission_box_extents = Vector3(16, 1, 16)
+	pm.direction = Vector3(0.15, -1, 0.05)
+	pm.spread = 3.0
+	pm.initial_velocity_min = 16.0
+	pm.initial_velocity_max = 20.0
+	pm.gravity = Vector3(0, -9.8, 0)
+	_rain.process_material = pm
+	var qm := QuadMesh.new()
+	qm.size = Vector2(0.015, 0.45)
+	var rm := StandardMaterial3D.new()
+	rm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	rm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	rm.albedo_color = Color(0.7, 0.75, 0.8, 0.22)
+	rm.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
+	qm.material = rm
+	_rain.draw_pass_1 = qm
+	add_child(_rain)
+	_rain_snd = AudioStreamPlayer.new()
+	_rain_snd.stream = Sound.get_stream("amb_rain")
+	_rain_snd.bus = "Ambience"
+	_rain_snd.volume_db = -80.0
+	add_child(_rain_snd)
+	_rain_snd.play()
+
+
+func _lightning() -> void:
+	var e := moon.light_energy
+	var tw := create_tween()
+	for i in 2:
+		tw.tween_property(moon, "light_energy", 4.0, 0.04)
+		tw.tween_property(moon, "light_energy", e, 0.12)
+	await get_tree().create_timer(randf_range(1.0, 3.0)).timeout
+	Sound.play_2d("thunder_%d" % (randi() % 3), -6.0, "Ambience")
 
 
 func _build_environment() -> void:
@@ -169,9 +271,10 @@ func _bake_navigation() -> void:
 	NavigationServer3D.map_set_cell_size(map, 0.3)
 	NavigationServer3D.map_set_cell_height(map, 0.25)
 	var regions := {
-		"surface": AABB(Vector3(-82, -4, -72), Vector3(130, 30, 160)),
+		"surface": AABB(Vector3(-120, -4, -72), Vector3(170, 30, 180)),
 		"caves": AABB(CAVE_ORIGIN + Vector3(-40, -6, -100), Vector3(80, 20, 110)),
 		"chamber": AABB(CHAMBER_ORIGIN + Vector3(-22, -4, -22), Vector3(44, 14, 44)),
+		"annex": AABB(ANNEX_ORIGIN + Vector3(-30, -4, -30), Vector3(60, 12, 60)),
 	}
 	for key in regions:
 		var nm := NavigationMesh.new()

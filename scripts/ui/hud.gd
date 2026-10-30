@@ -116,7 +116,9 @@ void fragment(){
 	_death_label.modulate.a = 0
 	root.add_child(_death_label)
 
+	_build_extras(root)
 	Game.objective_changed.connect(func(_id): show_objective())
+	Game.journal_added.connect(func(_id): toast("Journal updated  [J]", 2.5))
 	Sound.caption.connect(_on_caption)
 	show_objective()
 
@@ -298,6 +300,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if reading and (event.is_action_pressed("interact") or event.is_action_pressed("pause") or event.is_action_pressed("rec_use")):
 		get_viewport().set_input_as_handled()
 		close_note()
+	elif _journal.visible and (event.is_action_pressed("journal") or event.is_action_pressed("pause") or event.is_action_pressed("interact")):
+		get_viewport().set_input_as_handled()
+		_journal.visible = false
+		player.freeze(false)
+	elif event.is_action_pressed("journal") and not reading and player.input_enabled:
+		get_viewport().set_input_as_handled()
+		open_journal()
+	elif event.is_action_pressed("watch") and player.input_enabled:
+		show_watch()
 
 
 func _on_caption(text: String, kind: String, duration: float) -> void:
@@ -332,6 +343,7 @@ func _run_subs() -> void:
 			"preecho": color = UITheme.ECHO
 			"radio": color = Color(0.72, 0.86, 0.72)
 			"aside": color = UITheme.DIM
+			"elias": color = Color(0.95, 0.86, 0.62)
 		var l := UITheme.lbl("", 20, color, item[1] == "radio")
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -397,3 +409,121 @@ func white_flash() -> void:
 	var tw := create_tween()
 	tw.tween_property(_flash, "color:a", 1.0, 0.1)
 	tw.tween_property(_flash, "color:a", 0.0, 2.5)
+
+
+
+# ------------------------------------------------------------------ story presentation
+var _journal: Control
+var _journal_text: RichTextLabel
+var _chapter: Label
+var _chapter_sub: Label
+var _watch: Label
+
+
+func _build_extras(root: Control) -> void:
+	_chapter = UITheme.lbl("", 40, UITheme.BONE, true)
+	_chapter.set_anchors_preset(Control.PRESET_CENTER)
+	_chapter.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_chapter.position = Vector2(-600, -110)
+	_chapter.size = Vector2(1200, 60)
+	_chapter.modulate.a = 0
+	root.add_child(_chapter)
+	_chapter_sub = UITheme.lbl("", 18, UITheme.DIM)
+	_chapter_sub.set_anchors_preset(Control.PRESET_CENTER)
+	_chapter_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_chapter_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_chapter_sub.position = Vector2(-450, -40)
+	_chapter_sub.size = Vector2(900, 60)
+	_chapter_sub.modulate.a = 0
+	root.add_child(_chapter_sub)
+	_watch = UITheme.lbl("", 26, UITheme.AMBER, true)
+	_watch.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_watch.position = Vector2(-220, 28)
+	_watch.size = Vector2(190, 40)
+	_watch.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_watch.modulate.a = 0
+	root.add_child(_watch)
+	_journal = ColorRect.new()
+	(_journal as ColorRect).color = Color(0, 0, 0, 0.82)
+	_journal.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(_journal)
+	var paper := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.76, 0.73, 0.64)
+	sb.set_content_margin_all(36)
+	paper.add_theme_stylebox_override("panel", sb)
+	paper.set_anchors_preset(Control.PRESET_CENTER)
+	paper.custom_minimum_size = Vector2(760, 560)
+	paper.position = Vector2(-380, -290)
+	_journal.add_child(paper)
+	_journal_text = RichTextLabel.new()
+	_journal_text.bbcode_enabled = true
+	_journal_text.scroll_following = false
+	_journal_text.add_theme_font_override("normal_font", UITheme.heading_font())
+	_journal_text.add_theme_font_override("bold_font", UITheme.heading_font())
+	_journal_text.add_theme_font_size_override("normal_font_size", 17)
+	_journal_text.add_theme_font_size_override("bold_font_size", 20)
+	_journal_text.add_theme_color_override("default_color", Color(0.17, 0.14, 0.11))
+	paper.add_child(_journal_text)
+	_journal.visible = false
+
+
+func open_journal() -> void:
+	var t := "[b]ELIAS VALE — NOTEBOOK[/b]          %s\n\n[b]Now:[/b] %s\n\n" % [Game.clock_text(), Game.objective_text()]
+	for e in Story.JOURNAL:
+		if e[0] in Game.state.get("journal", []):
+			t += "[b]%s[/b]\n%s\n\n" % [e[1], e[2]]
+	t += "[color=#5a4f45](J / E to close)[/color]"
+	_journal_text.text = t
+	_journal.visible = true
+	Sound.play_2d("paper", -6.0, "UI")
+	player.freeze(true)
+
+
+func show_watch() -> void:
+	_watch.text = "◷ " + Game.clock_text()
+	var tw := create_tween()
+	tw.tween_property(_watch, "modulate:a", 1.0, 0.2)
+	tw.tween_interval(3.0)
+	tw.tween_property(_watch, "modulate:a", 0.0, 0.8)
+
+
+func chapter(numeral: String, title: String, premise: String) -> void:
+	_chapter.text = "%s  ·  %s" % [numeral, title]
+	_chapter_sub.text = premise
+	var tw := create_tween()
+	tw.tween_property(_chapter, "modulate:a", 1.0, 1.2)
+	tw.parallel().tween_property(_chapter_sub, "modulate:a", 1.0, 1.6)
+	tw.tween_interval(4.0)
+	tw.tween_property(_chapter, "modulate:a", 0.0, 1.5)
+	tw.parallel().tween_property(_chapter_sub, "modulate:a", 0.0, 1.5)
+
+
+func elias(id: String, delay := 0.0) -> void:
+	if delay > 0.0:
+		await get_tree().create_timer(delay).timeout
+	if Story.ELIAS.has(id):
+		_on_caption("ELIAS:  " + Story.ELIAS[id], "elias", 4.0)
+
+
+## Opening briefing: black cards that tell you who you are and why you're here.
+func intro() -> void:
+	player.freeze(true)
+	_flash.color = Color(0, 0, 0, 1)
+	var cards := [
+		"Vey Isle. North Atlantic.\nRemoved from the charts in 1972.",
+		"For six years a dead weather station on the island\nhas been transmitting a distress call.\nIt has no power.",
+		"You are Elias Vale, maintenance technician.\nRestore the station. Send its final report. Leave before dawn.",
+		"Arrival: 23:40.",
+	]
+	for c in cards:
+		_death_label.text = c
+		_death_label.position = Vector2(-500, -60)
+		var tw := create_tween()
+		tw.tween_property(_death_label, "modulate:a", 1.0, 0.8)
+		tw.tween_interval(3.2)
+		tw.tween_property(_death_label, "modulate:a", 0.0, 0.6)
+		await tw.finished
+	_death_label.position = Vector2(-500, -20)
+	await fade_black(false, 1.5)
+	player.freeze(false)

@@ -68,21 +68,14 @@ func _tower() -> void:
 			var p: Vector3 = center + tangent * off + Vector3(0, s[0] + h * 0.5, 0)
 			var wall := B.box(self, p, Vector3(w, h, 0.4), inner, {"surface": "stone"})
 			wall.rotation.y = a
-			var skin := B.box(self, p + n * 0.22, Vector3(w + 0.02, h, 0.04), plaster, {"collide": false})
-			skin.rotation.y = a
-		# red band and window slits
-		var band := B.box(self, center + n * 0.25 + Vector3(0, 9.0, 0), Vector3(side + 0.05, 1.6, 0.04), red, {"collide": false})
-		band.rotation.y = a
-		if i % 2 == 1:
-			for y in [4.5, 10.5]:
-				var slit := B.box(self, center + n * 0.26 + Vector3(0, y, 0), Vector3(0.35, 1.0, 0.04), B.glow(Color(1.0, 0.75, 0.4), 0.8 if y > 9 else 0.3), {"collide": false})
-				slit.rotation.y = a
-	# cap, gallery and lantern room
-	B.cyl(self, C + Vector3(0, TOP + 0.15, 0), R_IN + 0.9, 0.3, B.mat("concrete", Color(0.7, 0.7, 0.7), 0.5), {"segments": 8})
-	B.cyl(self, C + Vector3(0, TOP + 0.8, 0), R_IN + 0.9, 1.0, B.flat(Color(0.08, 0.08, 0.08), 0.5, 0.7), {"collide": false, "segments": 24, "top": R_IN + 0.85})
-	var glass := B.glass(Color(0.75, 0.75, 0.6, 0.18))
-	B.cyl(self, C + Vector3(0, TOP + 2.5, 0), 2.2, 3.0, glass, {"collide": false, "segments": 12})
-	B.cyl(self, C + Vector3(0, TOP + 4.4, 0), 2.4, 0.8, B.flat(Color(0.1, 0.1, 0.1), 0.4, 0.8), {"collide": false, "segments": 12, "top": 0.4})
+
+
+	# the exterior is the Blender model (tools/blender/build_models.py)
+	Models.spawn("res://assets/models/lighthouse.glb", self, C, 0.0, ["LighthouseShell"])
+	# short tunnel through the thick wall to the door
+	for sx in [-1, 1]:
+		B.box(self, C + Vector3(sx * 0.75, 1.3, R_IN + 0.95), Vector3(0.3, 2.6, 1.5), B.mat("stone_blocks", Color.WHITE, 0.35), {"surface": "stone"})
+	B.box(self, C + Vector3(0, 2.75, R_IN + 0.95), Vector3(1.8, 0.3, 1.5), B.mat("stone_blocks", Color.WHITE, 0.35), {})
 	# front door (barred from the inside)
 	var door := Door.make(self, C + Vector3(0, 0, R_IN + 0.2), 0, {"id": "lh_front", "w": 1.2, "h": 2.3, "lock": "lh_unbarred",
 		"locked_text": "Barred from the inside.", "mat": B.mat("wood_dark", Color(0.6, 0.5, 0.45), 0.6)})
@@ -151,6 +144,15 @@ func _ground_floor() -> void:
 	P.crate(self, C + Vector3(3.0, 0, 1.6), 20)
 	P.barrel(self, C + Vector3(2.6, 0, 2.8))
 	P.shelf(self, C + Vector3(-3.2, 0, 0.6), 90, 1.2)
+	P.note(self, C + Vector3(2.6, 0.82, 1.2), "keeper_log", 0)
+	Zone.make(self, C + Vector3(0, 1.5, 0), Vector3(6, 3, 6), {"once": true, "block": "lh_line", "on_enter": func(_b):
+		Game.set_flag("lh_line")
+		level.chapter("ch_lighthouse")
+		level.hud.elias("lighthouse", 2.0)})
+	# on the stairs: The Listener, on the landing above, for a moment
+	Zone.make(self, C + Vector3(S + 0.55, 4.5, 0), Vector3(1.4, 3, 4), {"once": true, "block": "lh_glimpse", "on_enter": func(_b):
+		Game.set_flag("lh_glimpse")
+		level.horror.listener_glimpse(C + Vector3(-1.5, 6.0, 2.5), PI * 0.75, null, 1.2)})
 	if Game.has_flag("seal_released"):
 		_set_hatch_open(true)
 
@@ -246,7 +248,7 @@ func _control_room() -> void:
 func _beacon() -> void:
 	beacon = Node3D.new()
 	add_child(beacon)
-	beacon.position = C + Vector3(0, TOP + 2.4, 0)
+	beacon.position = C + Vector3(0, TOP + 3.1, 0)
 	var core := MeshInstance3D.new()
 	var sm := SphereMesh.new()
 	sm.radius = 0.6

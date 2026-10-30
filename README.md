@@ -8,7 +8,7 @@ sounds arrive **before** the things that make them — and something on the
 island is listening.
 
 - Engine: **Godot 4.3** (GDScript, Forward+ renderer)
-- Length: roughly 20–30 minutes; two endings
+- Length: roughly 60–90 minutes with the optional chapters; three endings
 - No combat. Sound is how you survive.
 
 ---
@@ -56,6 +56,8 @@ A Linux preset is also included (`--export-release "Linux" build/linux/TheTideRe
 | R | Recorder: open the panel |
 | Left mouse | With the panel open: **Record** (top slot) or **Replay** the selected recording |
 | Mouse wheel / Tab / 1–9 | Select a recording |
+| J | Elias's journal: what he has worked out so far, in plain words |
+| T | Check your watch (the bell strikes the hour; Kell hunts for ten minutes after it) |
 | Esc | Pause (options, restart from checkpoint, main menu) |
 
 Mouse sensitivity, master volume, FOV, invert-Y, subtitles, reduced screen
@@ -77,6 +79,28 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
 - If you are caught, you return to the last checkpoint. Progress is saved automatically.
 
 ---
+
+## Locations and chapters
+
+| # | Location | Main path? | What happens there |
+|---|---|---|---|
+| I | Flooded Dock | yes | arrival, footstep pre-echo, recorder tutorial |
+| II | Abandoned Settlement | yes | teahouse radio, backwards clock (station key), first Listener patrol, house scares |
+| III | Weather Station | yes | fuel + generator, calibration tape, relay sequence B-A-C-A, transmission lowers the tide |
+| IV | Blackwood Forest + Old Radio Tower | optional | Kell's hut and diaries, his roost, the bat-man boss and the floodlight |
+| V | Ship Graveyard | optional | MV Pelagic's cargo hold, the radio incident, the mayday recording |
+| VI | Low Vey (submerged village) | optional, low tide | the drowned village; the thirteen-second silence |
+| VII | Tidal Caves | yes | drowned bell + acoustic seal, gallery stalked by the Listener |
+| VIII | Research Annex (Project Morrow) | optional | examination room, containment, Morrow's tape, Listener chase |
+| IX | Lighthouse | yes | contradicting tapes, the seal release heard before it is pulled |
+| X | Transmitter chamber | yes | three couplings, the final choice |
+
+**Endings**
+- **Break the Signal** — overload the transmitter.
+- **Send the Warning** — transmit the report.
+- **The Last Recording** (secret) — collect the three optional recordings (Morrow's tape in the Annex, the Pelagic mayday at the Ship Graveyard, Kell's tape from his roost) and a third option appears at the transmitter console. No extra puzzle is needed.
+
+See `docs/STORY.md` for the story bible.
 
 ## Project layout
 
@@ -147,6 +171,19 @@ Compatibility renderer) under Xvfb; the game itself targets Forward+.
 **Not verified:** frame rate on real hardware (60 FPS target unmeasured), the
 Forward+ look (volumetric fog, shadows) on a GPU, audio mix levels by ear, menu
 clicks with a real mouse, and real-player pacing (estimated 20–30 minutes).
+
+## Testing status — final build
+
+Automated scenarios (`tests/run_all.sh`), all run on the final code:
+
+| Scenario | Covers | Result |
+|---|---|---|
+| full_break / full_send | every main-path objective and puzzle → endings A and B | ✅ |
+| optional | ship radio + mayday, Kell's roost, tape, chase and floodlight death, Low Vey silence, Annex tape + Listener chase, **The Last Recording** ending | ✅ |
+| kell_hunt | Kell emerges on the hour; standing still survives his sonar; moving in the open gets you caught | ✅ |
+| horror | the Lodger whisper, apparition appears/vanishes, journal, watch | ✅ |
+| ai, death, menus, mouselook | Listener states, catch → checkpoint reload, pause/options, mouse look | ✅ |
+| walk_* (6 routes) | real movement input over every main route | see final report |
 
 ## Known limitations
 

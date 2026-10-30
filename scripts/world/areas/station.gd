@@ -103,6 +103,8 @@ func _compound() -> void:
 		if not Game.has_flag("reached_station"):
 			Game.set_flag("reached_station")
 			level.objective("restore_power")
+			level.chapter("ch_station")
+			level.hud.elias("station", 4.5)
 			level.checkpoint("station"))
 	B.label(root, Vector3(16.2, 2.9, 2.0), "VEY ISLE COASTAL WEATHER STATION", 26, Color(0.7, 0.68, 0.62), Vector3(0, 90, 0))
 
@@ -328,6 +330,10 @@ func _monitoring() -> void:
 	_console_lamp = B.box(root, Vector3(6.2, 1.05, -3.6), Vector3(0.18, 0.06, 0.18), B.glow(Color(0.6, 0.1, 0.05), 1.0), {"collide": false})
 	P.radio_set(root, Vector3(5.6, 1.0, -3.8), 0, false)
 	P.note(root, Vector3(3.2, 1.02, -3.7), "kell_log", 8)
+	P.note(root, Vector3(2.6, 0.8, 3.4), "pelagic_brief", 80)
+	B.box(root, Vector3(-0.2, 1.6, -4.38), Vector3(1.6, 1.0, 0.03), B.flat(Color(0.06, 0.08, 0.07), 0.8), {"collide": false})
+	P.examine(root, Vector3(-0.2, 1.6, -4.2), Vector3(1.6, 1.0, 0.3), "station_board")
+	level.horror.apparition(ORIGIN + Vector3(4, 0, -6.5), PI, {"range": 14.0, "scare": true, "sting": 1, "flag": "station_window", "require": "station_power"})
 	P.chair(root, Vector3(4.4, 0, -2.9), 180)
 	P.shelf(root, Vector3(6.75, 0, 3.4), -90, 1.6)
 	P.table(root, Vector3(3.0, 0, 3.4), 90, Vector2(1.4, 0.8))
@@ -359,6 +365,7 @@ func _transmit(p: Node) -> void:
 	Sound.play_2d("transmit_surge", -10.0, "SFX", 0.6)
 	p.shake(1.5)
 	level.ocean.set_level(Ocean.LOW, 14.0)
+	level.hud.elias("tide_out", 4.0)
 	level.listener.deactivate()
 	get_tree().call_group("beacon", "flare")
 	_transmitting = false

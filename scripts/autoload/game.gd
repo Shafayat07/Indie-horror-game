@@ -7,6 +7,7 @@ signal flag_set(flag: String)
 signal objective_changed(id: String)
 signal recordings_changed
 signal settings_changed
+signal journal_added(id: String)
 
 const SAVE_PATH := "user://save.json"
 const SETTINGS_PATH := "user://settings.cfg"
@@ -57,6 +58,7 @@ func _setup_input() -> void:
 		"flashlight": [KEY_F], "listen": [KEY_Q], "recorder": [KEY_R],
 		"pause": [KEY_ESCAPE], "jump": [KEY_SPACE],
 		"rec_next": [KEY_TAB],
+		"journal": [KEY_J], "watch": [KEY_T],
 	}
 	for action in keys:
 		if not InputMap.has_action(action):
@@ -105,7 +107,47 @@ func reset_state() -> void:
 		"checkpoint": "dock_start",
 		"recordings": [],      # Array of {id, origin:[x,y,z]}
 		"documents": [],       # ids of notes read
+		"journal": [],         # ids of Elias's journal entries unlocked
+		"clock": 0.0,          # in-game seconds since 23:40
 	}
+
+
+# ------------------------------------------------------------------ clock & journal
+const CLOCK_START := 23 * 3600 + 40 * 60
+const CLOCK_SPEED := 6.0   # in-game seconds per real second (an hour every 10 minutes)
+
+
+func clock_seconds() -> int:
+	return int(CLOCK_START + float(state.get("clock", 0.0))) % 86400
+
+
+func clock_text() -> String:
+	var s := clock_seconds()
+	return "%02d:%02d" % [s / 3600, (s / 60) % 60]
+
+
+func minute_of_hour() -> int:
+	return (clock_seconds() / 60) % 60
+
+
+func add_journal(id: String) -> void:
+	if not state.has("journal"):
+		state.journal = []
+	if id in state.journal:
+		return
+	state.journal.append(id)
+	journal_added.emit(id)
+
+
+## The three parts of the last recording (optional): unlocks the third ending.
+const LAST_PARTS := ["morrow_tape", "mayday", "kell_tape"]
+
+
+func last_recording_complete() -> bool:
+	for p in LAST_PARTS:
+		if not has_recording(p):
+			return false
+	return true
 
 
 func has_flag(f: String) -> bool:

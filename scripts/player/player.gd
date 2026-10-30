@@ -274,7 +274,7 @@ func surface() -> String:
 func _footstep() -> void:
 	var s := surface()
 	_last_surface = s
-	_step_player.stream = Sound.get_stream("step_%s_%d" % [s, randi() % 4])
+	_step_player.stream = Sound.get_stream("step_%s_%d" % [s, randi() % 6])
 	_step_player.pitch_scale = randf_range(0.92, 1.08)
 	var vol := -14.0 if crouching else (-3.0 if sprinting else -8.0)
 	_step_player.volume_db = vol + (3.0 if s == "water" else 0.0)

@@ -9,7 +9,7 @@ signal noise_emitted(pos: Vector3, radius: float, kind: String)
 
 const AUDIO_DIR := "res://assets/audio/"
 const LOOPS := ["amb_sea", "amb_wind", "amb_interior", "amb_cave", "amb_drone", "amb_signal",
-	"amb_generator", "amb_static", "amb_tape", "listener_strings", "calibration_tape"]
+	"amb_generator", "amb_static", "amb_tape", "listener_strings", "calibration_tape", "amb_woods", "amb_rain", "crystal_hum"]
 
 ## Ambience presets: layer -> volume dB. Layers not listed fade out.
 const ZONES := {
@@ -26,6 +26,7 @@ const ZONES := {
 	"silence": {},
 	"aftermath_break": {"amb_sea": -10.0, "amb_wind": -14.0},
 	"aftermath_send": {"amb_sea": -12.0, "amb_wind": -10.0, "amb_signal": -6.0, "amb_static": -24.0, "amb_drone": -14.0},
+	"forest": {"amb_woods": -6.0, "amb_wind": -12.0, "amb_drone": -22.0, "amb_signal": -30.0},
 	"menu": {"amb_sea": -12.0, "amb_wind": -14.0, "amb_drone": -28.0},
 }
 
@@ -40,7 +41,7 @@ var _ambience_lowpass: AudioEffectLowPassFilter
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_setup_buses()
-	for name in ["amb_sea", "amb_wind", "amb_interior", "amb_cave", "amb_drone", "amb_signal", "amb_static"]:
+	for name in ["amb_sea", "amb_wind", "amb_interior", "amb_cave", "amb_drone", "amb_signal", "amb_static", "amb_woods"]:
 		var p := AudioStreamPlayer.new()
 		p.stream = get_stream(name)
 		p.bus = "Ambience"

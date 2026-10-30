@@ -96,6 +96,7 @@ func _build_boat() -> void:
 	B.box(self, Vector3(3.95, DECK_Y - 0.05, 108.75), Vector3(1.4, 0.1, 1.2), B.mat("wood_planks", Color(0.8, 0.75, 0.68), 1.0), {"surface": "wood"})
 	var leave := Interactable.make(boat, Vector3(0.4, DECK_Y + 1.0, 2.2), Vector3(0.8, 0.6, 0.6), "Start the engine and leave Vey Isle")
 	leave.used.connect(_on_leave)
+	P.examine(boat, Vector3(0, DECK_Y + 0.5, -2.5), Vector3(1.0, 0.8, 1.0), "boat_engine")
 	leave.enabled = false
 	boat.set_meta("leave", leave)
 	var bob := create_tween().set_loops()
@@ -137,7 +138,10 @@ func _build_shed() -> void:
 		p.recorder.give()
 		Sound.play_2d("pickup", -4.0)
 		p.hud.toast("Field recorder.  Q — listen     R — open recorder")
-		level.objective("try_listen"))
+		level.objective("try_listen")
+		level.hud.elias("recorder", 1.0))
+	P.examine(shed, Vector3(-1.8, 1.6, 0.5), Vector3(0.2, 0.6, 0.8), "shed_photo")
+	B.box(shed, Vector3(-1.88, 1.6, 0.5), Vector3(0.02, 0.4, 0.55), B.flat(Color(0.5, 0.48, 0.42), 0.9), {"collide": false})
 	if Game.has_flag("has_recorder"):
 		rec_model.queue_free()
 		take.queue_free()
@@ -177,9 +181,9 @@ func _build_shore() -> void:
 # ------------------------------------------------------------------ events
 func on_spawn(cp: String) -> void:
 	var leave: Interactable = boat.get_meta("leave")
-	leave.enabled = Game.has_flag("chose_break") or Game.has_flag("chose_send")
+	leave.enabled = Game.has_flag("chose_break") or Game.has_flag("chose_send") or Game.has_flag("chose_last")
 	Game.flag_set.connect(func(f):
-		if f == "chose_break" or f == "chose_send":
+		if f in ["chose_break", "chose_send", "chose_last"]:
 			leave.enabled = true)
 	if cp == "dock_start":
 		_opening()
@@ -202,6 +206,8 @@ func _opening() -> void:
 	await get_tree().create_timer(0.8).timeout
 	Sound.play_at("radio_voice_elias", pos, -2.0, {"bus": "Voice", "unit_size": 3.0})
 	level.hud.radio("boat_arrival")
+	level.chapter("ch_dock")
+	level.hud.elias("arrive", 12.0)
 	Sound.play_at("bell", Vector3(-10, 30, -40), -6.0, {"unit_size": 40.0, "max_distance": 400.0})
 
 
@@ -251,6 +257,7 @@ func _three_more_steps() -> void:
 		Sound.play_at("step_wood_%d" % i, Vector3(at.x, DECK_Y, at.z), 0.0, {"bus": "PreEcho", "unit_size": 5.0})
 	await get_tree().create_timer(0.8).timeout
 	Sound.say("[three more steps. Then nothing.]", "aside", 3.5)
+	level.hud.elias("dock_steps", 3.0)
 
 
 func _on_listen(on: bool) -> void:
@@ -260,6 +267,7 @@ func _on_listen(on: bool) -> void:
 		Sound.say("[the footsteps again — and beneath them, a voice. Yours.]", "preecho", 4.5)
 		await get_tree().create_timer(3.0).timeout
 		Sound.say("\"...don't let it hear you twice...\"", "preecho", 4.0)
+		level.hud.elias("listen", 4.0)
 		await get_tree().create_timer(2.0).timeout
 		level.objective("record_echo")
 
@@ -275,7 +283,7 @@ func _on_leave(p: Node) -> void:
 	## Final scene for both endings: the boat pulls away, the radio speaks.
 	p.freeze(true)
 	p.set_physics_process(false)
-	var choice := "break" if Game.has_flag("chose_break") else "send"
+	var choice := "last" if Game.has_flag("chose_last") else ("break" if Game.has_flag("chose_break") else "send")
 	p.hud.hide_overlays()
 	p.place(boat.global_position + Vector3(0, DECK_Y + 0.1, -2.0), 0.0)
 	p.reparent(boat)
@@ -285,7 +293,7 @@ func _on_leave(p: Node) -> void:
 	tw.parallel().tween_property(boat, "rotation_degrees:y", 160.0, 14.0).set_trans(Tween.TRANS_SINE)
 	await get_tree().create_timer(5.0).timeout
 	var pos: Vector3 = boat_radio.global_position
-	Sound.play_at("radio_burst", pos, -8.0 if choice == "break" else 0.0)
+	Sound.play_at("radio_burst", pos, -8.0 if choice != "send" else 0.0)
 	if choice == "send":
 		Sound.play_at("radio_voice_elias", pos, -2.0, {"bus": "Voice"})
 	await get_tree().create_timer(1.0).timeout

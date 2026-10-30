@@ -258,39 +258,53 @@ def amb_tape(dur=3.0):
 
 
 # --------------------------------------------------------------------------- one-shots
+def _burst(dur, lo, hi, attack, decay, amp=1.0):
+    n = int(dur * SR)
+    return bandpass(noise(dur), lo, hi, 1.5) * env_ad(n, attack, decay) * amp
+
+
+def _grains(dur, count, lo, hi, spread, amp):
+    out = np.zeros(int(dur * SR))
+    for _ in range(count):
+        at = abs(rng.normal(0.0, spread))
+        g = bandpass(noise(0.012), lo, hi, 1.0) * np.exp(-t_axis(0.012) * 350) * rng.uniform(0.2, 1.0)
+        place(out, g, at)
+    return out * amp
+
+
 def step(surface, seed):
+    """A footstep: heel strike, then the roll onto the toe ~70 ms later,
+    each shaped by the surface. Kept soft: these play hundreds of times."""
     global rng
     rng = np.random.default_rng(seed)
-    d = 0.35
-    n = int(d * SR)
-    t = t_axis(d)
-    if surface == "wood":
-        x = modes([95, 180, 420, 660], [0.05, 0.04, 0.03, 0.02], [1, 0.5, 0.25, 0.15], d, 0.1)
-        x += lowpass(noise(d), 1500) * env_ad(n, 0.002, 0.02) * 0.6
-        if rng.random() < 0.5:  # creak
-            c = np.sin(2 * np.pi * np.cumsum(np.full(n, rng.uniform(500, 800)) * (1 + 0.1 * t)) / SR)
-            x += bandpass(c * env_ad(n, 0.04, 0.06) * (rng.random(n) < 0.15), 300, 2000) * 0.4
-    elif surface == "stone":
-        x = highpass(noise(d), 1500) * env_ad(n, 0.001, 0.012) + lowpass(noise(d), 300) * env_ad(n, 0.002, 0.03) * 0.8
-        x += bandpass(noise(d), 2000, 6000) * env_ad(n, 0.03, 0.03) * 0.15
-    elif surface == "gravel":
-        x = np.zeros(n)
-        for _ in range(40):
-            at = abs(rng.normal(0.04, 0.035))
-            g = highpass(noise(0.01), 2000) * np.exp(-t_axis(0.01) * 400) * rng.uniform(0.2, 1)
-            place(x, g, at)
-        x += lowpass(noise(d), 250) * env_ad(n, 0.003, 0.03) * 0.8
-    elif surface == "water":
-        x = bandpass(noise(d), 600, 4000) * env_ad(n, 0.01, 0.08)
-        for _ in range(6):
-            place(x, drip(rng.uniform(600, 1500)) * 0.3, rng.uniform(0.02, 0.2))
-        x += lowpass(noise(d), 200) * env_ad(n, 0.005, 0.05)
-    elif surface == "metal":
-        x = modes([210, 480, 870, 1430, 2210], [0.25, 0.18, 0.12, 0.08, 0.05], [1, 0.6, 0.4, 0.3, 0.2], d, 0.05)
-        x = x * 0.4 + highpass(noise(d), 1000) * env_ad(n, 0.001, 0.01) * 0.6
-    else:  # grass
-        x = bandpass(noise(d), 800, 5000) * env_ad(n, 0.02, 0.05) * 0.5 + lowpass(noise(d), 250) * env_ad(n, 0.003, 0.03) * 0.6
-    return fade(x)
+    d = 0.45
+    out = np.zeros(int(d * SR))
+    toe_at = rng.uniform(0.055, 0.09)
+    for part, at, amp in (("heel", 0.0, 1.0), ("toe", toe_at, rng.uniform(0.45, 0.7))):
+        if surface == "wood":
+            x = modes([rng.uniform(85, 110), rng.uniform(190, 240), rng.uniform(330, 420)], [0.06, 0.045, 0.03], [1, 0.45, 0.2], 0.25, 0.05)
+            x = lowpass(x, 1800) * env_ad(len(x), 0.002, 0.05)
+            x += _burst(0.25, 150, 2500, 0.001, 0.012, 0.35)
+        elif surface == "stone":
+            x = _burst(0.2, 250, 3500, 0.001, 0.018, 0.9) + lowpass(noise(0.2), 220) * env_ad(int(0.2 * SR), 0.002, 0.025) * 0.8
+            x += _grains(0.2, 10, 1500, 5000, 0.02, 0.25)
+        elif surface == "gravel":
+            x = _grains(0.25, 45, 900, 5500, 0.035, 0.6) + lowpass(noise(0.25), 200) * env_ad(int(0.25 * SR), 0.003, 0.03) * 0.7
+        elif surface == "water":
+            x = _burst(0.35, 300, 3000, 0.008, 0.07, 0.9) + lowpass(noise(0.35), 180) * env_ad(int(0.35 * SR), 0.004, 0.05) * 0.8
+            for _ in range(5):
+                place(x, drip(rng.uniform(500, 1300)) * 0.18, rng.uniform(0.03, 0.22))
+        elif surface == "metal":
+            x = modes([rng.uniform(380, 450), rng.uniform(820, 950), rng.uniform(1500, 1700)], [0.07, 0.05, 0.035], [1, 0.55, 0.3], 0.3, 0.02) * 0.45
+            x += _burst(0.3, 400, 4000, 0.001, 0.008, 0.6) + lowpass(noise(0.3), 250) * env_ad(int(0.3 * SR), 0.002, 0.02) * 0.6
+        else:  # grass
+            x = _burst(0.3, 700, 4500, 0.01, 0.06, 0.35) + lowpass(noise(0.3), 180) * env_ad(int(0.3 * SR), 0.003, 0.03) * 0.7
+        if part == "toe":
+            x = lowpass(x, 2500)
+        place(out, x * amp, at)
+    # a little scuff of the sole as the weight shifts
+    out += _burst(d, 600, 3000, 0.04, 0.05, 0.06)
+    return fade(out, 0.001, 0.05)
 
 
 def listener_step(seed):
@@ -614,7 +628,133 @@ def flashlight_echo():
     return fade(reverb(out, 1.4, 0.7))
 
 
+def rain_loop(dur=20.0):
+    n = int(dur * SR)
+    hiss = bandpass(noise(dur), 1500, 9000) * 0.35
+    patter = np.zeros(n)
+    r = np.random.default_rng(5)
+    for at in r.uniform(0, dur - 0.05, 1600):
+        place(patter, highpass(noise(0.006), 2500) * np.exp(-t_axis(0.006) * 600) * r.uniform(0.1, 0.6), at)
+    body = lowpass(noise(dur), 400) * 0.25
+    return hiss + patter + body
+
+
+def thunder(seed=0):
+    global rng
+    rng = np.random.default_rng(seed)
+    d = 7.0
+    t = t_axis(d)
+    crack = highpass(noise(d), 800) * env_ad(len(t), 0.01, 0.08) * 0.6
+    roll = lowpass(noise(d), 120) * (np.exp(-t * 0.5) * (0.6 + 0.4 * slow_lfo(len(t), 0.9))) * 3.0
+    rumble = lowpass(noise(d), 60) * np.exp(-t * 0.35) * 3.0
+    return fade(crack + roll + rumble, 0.01, 1.5)
+
+
+def sonar_clicks(seed=0):
+    """The Kell creature's echolocation: a fast, dry run of tongue clicks."""
+    global rng
+    rng = np.random.default_rng(seed)
+    out = np.zeros(int(1.1 * SR))
+    at = 0.0
+    gap = 0.11
+    while at < 0.9:
+        c = bandpass(noise(0.015), 2000, 7000) * np.exp(-t_axis(0.015) * 400)
+        c += modes([2400 * rng.uniform(0.95, 1.05)], [0.006], [1], 0.015) * 0.8
+        place(out, c, at)
+        at += gap
+        gap = max(gap * 0.82, 0.025)
+    return fade(reverb(out, 1.2, 0.35), 0.001, 0.2)
+
+
+def screech():
+    d = 1.6
+    t = t_axis(d)
+    f = 2200 + 900 * np.sin(t * 9) * np.exp(-t * 1.5) + 700 * (1 - t / d)
+    tone = np.sin(2 * np.pi * np.cumsum(f) / SR)
+    rasp = bandpass(noise(d), 1500, 6000) * 0.8
+    x = (tone * 0.6 + rasp) * np.sin(2 * np.pi * 38 * t) ** 2 * env_ad(len(t), 0.02, 0.6)
+    return fade(reverb(x, 1.5, 0.35), 0.005, 0.3)
+
+
+def wingbeat():
+    d = 0.5
+    t = t_axis(d)
+    whoosh = bandpass(noise(d), 120, 1200) * np.sin(np.pi * np.clip(t / 0.35, 0, 1)) ** 2
+    flap = lowpass(noise(d), 300) * env_ad(len(t), 0.005, 0.05) * 1.5
+    return fade(whoosh + flap)
+
+
+def chapel_bell():
+    return bell(147.0, 9.0)
+
+
+def sting(kind):
+    d = 2.5
+    t = t_axis(d)
+    if kind == 0:   # orchestral-ish stab of detuned saws
+        x = sum(((np.cumsum(np.full(len(t), f * (1 + 0.004 * k))) / SR) % 1.0 * 2 - 1) for k, f in enumerate([110, 116.5, 155.6, 233, 311]))
+        x = lowpass(x, 3000) * env_ad(len(t), 0.004, 0.6)
+    elif kind == 1:  # metallic shriek
+        x = modes([523, 987, 1480, 2217, 3140], [0.5, 0.4, 0.35, 0.3, 0.2], [1, 0.8, 0.7, 0.6, 0.5], d, 0.02) * 0.7 + bandpass(noise(d), 2000, 8000) * env_ad(len(t), 0.002, 0.3)
+    else:            # low impact with breath
+        x = lowpass(noise(d), 150) * env_ad(len(t), 0.003, 0.4) * 3 + np.sin(2 * np.pi * 42 * t) * np.exp(-t * 1.5) * 1.5 + highpass(noise(d), 1500) * env_ad(len(t), 0.002, 0.15)
+    return fade(reverb(x, 1.6, 0.3), 0.001, 0.6)
+
+
+def glass_break():
+    d = 1.8
+    x = np.zeros(int(d * SR))
+    for _ in range(60):
+        place(x, modes([rng.uniform(2500, 7000)], [rng.uniform(0.02, 0.15)], [1], 0.3), abs(rng.normal(0.05, 0.25)))
+    x += highpass(noise(d), 2000) * env_ad(int(d * SR), 0.001, 0.06) * 2
+    return fade(reverb(x * 0.4, 1.0, 0.3), 0.001, 0.3)
+
+
+def switch_clunk():
+    d = 1.2
+    x = modes([70, 180, 420], [0.15, 0.1, 0.05], [1, 0.6, 0.3], d) + lowpass(noise(d), 1200) * env_ad(int(d * SR), 0.001, 0.02) * 2
+    hum = np.zeros(int(d * SR))
+    place(hum, np.sin(2 * np.pi * 60 * t_axis(0.9)) * 0.3 * np.minimum(t_axis(0.9) / 0.1, 1) * np.exp(-t_axis(0.9) * 1.5), 0.15)
+    return fade(reverb(x + hum, 1.2, 0.35))
+
+
+def woods_loop(dur=24.0):
+    n = int(dur * SR)
+    leaves = bandpass(noise(dur), 1500, 6000) * (0.3 + 0.7 * (slow_lfo(n, loop_rate(dur, 0.12)) * 0.5 + 0.5)) * 0.4
+    trunk = bandpass(noise(dur), 80, 400) * 0.3
+    creaks = np.zeros(n)
+    for at in [4.0, 13.5, 19.0]:
+        place(creaks, creak(1.2, rng.uniform(4, 7), int(at)) * 0.35, at)
+    return leaves + trunk + creaks
+
+
+def crystal_hum(dur=4.0):
+    t = t_axis(dur)
+    x = sum(np.sin(2 * np.pi * loop_rate(dur, f) * t) * a for f, a in [(880, 0.5), (1319, 0.3), (1760, 0.2)])
+    return x * (0.7 + 0.3 * slow_lfo(len(t), loop_rate(dur, 0.5)))
+
+
+def write_if(only, name, fn, peak=0.9):
+    if name in only:
+        write(name, fn(), peak)
+
+
 if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:   # regenerate only the named sounds
+        only = set(sys.argv[1:])
+        for i in range(3):
+            write_if(only, f"thunder_{i}", lambda: thunder(40 + i), 1.0)
+            write_if(only, f"sonar_{i}", lambda: sonar_clicks(50 + i), 0.8)
+            write_if(only, f"sting_{i}", lambda: sting(i), 1.0)
+        write_if(only, "screech", screech, 1.0)
+        write_if(only, "wingbeat", wingbeat, 0.8)
+        write_if(only, "chapel_bell", chapel_bell, 1.0)
+        write_if(only, "glass_break", glass_break, 0.9)
+        write_if(only, "switch_clunk", switch_clunk, 0.9)
+        write_if(only, "whisper_2", lambda: whisper(5.0, 23), 0.5)
+        write_if(only, "radio_voice_d", lambda: radio_voice(4.0, 135, 15), 0.6)
+        sys.exit(0)
     write("amb_sea", amb_sea(), 0.8)
     write("amb_wind", amb_wind(), 0.7)
     write("amb_interior", amb_interior(), 0.6)
@@ -626,8 +766,8 @@ if __name__ == "__main__":
     write("amb_tape", amb_tape(), 0.4)
     write("listener_strings", listener_strings(), 0.7)
     for s in ["wood", "stone", "gravel", "water", "metal", "grass"]:
-        for i in range(4):
-            write(f"step_{s}_{i}", step(s, 1000 + 37 * ["wood", "stone", "gravel", "water", "metal", "grass"].index(s) + i), 0.8)
+        for i in range(6):
+            write(f"step_{s}_{i}", step(s, 1000 + 37 * ["wood", "stone", "gravel", "water", "metal", "grass"].index(s) + i), 0.7)
     for i in range(3):
         write(f"listener_step_{i}", listener_step(900 + i), 0.9)
     write("door_creak_0", creak(1.4, 6.0, 1), 0.7)
@@ -671,3 +811,17 @@ if __name__ == "__main__":
     write("radio_voice_elias", radio_voice(3.5, 98, 14), 0.6)
     write("whisper_0", whisper(3.0, 21), 0.5)
     write("whisper_1", whisper(4.0, 22), 0.5)
+    write("amb_rain", rain_loop(), 0.6)
+    write("amb_woods", woods_loop(), 0.6)
+    write("crystal_hum", crystal_hum(), 0.5)
+    for i in range(3):
+        write(f"thunder_{i}", thunder(40 + i), 1.0)
+        write(f"sonar_{i}", sonar_clicks(50 + i), 0.8)
+        write(f"sting_{i}", sting(i), 1.0)
+    write("screech", screech(), 1.0)
+    write("wingbeat", wingbeat(), 0.8)
+    write("chapel_bell", chapel_bell(), 1.0)
+    write("glass_break", glass_break(), 0.9)
+    write("switch_clunk", switch_clunk(), 0.9)
+    write("whisper_2", whisper(5.0, 23), 0.5)
+    write("radio_voice_d", radio_voice(4.0, 135, 15), 0.6)

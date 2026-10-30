@@ -32,6 +32,8 @@ func build(lv: Node) -> void:
 		var cp: Array = level.checkpoints["aftermath" if _choice_made or Game.has_flag("chose_break") or Game.has_flag("chose_send") else "lighthouse"]
 		level.travel(cp[0], cp[1], "surface", "lighthouse"))
 	Zone.make(self, O + Vector3(0, 3, 0), Vector3(30, 10, 30), {"ambience": "chamber", "reverb": 0.5})
+	P.note(self, O + Vector3(1.2, 1.12, 4.3), "marrow_final", 180)
+	P.examine(self, O + Vector3(-1.0, 1.3, 3.8), Vector3(0.6, 0.4, 0.3), "chamber_dial")
 
 
 func _hall() -> void:
@@ -208,13 +210,22 @@ func _console() -> void:
 	a.locked_text = "Dead. The couplings aren't engaged."
 	b.locked_text = "Dead. The couplings aren't engaged."
 	a.used.connect(func(_p): _choose("break", lever))
+	# the secret third option: only if you carry all three parts of the last recording
+	var c3 := Interactable.make(c, Vector3(0, 1.3, 0.3), Vector3(0.5, 0.5, 0.5), "PLAY THE LAST RECORDING into the transmitter")
+	c3.require_flag = "armed"
+	c3.locked_text = "Dead. The couplings aren't engaged."
+	c3.used.connect(func(_p):
+		if not Game.last_recording_complete():
+			_p.hud.toast("You'd need all three parts of the last recording. (%d/3)" % Game.LAST_PARTS.filter(func(x): return Game.has_recording(x)).size())
+			return
+		_choose("last", c))
 	b.used.connect(func(_p): _choose("send", key))
 	Zone.make(self, O + Vector3(0, 1, 5.5), Vector3(4, 3, 3), {"once": true, "require": "armed", "on_enter": func(_b):
 		Sound.pre_echo("whisper_0", level.player.global_position + level.player.global_transform.basis.z * 2.0 + Vector3(0, 1.6, 0), "[your own voice, right behind you: \"Don't.\"]", 0.0)})
 
 
 func _choose(choice: String, handle: Node3D) -> void:
-	if _choice_made or Game.has_flag("chose_break") or Game.has_flag("chose_send"):
+	if _choice_made or Game.has_flag("chose_break") or Game.has_flag("chose_send") or Game.has_flag("chose_last"):
 		return
 	_choice_made = true
 	var p: Node = level.player
@@ -243,6 +254,24 @@ func _choose(choice: String, handle: Node3D) -> void:
 		await get_tree().create_timer(4.0).timeout
 		Sound.say("[silence. Real silence, for the first time since you landed.]", "aside", 5.0)
 		level.ocean.set_level(Ocean.HIGH, 90.0)
+	elif choice == "last":
+		# Morrow, the Pelagic, Kell: the island hears itself, and stops listening.
+		for id in Game.LAST_PARTS:
+			Sound.play_at(Story.RECORDINGS[id].sound, O + Vector3(0, 3, 0), 2.0, {"bus": "Voice"})
+			Sound.say(Story.RECORDINGS[id].caption, "radio", 4.0)
+			await get_tree().create_timer(4.2).timeout
+		if level.listener.is_active():
+			level.listener.head_target = O + Vector3(0, 3, 0)
+			var lt := create_tween()
+			lt.tween_property(level.listener, "global_position", O + Vector3(0, 0, 1.8), 4.0)
+			await lt.finished
+			level.listener.model.collapse()
+		await level.horror.silence13()
+		_core_light.light_color = Color(0.85, 0.92, 1.0)
+		_core_mat.emission = Color(0.85, 0.92, 1.0)
+		Game.set_flag("chose_last")
+		Sound.override_zone("aftermath_break")
+		Sound.say("[the transmitter is playing back the thirteen seconds — to itself]", "aside", 5.0)
 	else:
 		var tw := create_tween()
 		tw.tween_property(handle, "rotation_degrees:z", 90.0, 0.3)
@@ -286,7 +315,8 @@ func on_spawn(cp: String) -> void:
 
 ## Called whenever the player arrives in the chamber (spawn or hatch).
 func enter() -> void:
-	if not Game.has_flag("chose_break") and not Game.has_flag("chose_send") and not level.listener.is_active():
+	level.chapter("ch_chamber")
+	if not Game.has_flag("chose_break") and not Game.has_flag("chose_send") and not Game.has_flag("chose_last") and not level.listener.is_active():
 		var pts: Array = []
 		for i in 6:
 			var a := TAU * i / 6.0

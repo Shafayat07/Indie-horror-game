@@ -28,7 +28,7 @@ func run(name: String, lv: Node) -> bool:
 		"walk_cliff":
 			var so: Vector3 = level.areas.station.ORIGIN
 			await _walk([so + Vector3(6.5, 0, 1.5), so + Vector3(12, 0, 1.8), so + Vector3(18, 0, 2.0), Vector3(-36, 0, -6), Vector3(-2, 0, 22), Vector3(20, 0, 18), Vector3(42, 0, 10), Vector3(52, 0, 2),
-				Vector3(62, 0, -4), Vector3(66, 0, -20), Vector3(66, 0, -44), Vector3(66, 0, -50.2)])
+				Vector3(62, 0, -4), Vector3(66, 0, -6), Vector3(66, 0, -20), Vector3(66, 0, -44), Vector3(66, 0, -50.2)])
 			await wait(2.0)
 			expect(level.space == "caves", "walked into the cave mouth")
 		"walk_cave":
@@ -41,6 +41,9 @@ func run(name: String, lv: Node) -> bool:
 			var C: Vector3 = level.areas.lighthouse.C
 			await _walk([C + Vector3(0, 0, 3.5), C + Vector3(0, 0, 7.5), Vector3(0, 0, -36.5), Vector3(0, 0, -30), Vector3(0, 0, 22),
 				Vector3(0, 0, 62), Vector3(0, 0, 80), Vector3(0, 0, 104), Vector3(1.5, 0, 108.75), Vector3(5.2, 0, 108.75)])
+		"walk_forest":
+			await _walk([Vector3(-4, 0, 40), Vector3(-35, 0, 44), Vector3(-58, 0, 40), Vector3(-54, 0, 34), Vector3(-58, 0, 40),
+				Vector3(-66, 0, 52), Vector3(-71.5, 0, 57), Vector3(-62, 0, 42), Vector3(-88, 0, 46), Vector3(-97, 0, 46)])
 		"walk_lighthouse":
 			var C: Vector3 = level.areas.lighthouse.C
 			var e: float = level.areas.lighthouse.S + 0.55
@@ -83,6 +86,61 @@ func run(name: String, lv: Node) -> bool:
 			expect(cfg.load(Game.SETTINGS_PATH) == OK and abs(float(cfg.get_value("settings", "mouse_sensitivity")) - 0.33) < 0.001, "settings persisted to disk")
 			Game.settings.mouse_sensitivity = 0.18
 			Game.save_settings()
+		"kell_hunt":
+			var k = level.areas.forest.kell
+			expect(k.state == k.S.ROOST, "Kell roosting before the hour")
+			Game.state.clock = 3600.0 * (24 - 23) - 40 * 60 - 5.0 + 1200.0 - 1200.0   # 23:59:55
+			await wait(3.0)
+			expect(k.state == k.S.OUT, "the bell strikes and Kell comes out (clock %s)" % Game.clock_text())
+			var spot := Vector3(-50, 0, 46)
+			await tp(Vector3(spot.x, Terrain.height(spot.x, spot.z) + 0.5, spot.z))
+			p.freeze(false)
+			k.global_position = Vector3(spot.x + 6, Terrain.height(spot.x, spot.z) + 10, spot.z)
+			k._ping_t = 1.0
+			# standing perfectly still: the clicks pass over
+			await wait(2.5)
+			expect(k.state == k.S.OUT, "standing still under the sonar: not detected")
+			# walking in the open: detected, screech, dive, caught
+			Input.action_press("move_forward")
+			var dove := false
+			var caught := false
+			k._ping_t = 0.3
+			for i in 480:
+				await get_tree().physics_frame
+				if i % 30 == 0 and is_instance_valid(p):
+					p._yaw += 1.2
+				if is_instance_valid(k) and (k.state == k.S.WARN or k.state == k.S.DIVE):
+					dove = true
+				if not is_instance_valid(p) or p.dead:
+					caught = true
+					break
+			Input.action_release("move_forward")
+			expect(dove, "moving under the sonar: he screeches and dives")
+			expect(caught, "the dive catches a player in the open")
+		"horror":
+			var h = level.horror
+			h._cooldown = 0.0
+			p.freeze(false)
+			await wait(27.0 + 7.0)
+			expect(h._cooldown > 60.0, "standing still: the Lodger came and whispered")
+			var g = h.apparition(p.global_position - p.global_transform.basis.z * 8.0, 0.0, {"flag": "test_ghost"})
+			p._yaw += PI
+			await wait(0.5)
+			expect(g.visible, "apparition stands where you are not looking")
+			p._yaw -= PI
+			await wait(1.0)
+			expect(Game.has_flag("test_ghost"), "looking at it banishes it")
+			Game.set_flag("left_boat")
+			await wait(0.2)
+			expect("j_arrival" in Game.state.journal, "journal entry unlocked by progress")
+			level.hud.open_journal()
+			expect(level.hud._journal.visible and "Why I'm here" in level.hud._journal_text.text, "journal opens with entries")
+			level.hud._journal.visible = false
+			p.freeze(false)
+			level.hud.show_watch()
+			expect(":" in level.hud._watch.text, "watch shows the island clock")
+		"optional":
+			await _optional()
 		"seal":
 			var caves = level.areas.caves
 			await tp(caves._p(0, -33.3, 0.3))
@@ -368,6 +426,75 @@ func _walk(points: Array) -> void:
 				return
 		print("[scenario] ok: reached ", target, " in %.1fs" % t)
 	Input.action_release("move_forward")
+
+
+# ------------------------------------------------------------------ optional chapters + third ending
+func _optional() -> void:
+	# Ship graveyard: the radio switches on, then the mayday can be recorded
+	var gy = level.areas.graveyard
+	var radio := find_use("Examine the radio")
+	await tp(radio.global_position + Vector3(-1.5, -0.8, -1.0))
+	await wait(3.0)
+	expect(Game.has_flag("graveyard_radio"), "ship radio incident fires")
+	await tp(radio.global_position + Vector3(-1.2, -0.8, -0.6))
+	await record_here(false)
+	expect(Game.has_recording("mayday"), "recorded the Pelagic mayday (last recording 2/3)")
+	# Blackwood: Kell's hut, the roost, the tape, the chase, the floodlight
+	var forest = level.areas.forest
+	expect(forest.kell.state == forest.kell.S.ROOST, "Kell is asleep in the roost")
+	await tp(forest.roost_mouth() + Vector3(0, 0.6, 0.4))
+	await wait(2.5)
+	expect(level.space == "roost", "entered the Roost")
+	await use("Take Kell's tape")
+	expect(Game.has_recording("kell_tape"), "took Kell's tape (last recording 3/3)")
+	await wait(2.0)
+	expect(forest.kell.chase and forest.kell.state != forest.kell.S.ROOST, "taking the tape wakes Kell: chase")
+	await use("Climb back out")
+	await wait(2.0)
+	await use("Throw the floodlight switch")
+	expect(forest.floodlight_on, "tower floodlight on")
+	for i in 40:
+		await wait(0.5)
+		if Game.has_flag("kell_dead"):
+			break
+	expect(Game.has_flag("kell_dead"), "Kell flies into the floodlight and dies")
+	# Low Vey at low tide: the thirteen seconds
+	await tp(Vector3(67, Terrain.height(67, -20) + 0.4, -20))
+	await wait(19.0)
+	expect(Game.has_flag("lowvey_silence"), "Low Vey's thirteen-second silence plays out")
+	# the Annex: Morrow's tape and the chase
+	var cp: Array = level.checkpoints["annex"]
+	await level.travel(cp[0], cp[1], "annex", "station_in")
+	await use("Play and record Dr. Morrow's tape")
+	expect(Game.has_recording("morrow_tape"), "recorded Morrow's tape (last recording 1/3)")
+	p.set_safe(true)
+	await wait(7.5)
+	expect(level.listener.is_active(), "the Listener comes down the annex corridor")
+	level.listener.hunt_enabled = false
+	p.set_safe(false)
+	await use("Climb back up to the caves")
+	await wait(2.0)
+	expect(level.space == "caves" and not level.listener.is_active(), "escaped the annex back into the caves")
+	expect(Game.last_recording_complete(), "all three parts of the last recording")
+	# The chamber: the secret third choice
+	Game.set_flag("seal_released")
+	cp = level.checkpoints["chamber"]
+	await level.travel(cp[0], cp[1], "chamber", "chamber")
+	level.areas.chamber.enter()
+	level.listener.hunt_enabled = false
+	for i in 3:
+		await use("Engage coupling %d" % (i + 1))
+	await wait(2.5)
+	await use("PLAY THE LAST RECORDING")
+	await wait(36.0)
+	expect(Game.has_flag("chose_last"), "chose THE LAST RECORDING")
+	expect(Game.state.objective == "return_boat", "objective -> return_boat")
+	await tp(Vector3(5.6, 1.6, 108))
+	var leave := find_use("leave Vey Isle")
+	expect(leave != null and leave.enabled, "boat departure available after the last recording")
+	leave.interact(p)
+	await wait(22.0)
+	expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "last", "ending THE LAST RECORDING reached")
 
 
 # ------------------------------------------------------------------ AI
