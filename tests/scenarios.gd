@@ -47,6 +47,21 @@ func run(name: String, lv: Node) -> bool:
 			await _walk([C + Vector3(-2.8, 0, -0.5), C + Vector3(-2.8, 0, -e), C + Vector3(e, 3, -e), C + Vector3(e, 6, e),
 				C + Vector3(-e, 9, e), C + Vector3(-e, 12, -e), C + Vector3(-1.0, 12, -e), C + Vector3(1.5, 12, -1.5)])
 			expect(p.global_position.y > C.y + 11.5, "reached the control room floor (y=%.1f)" % (p.global_position.y - C.y))
+		"mouselook":
+			p.freeze(false)
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			await physics(2)
+			var yaw0: float = p._yaw
+			var pitch0: float = p._pitch
+			for i in 10:
+				var ev := InputEventMouseMotion.new()
+				ev.relative = Vector2(20, 8)
+				ev.position = get_viewport().get_visible_rect().size * 0.5
+				Input.parse_input_event(ev)
+				await get_tree().process_frame
+			await physics(2)
+			expect(abs(p._yaw - yaw0) > 0.1, "mouse motion turns the view (yaw %.3f -> %.3f)" % [yaw0, p._yaw])
+			expect(abs(p._pitch - pitch0) > 0.05, "mouse motion tilts the view (pitch %.3f -> %.3f)" % [pitch0, p._pitch])
 		"menus":
 			var pm = level.pause_menu
 			pm.toggle()

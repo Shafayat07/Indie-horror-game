@@ -136,14 +136,28 @@ func place(pos: Vector3, yaw_deg: float) -> void:
 	flash_pivot.global_transform = camera.global_transform
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if dead:
+## Mouse-look is read in _input (before any UI) so no HUD control can swallow it.
+func _input(event: InputEvent) -> void:
+	if dead or get_tree().paused:
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and look_enabled:
 		var s: float = Game.settings.mouse_sensitivity * 0.01
 		_yaw -= event.relative.x * s
 		_pitch -= event.relative.y * s * (-1.0 if Game.settings.invert_y else 1.0)
 		_pitch = clamp(_pitch, deg_to_rad(-85), deg_to_rad(85))
+	elif event is InputEventMouseButton and event.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and look_enabled:
+		# the window lost the cursor (alt-tab, focus change): take it back on click
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_IN and is_inside_tree() and not get_tree().paused and not dead and look_enabled:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if dead:
+		return
 	if not input_enabled:
 		return
 	if event.is_action_pressed("interact"):

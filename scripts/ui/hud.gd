@@ -60,6 +60,7 @@ void fragment(){
 	_dot = ColorRect.new()
 	_dot.size = Vector2(3, 3)
 	_dot.color = Color(0.9, 0.88, 0.8, 0.35)
+	_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE   # the captured cursor sits here; never eat mouse-look
 	_dot.set_anchors_preset(Control.PRESET_CENTER)
 	_dot.position = Vector2(-1.5, -1.5)
 	root.add_child(_dot)
