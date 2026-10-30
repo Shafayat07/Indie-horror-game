@@ -10,6 +10,7 @@ signal settings_changed
 signal journal_added(id: String)
 
 const SAVE_PATH := "user://save.json"
+const CHOICE_PATH := "user://save_before_choice.json"   # arriving at the transmitter: lets you try every ending
 const SETTINGS_PATH := "user://settings.cfg"
 const GAME_SCENE := "res://scenes/island.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
@@ -239,6 +240,9 @@ func save_checkpoint(id: String) -> void:
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(state))
+		f.close()
+		if id == "chamber" and not has_flag("armed"):
+			DirAccess.copy_absolute(ProjectSettings.globalize_path(SAVE_PATH), ProjectSettings.globalize_path(CHOICE_PATH))
 	_checkpoint_snapshot = state.duplicate(true)
 
 
@@ -262,8 +266,9 @@ func load_save() -> bool:
 func new_game() -> void:
 	reset_state()
 	_checkpoint_snapshot = {}
-	if FileAccess.file_exists(SAVE_PATH):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+	for path in [SAVE_PATH, CHOICE_PATH]:
+		if FileAccess.file_exists(path):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	save_checkpoint("dock_start")
 	change_scene(GAME_SCENE)
 
@@ -286,8 +291,11 @@ func restart_from_checkpoint() -> void:
 
 func finish_game(choice: String) -> void:
 	ending_choice = choice
-	# A finished save would just replay the ending; clear it so Continue hides.
-	if FileAccess.file_exists(SAVE_PATH):
+	# A finished save would just replay the ending. Put Continue back at the
+	# transmitter chamber, before the choice, so the other endings can be tried.
+	if FileAccess.file_exists(CHOICE_PATH):
+		DirAccess.copy_absolute(ProjectSettings.globalize_path(CHOICE_PATH), ProjectSettings.globalize_path(SAVE_PATH))
+	elif FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
 	change_scene(ENDING_SCENE, 2.0)
 

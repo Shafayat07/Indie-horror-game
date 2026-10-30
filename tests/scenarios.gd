@@ -159,6 +159,7 @@ func run(name: String, lv: Node) -> bool:
 			expect(Game.has_flag("chose_suha"), "followed her voice to the lantern room")
 			await wait(40.0)
 			expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "suha", "ending THE LIGHT (SUHA) reached")
+			expect(Game.has_save() and Game.load_save() and Game.state.checkpoint == "chamber" and not Game.has_flag("armed"), "after an ending, Continue returns to the chamber before the choice")
 		"voices":
 			expect(Sound.voice("elias_arrive") == 0.0, "Elias's thoughts are subtitles only")
 			for id in ["suha_1_0", "suha_2_0", "dock_name_1", "boat_arrival_1", "suha_3_0", "ending_suha_4", "lodger_0", "rec_mayday", "teahouse_0"]:

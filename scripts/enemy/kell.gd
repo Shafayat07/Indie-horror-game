@@ -135,13 +135,15 @@ func _process(delta: float) -> void:
 				state = S.DIVE
 				_state_t = 0.0
 		S.DIVE:
-			if _state_t < 0.7:
+			# he tracks you on the way down and commits only in the last few metres:
+			# after the screech, light or a roof saves you, walking on does not
+			if _state_t < 0.05 or global_position.distance_to(p.global_position + Vector3(0, 1.0, 0)) > 5.0:
 				_dive_target = p.global_position + Vector3(0, 1.0, 0)
 			_fly_to(_dive_target, 22.0, delta)
 			model.pose_dive()
 			if _flashlight_on_me(p):
 				_stunned()
-			elif global_position.distance_to(_dive_target) < 1.2 or _state_t > 2.5:
+			elif global_position.distance_to(_dive_target) < 1.2 or _state_t > 3.0:
 				_impact(p)
 		S.STUNNED:
 			_fly_to(global_position + Vector3(0, 6, 0) - (p.global_position - global_position).normalized() * 4.0, 8.0, delta)
