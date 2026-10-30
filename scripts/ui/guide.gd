@@ -152,7 +152,7 @@ func _process(delta: float) -> void:
 		_index()
 	var on: bool = Game.settings.get("nav_helper", true)
 	var hud: Node = level.hud
-	visible = on and not hud.reading and not get_tree().paused and hud.visible and not hud.in_cutscene
+	visible = on and not hud.reading and not get_tree().paused and hud.visible and not hud.in_cutscene and not level.horror.scaring
 	if not visible:
 		return
 	var t := _objective_target()

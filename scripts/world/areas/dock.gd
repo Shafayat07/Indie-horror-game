@@ -344,11 +344,10 @@ func _stern(p: Node) -> void:
 	k.add_child(glow)
 	glow.position = Vector3(0, 1.4, 1.0)
 	Game.set_flag("boat_kell")
-	Sound.play_at("wingbeat", k.global_position + Vector3(0, 2, 0), 4.0)
-	await get_tree().create_timer(0.5).timeout
-	Sound.play_at("wingbeat", k.global_position + Vector3(0, 1, 0), 2.0)
-	Sound.play_at("door_slam", k.global_position, -6.0, {"unit_size": 3.0})
-	p.shake(0.4)
+	Sound.play_at("heavy_thud", k.global_position, 6.0, {"unit_size": 4.0})
+	p.shake(0.6)
+	await get_tree().create_timer(0.6).timeout
+	Sound.play_at("demon_roar", k.global_position, -10.0, {"unit_size": 3.0, "pitch": 0.8})   # a low growl behind you
 	Sound.say("[something heavy lands on the stern behind you]", "aside", 3.0)
 	var yaw0: float = p.rotation.y
 	var looked := false
@@ -369,8 +368,8 @@ func _stern(p: Node) -> void:
 		await tw0.finished
 	# he has seen you see him
 	p.look_enabled = false
-	Sound.play_at("screech", k.global_position, 8.0, {"unit_size": 6.0})
-	p.shake(0.3)
+	Sound.play_2d("demon_roar", 4.0)
+	p.shake(0.5)
 	await get_tree().create_timer(0.9).timeout
 	k.pose_dive()
 	var tw := k.create_tween()
@@ -378,6 +377,6 @@ func _stern(p: Node) -> void:
 	p.shake(1.5)
 	p.hud.set_dread(1.0)
 	await get_tree().create_timer(0.45).timeout
-	Sound.play_2d("sting_1", 0.0)
+	Sound.play_2d("face_scare", 0.0)
 	await p.hud.fade_black(true, 0.15)
 	await get_tree().create_timer(1.2).timeout

@@ -22,6 +22,7 @@ var level: Node
 var _still := 0.0
 var _cooldown := 60.0
 var _behind_t := 120.0
+var scaring := false   # a face scare is on screen (the HUD helper hides)
 var _lodger_running := false
 var _whisper_i := 0
 var _ghost_script := preload("res://scripts/world/ghost.gd")
@@ -83,7 +84,7 @@ func _lodger() -> void:
 		await get_tree().create_timer(0.2).timeout
 	if is_instance_valid(p) and not p.dead:
 		if turned:
-			jumpscare(p.head.global_position - p.global_transform.basis.z * 0.9, 1)
+			face_scare(1)
 		elif Vector2(p.velocity.x, p.velocity.z).length() <= 0.6:
 			var wi := _whisper_i % WHISPERS.size()
 			var line: String = WHISPERS[wi]
@@ -116,65 +117,86 @@ func make_ghost(pos: Vector3, yaw: float, kind := "villager") -> Node3D:
 
 
 ## A figure that is only there while you are not looking straight at it.
-func apparition(pos: Vector3, yaw: float, opts := {}) -> Node3D:
-	var g := make_ghost(pos, yaw, opts.get("kind", "villager"))
-	g.set_meta("opts", opts)
-	g.set_meta("seen", 0.0)
-	g.visible = false
-	_apparitions.append(g)
-	return g
+## A haunted spot. Nothing stands there waiting to be seen from afar: when you
+## come close, something is suddenly right in front of you, grinning, and
+## screams, and is gone. opts: range (trigger distance, capped at 7 m),
+## require, flag, once (default true), kind ("listener" = the Listener's cage
+## face), caption, sting.
+func apparition(pos: Vector3, _yaw: float, opts := {}) -> Node3D:
+	var m := Node3D.new()
+	add_child(m)
+	m.global_position = pos
+	m.set_meta("opts", opts)
+	m.set_meta("cool", 0.0)
+	_apparitions.append(m)
+	return m
 
 
 func _update_apparitions(delta: float) -> void:
-	var cam: Camera3D = level.player.camera
-	for g in _apparitions.duplicate():
-		if not is_instance_valid(g):
-			_apparitions.erase(g)
+	var p: Node3D = level.player
+	for m in _apparitions.duplicate():
+		if not is_instance_valid(m):
+			_apparitions.erase(m)
 			continue
-		var opts: Dictionary = g.get_meta("opts")
+		var opts: Dictionary = m.get_meta("opts")
 		var flag: String = opts.get("flag", "")
 		if flag != "" and Game.has_flag(flag):
-			g.queue_free()
-			_apparitions.erase(g)
+			m.queue_free()
+			_apparitions.erase(m)
 			continue
-		if opts.has("require") and not Game.has_flag(opts.require):
-			g.visible = false
+		m.set_meta("cool", max(float(m.get_meta("cool")) - delta, 0.0))
+		if m.get_meta("cool") > 0.0 or (opts.has("require") and not Game.has_flag(opts.require)):
 			continue
-		var to: Vector3 = g.global_position + Vector3(0, 1.5, 0) - cam.global_position
-		var d := to.length()
-		if d > opts.get("range", 30.0) or (level.space == "surface") != (g.global_position.y > -100.0):
-			g.visible = false
+		if (level.space == "surface") != (m.global_position.y > -100.0):
 			continue
-		var facing := (-cam.global_transform.basis.z).dot(to.normalized())
-		if not g.visible:
-			# appears only while out of view
-			if facing < 0.3 and d > 4.0:
-				g.visible = true
+		var r: float = min(float(opts.get("range", 6.0)), 7.0)
+		if p.global_position.distance_to(m.global_position) > r:
+			continue
+		if p.dead or not p.input_enabled or level.hud.reading or level.listener.is_active() or _lodger_running:
+			continue
+		if opts.has("caption"):
+			Sound.say(opts.caption, "preecho", 3.5)
+		face_scare(int(opts.get("sting", 1)), "listener" if opts.get("kind", "") == "listener" else "smile")
+		if flag != "":
+			Game.set_flag(flag)
+		if opts.get("once", true):
+			_apparitions.erase(m)
+			m.queue_free()
 		else:
-			g.look_at(Vector3(cam.global_position.x, g.global_position.y, cam.global_position.z), Vector3.UP, true)
-			if facing > 0.93 or d < 3.0:
-				g.set_meta("seen", g.get_meta("seen") + delta)
-				if g.get_meta("seen") > 0.35:
-					_banish(g, opts)
+			m.set_meta("cool", 120.0)
 
 
-func _banish(g: Node3D, opts: Dictionary) -> void:
-	_apparitions.erase(g)
-	if opts.get("scare", false):
-		Sound.play_2d("sting_%d" % opts.get("sting", 1), -2.0)
-		level.player.shake(0.6)
+## Turn round, or walk into the wrong place, and it is right there in front of
+## your eyes: grinning, staring, then screaming at you, then gone.
+func face_scare(sting := 1, kind := "smile") -> void:
+	var p: Node3D = level.player
+	var cam: Camera3D = p.camera
+	var fwd: Vector3 = -cam.global_transform.basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized()
+	var g: Node3D
+	if kind == "listener":
+		g = make_ghost(cam.global_position + fwd * 1.1 - Vector3(0, 2.3, 0), atan2(-fwd.x, -fwd.z), "listener")
 	else:
-		Sound.play_at("whisper_1", g.global_position + Vector3(0, 1.6, 0), -4.0, {"unit_size": 3.0})
-	if opts.has("caption"):
-		Sound.say(opts.caption, "preecho", 3.5)
-	if opts.has("flag") and opts.flag != "":
-		Game.set_flag(opts.flag)
-	if opts.get("once", true):
-		g.vanish()
-	else:
-		g.visible = false
-		g.set_meta("seen", 0.0)
-		_apparitions.append(g)
+		g = make_ghost(cam.global_position + fwd * 0.95 - Vector3(0, 1.57, 0), 0.0, kind)
+		g.look_at(Vector3(cam.global_position.x, g.global_position.y, cam.global_position.z), Vector3.UP, true)
+	_cooldown = max(_cooldown, 40.0)
+	scaring = true
+	Sound.play_2d("face_scare", 2.0)
+	Sound.play_2d("sting_%d" % sting, -6.0)
+	p.shake(1.0)
+	level.hud.set_dread(1.0)
+	var tw := g.create_tween().set_parallel()
+	tw.tween_property(g, "global_position", g.global_position + (cam.global_position - g.global_position) * Vector3(1, 0, 1) * 0.3, 0.6).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+	tw.tween_property(g, "rotation:z", 0.05, 0.6)   # the head tilts as it grins at you
+	await get_tree().create_timer(0.8).timeout
+	if is_instance_valid(g):
+		if g.has_method("vanish"):
+			g.vanish()
+		else:
+			g.queue_free()
+	level.hud.set_dread(0.0)
+	scaring = false
 
 
 ## A face that lunges into view for a moment: loud sting, shake, gone.
@@ -225,8 +247,7 @@ func presence_behind() -> void:
 	breath.queue_free()
 	level.hud.set_dread(0.0)
 	if turned and is_instance_valid(p) and not p.dead:
-		var at: Vector3 = p.head.global_position - p.global_transform.basis.z * 0.9
-		jumpscare(at, 2, "villager")
+		face_scare(2)
 	_cooldown = LODGER_COOLDOWN
 	_lodger_running = false
 

@@ -163,12 +163,12 @@ func _optimize() -> void:
 		var sc: Vector3 = gi.global_transform.basis.get_scale()
 		var size := (aabb.size * sc.abs()).length()
 		if size < 0.7:
-			gi.visibility_range_end = 22.0
+			gi.visibility_range_end = 32.0
 			gi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		elif size < 2.2:
-			gi.visibility_range_end = 40.0
+			gi.visibility_range_end = 55.0
 		elif size < 7.0:
-			gi.visibility_range_end = 85.0
+			gi.visibility_range_end = 110.0
 		elif size < 20.0:
 			gi.visibility_range_end = 160.0
 		if gi.visibility_range_end > 0.0:
@@ -188,8 +188,26 @@ func _optimize() -> void:
 		l.distance_fade_enabled = true
 		l.distance_fade_begin = 24.0
 		l.distance_fade_length = 6.0
-	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
-	moon.directional_shadow_max_distance = 55.0
+	for n in find_children("*", "MultiMeshInstance3D", true, false):
+		_forest_mm.append(n)
+	_apply_quality()
+	Game.settings_changed.connect(_apply_quality)
+
+
+var _forest_mm: Array = []
+
+
+## Graphics quality: 0 low, 1 medium, 2 high.
+func _apply_quality() -> void:
+	var q := int(Game.settings.get("quality", 1))
+	env.volumetric_fog_enabled = Game.settings.get("volumetric_fog", true) and q >= 1
+	moon.shadow_enabled = q >= 1
+	moon.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if q >= 2 else DirectionalLight3D.SHADOW_ORTHOGONAL
+	moon.directional_shadow_max_distance = 55.0 if q >= 2 else 40.0
+	for mm in _forest_mm:
+		if is_instance_valid(mm):
+			(mm as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if q >= 2 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	get_viewport().scaling_3d_scale = clampf(float(Game.settings.get("render_scale", 1.0)), 0.5, 1.0) * (0.8 if q == 0 else 1.0)
 
 
 func _in_ghost(n: Node) -> bool:
@@ -336,9 +354,7 @@ func _build_environment() -> void:
 	moon.rotation_degrees = Vector3(-38, 35, 0)
 	add_child(moon)
 	Game.settings_changed.connect(func():
-		env.volumetric_fog_enabled = Game.settings.get("volumetric_fog", true)
-		env.tonemap_exposure = 1.22 * float(Game.settings.get("brightness", 1.0))
-		get_viewport().scaling_3d_scale = clampf(float(Game.settings.get("render_scale", 1.0)), 0.5, 1.0))
+		env.tonemap_exposure = 1.22 * float(Game.settings.get("brightness", 1.0)))
 	env.tonemap_exposure = 1.22 * float(Game.settings.get("brightness", 1.0))
 	get_viewport().scaling_3d_scale = clampf(float(Game.settings.get("render_scale", 1.0)), 0.5, 1.0)
 

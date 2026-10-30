@@ -692,6 +692,48 @@ def ghost_scream():
     return fade(reverb(x, 1.8, 0.4), 0.004, 0.35)
 
 
+def _resample(x, rate):
+    idx = np.arange(0, len(x) - 1, rate)
+    return np.interp(idx, np.arange(len(x)), x)
+
+
+def face_scare():
+    """For a face right in front of you: a sub hit and crack, then a shrieking scream."""
+    d = 1.8
+    t = t_axis(d)
+    boom = np.sin(2 * np.pi * np.cumsum(55 * np.exp(-t * 3) + 28) / SR) * np.exp(-t * 4) * 1.4
+    crack = bandpass(noise(d), 800, 9000) * np.exp(-t * 30) * 1.2
+    scr = _resample(ghost_scream(), 0.8)[: len(t)]
+    scr = np.pad(scr, (0, max(0, len(t) - len(scr))))
+    x = boom + crack + np.tanh(scr * 2.5) * 0.8
+    return fade(reverb(x, 1.2, 0.3), 0.001, 0.3)
+
+
+def demon_roar():
+    """Deep, torn, inhuman: a growling voice an octave below a man's, with a
+    slowed scream underneath it, distorted and huge."""
+    d = 2.8
+    t = t_axis(d)
+    f0 = 62 + 18 * np.sin(t * 2.1) + rng.normal(0, 6, len(t)).cumsum() * 0.002
+    ph = np.cumsum(f0) / SR
+    saw = 2.0 * (ph - np.floor(ph + 0.5))
+    growl = sum(bandpass(saw, fc * 0.75, fc * 1.25) * g for fc, g in [(240, 1.0), (620, 0.8), (1150, 0.5), (2400, 0.25)])
+    rasp = bandpass(noise(d), 200, 2500) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t) ** 2) * 0.7
+    low = _resample(ghost_scream(), 0.45)[: len(t)]
+    low = np.pad(low, (0, max(0, len(t) - len(low)))) * 0.6
+    x = (growl + rasp + low) * env_ad(len(t), 0.08, 1.4)
+    x = np.tanh(x * 4.0) * 0.7
+    return fade(reverb(x, 2.4, 0.45), 0.01, 0.5)
+
+
+def heavy_thud():
+    d = 1.0
+    t = t_axis(d)
+    boom = np.sin(2 * np.pi * np.cumsum(70 * np.exp(-t * 5) + 32) / SR) * np.exp(-t * 6)
+    crack = lowpass(noise(d), 1800) * np.exp(-t * 25) * 0.8
+    return fade(reverb(boom + crack, 0.8, 0.2), 0.001, 0.2)
+
+
 def wingbeat():
     d = 0.5
     t = t_axis(d)
@@ -783,6 +825,9 @@ if __name__ == "__main__":
             write_if(only, f"sting_{i}", lambda: sting(i), 1.0)
         write_if(only, "screech", screech, 1.0)
         write_if(only, "ghost_scream", ghost_scream, 1.0)
+        write_if(only, "face_scare", face_scare, 1.0)
+        write_if(only, "demon_roar", demon_roar, 1.0)
+        write_if(only, "heavy_thud", heavy_thud, 1.0)
         write_if(only, "wingbeat", wingbeat, 0.8)
         write_if(only, "chapel_bell", chapel_bell, 1.0)
         write_if(only, "glass_break", glass_break, 0.9)

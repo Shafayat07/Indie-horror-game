@@ -189,16 +189,14 @@ func _no_collide(n: Node) -> void:
 		c.queue_free()
 
 
-## A figure that stands there until you come close, then is simply gone.
-func _distant_figure(pos: Vector3, yaw: float, vanish_at: float, require := "") -> void:
-	var g: Node3D = null
+## A haunted spot: nothing to see from afar; come close and something is in your face.
+func _distant_figure(pos: Vector3, _yaw: float, vanish_at: float, require := "") -> void:
 	_watch.append(func() -> bool:
 		if require != "" and not Game.has_flag(require):
 			return false
-		if g == null:
-			g = level.horror.make_ghost(pos, yaw)
-		if _near(pos, vanish_at):
-			g.vanish()
+		if _near(pos, vanish_at + 2.0) and _calm():
+			_scared()
+			level.horror.face_scare(2)
 			return true
 		return false)
 
@@ -266,7 +264,7 @@ func _dock() -> void:
 			return true
 		return false)
 	# a wet figure standing in the shallows past the end of the pier, on your return
-	_distant_figure(Vector3(-2.5, -0.6, 121.0), PI, 22.0, "has_station_key")
+	_distant_figure(Vector3(-0.5, 1.5, 113.0), PI, 4.0, "has_station_key")
 
 
 ## A wooden fingerpost; each board points toward its place.
@@ -553,7 +551,7 @@ func _behind_you() -> void:
 		if abs(wrapf(p.rotation.y - yaw0, -PI, PI)) > 2.2:
 			if is_instance_valid(g):
 				g.queue_free()
-			level.horror.jumpscare(p.head.global_position - p.global_transform.basis.z * 0.9, 2, "villager")
+			level.horror.face_scare(2)
 			return
 	if is_instance_valid(g):
 		g.vanish()

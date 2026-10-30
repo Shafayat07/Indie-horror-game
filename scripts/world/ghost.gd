@@ -31,7 +31,28 @@ void fragment() {
 	var dark := B.flat(Color(0, 0, 0), 1.0)
 	var hair := B.flat(Color(0.02, 0.025, 0.025), 0.3)
 	var gore := B.flat(Color(0.25, 0.02, 0.02), 0.3)
-	if kind == "face":
+	if kind == "smile":
+		# right in your face: drowned-white skin, huge black eyes, a grin too wide for it
+		_mat.set_shader_parameter("tint", Color(0.6, 0.65, 0.63))
+		_mat.set_shader_parameter("alpha", 1.0)
+		_mat.set_shader_parameter("flicker", 0.25)
+		var teeth := B.flat(Color(0.86, 0.84, 0.74), 0.4)
+		var pupil := B.glow(Color(0.95, 0.95, 0.85), 1.5)
+		_part(SphereMesh, Vector3(0, 1.55, 0), Vector3(0.25, 0.33, 0.25), _mat)
+		_part(SphereMesh, Vector3(0, 1.66, -0.05), Vector3(0.27, 0.24, 0.27), hair)
+		for sx in [-1, 1]:
+			_part(CylinderMesh, Vector3(sx * 0.2, 1.25, -0.02), Vector3(0.07, 0.75, 0.07), hair)     # wet hair down the sides
+			_part(SphereMesh, Vector3(sx * 0.088, 1.6, 0.2), Vector3(0.072, 0.062, 0.035), dark)   # eyes, too big
+			_part(SphereMesh, Vector3(sx * 0.088, 1.598, 0.232), Vector3(0.006, 0.006, 0.005), pupil)  # pinprick pupils
+			_part(SphereMesh, Vector3(sx * 0.155, 1.475, 0.185), Vector3(0.03, 0.022, 0.02), dark)  # grin corners, pulled up
+		_part(SphereMesh, Vector3(0, 1.44, 0.205), Vector3(0.17, 0.045, 0.03), dark)               # the grin
+		for i in 15:
+			var x := -0.13 + i * 0.0186
+			var curve := 0.014 * pow(abs(x) / 0.13, 2.0)
+			_part(SphereMesh, Vector3(x, 1.452 + curve, 0.226), Vector3(0.0045, 0.014, 0.004), teeth)          # thin, sharp
+			_part(SphereMesh, Vector3(x + 0.009, 1.428 + curve * 0.6, 0.224), Vector3(0.004, 0.012, 0.004), teeth)
+		_part(CylinderMesh, Vector3(0, 1.0, 0), Vector3(0.24, 0.9, 0.2), _mat)
+	elif kind == "face":
 		_part(SphereMesh, Vector3(0, 1.55, 0), Vector3(0.24, 0.3, 0.24), _mat)
 		for sx in [-1, 1]:
 			_part(SphereMesh, Vector3(sx * 0.08, 1.6, 0.19), Vector3(0.06, 0.05, 0.04), dark)   # empty eyes

@@ -123,13 +123,14 @@ func run(name: String, lv: Node) -> bool:
 			p.freeze(false)
 			await wait(27.0 + 7.0)
 			expect(h._cooldown > 60.0, "standing still: the Lodger came and whispered")
-			var g = h.apparition(p.global_position - p.global_transform.basis.z * 8.0, 0.0, {"flag": "test_ghost"})
-			p._yaw += PI
+			h._cooldown = 0.0
+			var far = h.apparition(p.global_position - p.global_transform.basis.z * 20.0, 0.0, {"flag": "test_far"})
 			await wait(0.5)
-			expect(g.visible, "apparition stands where you are not looking")
-			p._yaw -= PI
-			await wait(1.0)
-			expect(Game.has_flag("test_ghost"), "looking at it banishes it")
+			expect(not Game.has_flag("test_far"), "a haunted spot does nothing from far away")
+			far.queue_free()
+			h.apparition(p.global_position - p.global_transform.basis.z * 3.0, 0.0, {"flag": "test_ghost"})
+			await wait(0.5)
+			expect(Game.has_flag("test_ghost"), "come close and it's in your face, screaming")
 			Game.set_flag("left_boat")
 			await wait(0.2)
 			expect("j_arrival" in Game.state.journal, "journal entry unlocked by progress")
@@ -201,6 +202,11 @@ func run(name: String, lv: Node) -> bool:
 			leave.interact(p)
 			await wait(34.0)
 			expect(Game.has_flag("boat_kell"), "Kell lands on the stern")
+		"facescare":   # for looking at it
+			level.horror.face_scare(1)
+			await wait(0.35)
+			get_viewport().get_texture().get_image().save_png("/tmp/tide_cap_face.png")
+			await wait(1.0)
 		"optional":
 			await _optional()
 		"seal":

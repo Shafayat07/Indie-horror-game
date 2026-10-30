@@ -21,6 +21,7 @@ func _ready() -> void:
 	_slider(v, "Master volume", "master_volume", 0.0, 1.0, 0.01)
 	_slider(v, "Field of view", "fov", 60.0, 95.0, 1.0)
 	_slider(v, "Brightness", "brightness", 0.7, 1.8, 0.05)
+	_slider(v, "Graphics quality  (0 low · 1 medium · 2 high)", "quality", 0.0, 2.0, 1.0)
 	_slider(v, "Resolution scale (lower = faster)", "render_scale", 0.5, 1.0, 0.05)
 	_slider(v, "Screen edge margin (raise if text is cut off)", "hud_margin", 0.02, 0.2, 0.01)
 	_check(v, "Invert mouse Y", "invert_y")

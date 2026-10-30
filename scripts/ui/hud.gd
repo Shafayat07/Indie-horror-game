@@ -427,6 +427,37 @@ func _fade_out_later(l: Label, t: float) -> void:
 
 
 var in_cutscene := false
+var _perf: Label
+var _perf_t := 0.0
+
+
+## F3: frame rate and what the renderer is drawing (to report lag precisely).
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3:
+		if _perf == null:
+			_perf = UITheme.lbl("", 15, UITheme.AMBER)
+			_perf.position = Vector2(12, 8)
+			add_child(_perf)
+		_perf.visible = not _perf.visible or _perf.text == ""
+		_perf_t = 0.0
+
+
+func _process(delta: float) -> void:
+	_update_perf(delta)
+
+
+func _update_perf(delta: float) -> void:
+	if _perf == null or not _perf.visible:
+		return
+	_perf_t -= delta
+	if _perf_t > 0.0:
+		return
+	_perf_t = 0.5
+	_perf.text = "FPS %d   objects %d   draw calls %d   triangles %dk   video memory %d MB" % [
+		Engine.get_frames_per_second(), Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
+		Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
+		Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME) / 1000,
+		Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576]
 
 
 ## Endings: no objective, marker, hints or recorder; drop any queued subtitles.
