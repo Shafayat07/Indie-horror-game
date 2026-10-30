@@ -34,6 +34,7 @@ func build(lv: Node) -> void:
 	_landing()
 	_control_room()
 	_beacon()
+	_lantern_ladder()
 	Zone.make(self, C + Vector3(0, 7.5, 0), Vector3(9.6, 15, 9.6), {"ambience": "lighthouse", "reverb": 0.3})
 	Zone.make(self, C + Vector3(0, 2, 18), Vector3(30, 10, 22), {"ambience": "settlement"})
 	Zone.make(self, C + Vector3(0, 1.5, 8.5), Vector3(6, 3, 3), {"once": true, "require": "chose_break", "on_enter": func(_b):
@@ -243,6 +244,56 @@ func _control_room() -> void:
 		p.hud.radio("control_voice"))
 	for wy in [0.0]:
 		var win := B.box(self, C + Vector3(0, y + 1.6, R_IN + 0.02), Vector3(1.6, 1.0, 0.03), B.glass(), {"collide": false})
+
+
+func _lantern_ladder() -> void:
+	## Only after Suha's last call: an iron ladder up into the lantern room.
+	var iron := B.mat("metal_rust", Color(0.6, 0.6, 0.6), 1.0, {"metallic": 0.5})
+	var base := C + Vector3(2.4, 12.0, 2.4)
+	for sx in [-0.25, 0.25]:
+		B.box(self, base + Vector3(sx, 1.75, 0), Vector3(0.05, 3.5, 0.05), iron, {"collide": false})
+	for k in 7:
+		B.box(self, base + Vector3(0, 0.3 + k * 0.5, 0), Vector3(0.5, 0.04, 0.04), iron, {"collide": false})
+	var it := Interactable.make(self, base + Vector3(0, 1.2, 0), Vector3(0.9, 2.4, 0.9), "Climb to the light — Suha is calling")
+	it.require_flag = "suha_call"
+	it.locked_text = "The hatch to the lantern room is shut. The light doesn't need you. Not yet."
+	it.used.connect(func(_p):
+		if Game.has_flag("chose_break") or Game.has_flag("chose_send") or Game.has_flag("chose_last"):
+			_p.hud.toast("The hatch won't move. Whatever was up there has stopped calling.")
+			return
+		_suha_ending())
+
+
+## THE LIGHT: love was the lure.
+func _suha_ending() -> void:
+	var p: Node = level.player
+	Game.set_flag("chose_suha")
+	p.freeze(true)
+	level.listener.deactivate()
+	await p.hud.fade_black(true, 1.0)
+	p.place(C + Vector3(1.8, TOP + 0.15, 0.0), 90.0)
+	set_space_surface_quiet()
+	var her: Node3D = level.horror.make_ghost(C + Vector3(-1.4, TOP, 0.0), 0.0, "suha")
+	her.rotation.y = -PI * 0.5     # her back to you, facing the glass
+	await p.hud.fade_black(false, 2.0)
+	p.look_toward(her.global_position + Vector3(0, 1.5, 0), 1.5)
+	Sound.override_zone("silence")
+	Sound.play_2d("suha_2", -2.0, "Voice")
+	p.hud.radio("ending_suha")
+	await get_tree().create_timer(17.0).timeout
+	# she turns
+	her.rotation.y = PI * 0.5
+	level.horror.jumpscare(p.head.global_position - p.camera.global_transform.basis.z * 0.8, 1)
+	_flare = 6.0
+	await get_tree().create_timer(6.5).timeout
+	p.hud.white_flash()
+	Sound.play_2d("overload", -6.0)
+	await get_tree().create_timer(1.5).timeout
+	Game.finish_game("suha")
+
+
+func set_space_surface_quiet() -> void:
+	level.set_space("surface")
 
 
 func _beacon() -> void:

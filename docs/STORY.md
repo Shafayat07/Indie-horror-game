@@ -24,6 +24,11 @@ operator, last subject) · Ines Halloran (research assistant; letter to her daug
 **Elias Vale** is sent to restore the station and transmit its report. The island has heard him coming all
 night: his own voice on the radio, his own footsteps ahead of him, his name in Morrow's list.
 
+**Suha.** Elias's partner on the mainland. Her voice reaches him on radios that cannot reach that far — the
+island has been listening to him all night and learned the name he says when he is afraid. Her calls are the
+island's lure.
+
 **Endings.** Break the signal (silence; the warning is never sent) · Send the warning (the mainland is
 warned; the signal spreads) · The Last Recording (play Morrow's tape, the Pelagic mayday and Kell's message
-into the transmitter so it hears itself; the Listener stops).
+into the transmitter so it hears itself; the Listener stops) · The Light (follow Suha's voice to the lantern room;
+she was never there — Elias drowned at 03:12 and becomes the voice that keeps the light).

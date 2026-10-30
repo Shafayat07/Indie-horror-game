@@ -55,6 +55,7 @@ const JOURNAL := [
 	["j_pelagic", "The missing ships", "The research ship MV Pelagic and the boats that came looking for her are wrecked on the west shore. Their crews heard the island 'asking them to come closer'."],
 	["j_last", "The last recording", "Kell left a message: three recordings together — Morrow's tape, the Pelagic mayday and his own — would let the transmitter 'hear itself' and stop listening to us. I can play them in the chamber."],
 	["j_truth", "What is happening", "Marrow's notes make it clear. The transmitter under the lighthouse listens to sounds from the future. It heard thirteen seconds of the island going silent — and something ANSWERED. The Listener is how that something hears us. What it is, nobody wrote down."],
+	["j_suha", "Suha", "Suha keeps reaching me on the radio, out here where no radio should reach. She says it's a dream. She wants me to come up to the light. I want to believe her more than anything."],
 	["j_choice", "The choice", "In the chamber I can OVERLOAD the transmitter (the loop ends; the warning is never sent), or TRANSMIT the report (the mainland is warned of what's coming, but the signal goes with it)."],
 ]
 
@@ -193,6 +194,26 @@ const RADIO := {
 		["TRANSMITTER", "Carrier locked. Sending the Vey Isle report to the mainland.", 4.0],
 		["RADIO — MAINLAND", "\"Vey, we copy. We... copy.\"", 4.0],
 		["", "(Every radio on the island answers at once, in your voice.)", 4.5],
+	],
+	"suha_1": [
+		["RADIO — SUHA", "\"Elias? It's Suha. Call me the second you land. I hate it when you go out there.\"", 4.5],
+		["", "(Suha. Home is a long way from here.)", 3.0],
+	],
+	"suha_2": [
+		["RADIO — SUHA", "\"Love, I can hear the sea behind you. I can hear you breathing. Why aren't you answering?\"", 5.0],
+		["RADIO — SUHA", "\"I'll keep the light on for you. I always do.\"", 4.0],
+	],
+	"suha_3": [
+		["RADIO — SUHA", "\"Elias. Listen to me. None of this is real. You fell asleep on the boat. You're dreaming.\"", 5.5],
+		["RADIO — SUHA", "\"Don't touch that machine. Come up to the top of the lighthouse — to the light. I'm there. I'll wake you up.\"", 6.0],
+		["RADIO — SUHA", "\"Come home to me.\"", 3.5],
+	],
+	"ending_suha": [
+		["SUHA", "\"You came. I knew you would. You always come back to me.\"", 4.5],
+		["ELIAS", "Suha... I'm so tired. Wake me up.", 3.5],
+		["SUHA", "\"Shh. Don't turn the light off. Not ever.\"", 4.0],
+		["", "(She turns around.)", 2.5],
+		["THE ISLAND — IN HER VOICE", "\"There was never anyone waiting for you, Elias. You drowned at 03:12. We only needed someone to keep the light.\"", 6.5],
 	],
 	"ending_last": [
 		["RADIO", "...", 3.0],

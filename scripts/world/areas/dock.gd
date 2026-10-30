@@ -206,6 +206,8 @@ func _opening() -> void:
 	await get_tree().create_timer(0.8).timeout
 	Sound.play_at("radio_voice_elias", pos, -2.0, {"bus": "Voice", "unit_size": 3.0})
 	level.hud.radio("boat_arrival")
+	level.hud.radio("suha_1")
+	get_tree().create_timer(9.0).timeout.connect(func(): Sound.play_at("suha_0", pos, -2.0, {"bus": "Voice", "unit_size": 3.0}))
 	level.chapter("ch_dock")
 	level.hud.elias("arrive", 12.0)
 	Sound.play_at("bell", Vector3(-10, 30, -40), -6.0, {"unit_size": 40.0, "max_distance": 400.0})

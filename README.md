@@ -8,7 +8,7 @@ sounds arrive **before** the things that make them — and something on the
 island is listening.
 
 - Engine: **Godot 4.3** (GDScript, Forward+ renderer)
-- Length: roughly 60–90 minutes with the optional chapters; three endings
+- Length: roughly 60–90 minutes with the optional chapters; four endings
 - No combat. Sound is how you survive.
 
 ---
@@ -98,6 +98,7 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
 **Endings**
 - **Break the Signal** — overload the transmitter.
 - **Send the Warning** — transmit the report.
+- **The Light (Suha)** — Suha, Elias's love, calls him on the radio through the night in a soft, loving voice, and whispers to him between the scares ("wake up, love, it's only a dream"); now and then a warm figure in a pale dress stands far off and smiles. After the transmitter is armed she begs him to come up to the lantern room: "it's only a dream". Follow her voice (the ladder in the control room) and learn what the island did with it.
 - **The Last Recording** (secret) — collect the three optional recordings (Morrow's tape in the Annex, the Pelagic mayday at the Ship Graveyard, Kell's tape from his roost) and a third option appears at the transmitter console. No extra puzzle is needed.
 
 See `docs/STORY.md` for the story bible.
@@ -181,9 +182,10 @@ Automated scenarios (`tests/run_all.sh`), all run on the final code:
 | full_break / full_send | every main-path objective and puzzle → endings A and B | ✅ |
 | optional | ship radio + mayday, Kell's roost, tape, chase and floodlight death, Low Vey silence, Annex tape + Listener chase, **The Last Recording** ending | ✅ |
 | kell_hunt | Kell emerges on the hour; standing still survives his sonar; moving in the open gets you caught | ✅ |
+| suha | Suha's final call, the lantern-room climb, ending THE LIGHT | ✅ |
 | horror | the Lodger whisper, apparition appears/vanishes, journal, watch | ✅ |
 | ai, death, menus, mouselook | Listener states, catch → checkpoint reload, pause/options, mouse look | ✅ |
-| walk_* (6 routes) | real movement input over every main route | see final report |
+| walk_* (7 routes) | real movement input over every main and forest route | ✅ |
 
 ## Known limitations
 

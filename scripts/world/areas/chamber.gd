@@ -188,6 +188,13 @@ func _armed() -> void:
 		level.listener.head_target = level.player.head.global_position
 		level.listener.hunt_enabled = false
 	level.hud.toast("The console wakes. It has stopped moving. It is listening.", 4.0)
+	await get_tree().create_timer(6.0).timeout
+	if not _choice_made:
+		Game.set_flag("suha_call")
+		Sound.play_2d("radio_burst", -4.0)
+		Sound.play_2d("suha_3", -3.0, "Voice")
+		level.hud.radio("suha_3")
+		Game.add_journal("j_suha")
 
 
 func _console() -> void:

@@ -62,3 +62,7 @@ Legend: [x] done and verified · [~] done, partly verified · [ ] not done
 - [x] Island clock, watch [T], rain and lightning
 - [x] Existing puzzles untouched; both original full playthroughs still pass
 - [x] Commits authored only by Shafayat07 (GitHub noreply address)
+- [x] Fourth ending: The Light (Suha) — radio calls at the boat, the station and the armed chamber; lantern-room betrayal
+- [x] Suha's soft voice (4 lines), her whispers and warm figure through the game, radio calls in her voice
+- [x] Immersion pass: ground fog, dust, foghorn, cave drips, clutter in every location
+- [x] Final suite: 17/17 scenarios pass

@@ -344,6 +344,7 @@ func _run_subs() -> void:
 			"radio": color = Color(0.72, 0.86, 0.72)
 			"aside": color = UITheme.DIM
 			"elias": color = Color(0.95, 0.86, 0.62)
+			"suha": color = Color(1.0, 0.72, 0.78)
 		var l := UITheme.lbl("", 20, color, item[1] == "radio")
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

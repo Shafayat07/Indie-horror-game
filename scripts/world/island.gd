@@ -79,6 +79,10 @@ func _ready() -> void:
 		if Game.debug_ai:
 			print("[debug] built %s in %d ms" % [area_name, Time.get_ticks_msec() - t0])
 
+	var imm := preload("res://scripts/world/immersion.gd").new()
+	imm.name = "Immersion"
+	add_child(imm)
+	imm.setup(self)
 	_bake_navigation()
 	pause_menu = preload("res://scripts/ui/pause_menu.gd").new()
 	add_child(pause_menu)
@@ -117,6 +121,10 @@ func chapter(flag: String) -> void:
 	for c in Story.CHAPTERS:
 		if c[0] == flag:
 			hud.chapter(c[1], c[2], c[3])
+	if flag in ["ch_settlement", "ch_forest", "ch_lowvey", "ch_caves", "ch_lighthouse"]:
+		await get_tree().create_timer(25.0).timeout
+		if is_instance_valid(horror) and not Game.has_flag("chose_suha"):
+			horror.suha_presence(flag != "ch_caves")
 
 
 func _process(delta: float) -> void:

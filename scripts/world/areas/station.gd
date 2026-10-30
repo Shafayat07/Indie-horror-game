@@ -216,6 +216,7 @@ func _start_generator(p: Node) -> void:
 	_gen_loop.play()
 	_apply_power(true)
 	p.hud.toast("Power. The station hums awake.")
+	_suha_call()
 	level.objective("find_sequence")
 	level.checkpoint("station_power")
 
@@ -427,6 +428,15 @@ func _process(delta: float) -> void:
 	if Game.has_flag("station_power"):
 		for r in _reels:
 			r.rotation.y += delta * 2.0
+
+
+func _suha_call() -> void:
+	await get_tree().create_timer(9.0).timeout
+	var radio_pos := ORIGIN + Vector3(5.6, 1.2, -3.8)
+	Sound.play_at("radio_burst", radio_pos, -2.0)
+	Sound.play_at("suha_1", radio_pos, -1.0, {"bus": "Voice"})
+	level.hud.radio("suha_2")
+	Game.add_journal("j_suha")
 
 
 func on_spawn(_cp: String) -> void:

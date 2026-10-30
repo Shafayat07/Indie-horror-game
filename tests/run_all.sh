@@ -29,3 +29,4 @@ run optional --cp=graveyard --flags=tide_out,entered_settlement,has_recorder,rea
 run kell_hunt --cp=forest --flags=entered_settlement --scenario=kell_hunt --wait=1
 run horror --cp=settlement --flags=entered_settlement --scenario=horror --wait=1
 run walk_forest --cp=settlement --flags=entered_settlement --scenario=walk_forest --wait=1
+run suha --cp=chamber --flags=reached_chamber,seal_released,chamber_intro,tide_out --scenario=suha --wait=1

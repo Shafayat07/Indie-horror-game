@@ -2,6 +2,10 @@ extends Control
 ## Ending card + credits after the final boat scene. Text differs per choice.
 
 const TEXT := {
+	"suha": [
+		"ENDING — THE LIGHT (SUHA)",
+		"Elias Vale climbed to the lantern room at 03:12 because someone he loved asked him to.\n\nShe was never there. The island had listened to him all night —\nhis footsteps, his breathing, the name he whispered when he was afraid —\nand it learned how to say it back.\n\nThe Vey light still turns. Ships that pass the headland\nsometimes pick up a man on 2.182 MHz, calm and patient:\n\n'Suha? It's me. Come up to the light. I'll wake you up.'",
+	],
 	"last": [
 		"ENDING — THE LAST RECORDING",
 		"At 03:12 the Vey transmitter played Morrow's tape, the Pelagic's mayday\nand Tomas Kell's last message into itself — and listened.\n\nThe Listener was found at dawn: a heap of wet rope and old net\nbeside the transmitter, facing it.\n\nThe island has been silent since. Not the thirteen seconds.\nJust ordinary silence.\n\nElias Vale's recorder still holds one file. It is thirteen seconds long.\nHe has never played it.",

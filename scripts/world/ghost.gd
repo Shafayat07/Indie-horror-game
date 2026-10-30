@@ -24,6 +24,8 @@ void fragment() {
 """
 	_mat = ShaderMaterial.new()
 	_mat.shader = _shader
+	if kind == "suha":
+		_mat.set_shader_parameter("tint", Color(1.0, 0.82, 0.68))
 	var dark := B.flat(Color(0, 0, 0), 1.0)
 	var hair := B.flat(Color(0.02, 0.025, 0.025), 0.3)
 	var gore := B.flat(Color(0.25, 0.02, 0.02), 0.3)
@@ -35,6 +37,14 @@ void fragment() {
 		_part(SphereMesh, Vector3(0, 1.43, 0.18), Vector3(0.07, 0.11, 0.05), dark)               # gaping mouth
 		_part(SphereMesh, Vector3(0, 1.68, -0.06), Vector3(0.27, 0.22, 0.27), hair)
 		_part(CylinderMesh, Vector3(0, 1.0, 0), Vector3(0.22, 0.9, 0.2), _mat)
+	elif kind == "suha":
+		# a woman in a long pale dress, hair over one shoulder; warm, never wet
+		_part(CylinderMesh, Vector3(0, 0.75, 0), Vector3(0.32, 1.5, 0.32), _mat, 0.1)
+		_part(SphereMesh, Vector3(0, 1.62, 0.02), Vector3(0.13, 0.17, 0.14), _mat)
+		_part(SphereMesh, Vector3(0, 1.67, -0.03), Vector3(0.15, 0.18, 0.15), B.flat(Color(0.12, 0.07, 0.05), 0.4))
+		_part(CylinderMesh, Vector3(0.1, 1.35, 0.05), Vector3(0.07, 0.5, 0.06), B.flat(Color(0.12, 0.07, 0.05), 0.4))
+		for sx in [-1, 1]:
+			_part(CylinderMesh, Vector3(sx * 0.21, 1.1, 0.04), Vector3(0.05, 0.6, 0.05), _mat)
 	else:
 		_part(CylinderMesh, Vector3(0, 0.75, 0), Vector3(0.3, 1.5, 0.3), _mat, 0.12)            # long wet shift
 		_part(SphereMesh, Vector3(0, 1.62, 0.02), Vector3(0.14, 0.18, 0.15), _mat)

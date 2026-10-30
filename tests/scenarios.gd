@@ -139,6 +139,21 @@ func run(name: String, lv: Node) -> bool:
 			p.freeze(false)
 			level.hud.show_watch()
 			expect(":" in level.hud._watch.text, "watch shows the island clock")
+			h.suha_presence()
+			await wait(0.5)
+			expect(h._suha_i > 0 and h._apparitions.size() > 0, "Suha whispers and appears at a distance")
+		"suha":
+			level.listener.hunt_enabled = false
+			for i in 3:
+				await use("Engage coupling %d" % (i + 1))
+			await wait(9.5)
+			expect(Game.has_flag("suha_call"), "Suha calls after the transmitter is armed")
+			var lc: Vector3 = level.areas.lighthouse.C
+			await level.travel(lc + Vector3(1.0, 12.2, 1.0), 0.0, "surface", "lighthouse")
+			await use("Climb to the light")
+			expect(Game.has_flag("chose_suha"), "followed her voice to the lantern room")
+			await wait(30.0)
+			expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "suha", "ending THE LIGHT (SUHA) reached")
 		"optional":
 			await _optional()
 		"seal":

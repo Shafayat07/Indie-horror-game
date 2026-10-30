@@ -734,6 +734,24 @@ def crystal_hum(dur=4.0):
     return x * (0.7 + 0.3 * slow_lfo(len(t), loop_rate(dur, 0.5)))
 
 
+def suha_voice(dur, seed):
+    """Suha: soft, warm, close. A gentle breathy voice, no radio distortion."""
+    v = voice(dur, 205, seed, breathy=0.9)
+    v = lowpass(v, 2600, 2) + highpass(v, 2500) * 0.15
+    t = t_axis(len(v) / SR)
+    v = v * (0.85 + 0.15 * np.sin(2 * np.pi * 0.6 * t))
+    v = reverb(v, 1.8, 0.35, 2500)
+    return fade(v, 0.15, 0.6)
+
+
+def foghorn():
+    d = 6.0
+    t = t_axis(d)
+    x = sum(np.sin(2 * np.pi * f * t) * a for f, a in [(98, 1.0), (196, 0.5), (294, 0.25)])
+    x = lowpass(x, 600) * np.minimum(t / 0.6, 1) * np.clip((d - 0.5 - t) / 1.5, 0, 1)
+    return fade(reverb(x, 3.0, 0.5), 0.05, 1.0)
+
+
 def write_if(only, name, fn, peak=0.9):
     if name in only:
         write(name, fn(), peak)
@@ -754,6 +772,9 @@ if __name__ == "__main__":
         write_if(only, "switch_clunk", switch_clunk, 0.9)
         write_if(only, "whisper_2", lambda: whisper(5.0, 23), 0.5)
         write_if(only, "radio_voice_d", lambda: radio_voice(4.0, 135, 15), 0.6)
+        for i in range(4):
+            write_if(only, f"suha_{i}", lambda: suha_voice(3.2 + i * 0.6, 60 + i), 0.55)
+        write_if(only, "foghorn", foghorn, 0.8)
         sys.exit(0)
     write("amb_sea", amb_sea(), 0.8)
     write("amb_wind", amb_wind(), 0.7)
@@ -825,3 +846,6 @@ if __name__ == "__main__":
     write("switch_clunk", switch_clunk(), 0.9)
     write("whisper_2", whisper(5.0, 23), 0.5)
     write("radio_voice_d", radio_voice(4.0, 135, 15), 0.6)
+    for i in range(4):
+        write(f"suha_{i}", suha_voice(3.2 + i * 0.6, 60 + i), 0.55)
+    write("foghorn", foghorn(), 0.8)
