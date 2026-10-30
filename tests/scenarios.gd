@@ -496,7 +496,10 @@ func _optional() -> void:
 	var forest = level.areas.forest
 	expect(forest.kell.state == forest.kell.S.ROOST, "Kell is asleep in the roost")
 	await tp(forest.roost_mouth() + Vector3(0, 0.6, 0.4))
-	await wait(2.5)
+	for i in 24:   # the fade-and-travel takes longer when the machine is busy
+		await wait(0.25)
+		if level.space == "roost" and i >= 9:
+			break
 	expect(level.space == "roost", "entered the Roost")
 	await use("Take Kell's tape")
 	expect(Game.has_recording("kell_tape"), "took Kell's tape (last recording 3/3)")

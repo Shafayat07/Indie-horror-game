@@ -183,6 +183,12 @@ func _bob(n: Node3D, amp := 0.08, period := 3.0) -> void:
 	tw.tween_property(n, "position:y", y - amp, period * 0.5).set_trans(Tween.TRANS_SINE)
 
 
+## Strips collision from a decorative prop (things overhead, things in the way of nothing).
+func _no_collide(n: Node) -> void:
+	for c in n.find_children("*", "CollisionObject3D", true, false):
+		c.queue_free()
+
+
 ## A figure that stands there until you come close, then is simply gone.
 func _distant_figure(pos: Vector3, yaw: float, vanish_at: float, require := "") -> void:
 	var g: Node3D = null
@@ -405,6 +411,7 @@ func _forest() -> void:
 	var hp := Vector3(-50.0, 0, 37.0)
 	var net := P.net_pile(self, Vector3(hp.x, _g(hp.x, hp.z) + 3.4, hp.z))
 	net.rotation_degrees.x = 80
+	_no_collide(net)
 	# something hanging overhead: you only notice when the rope creaks
 	var hang := Node3D.new()
 	add_child(hang)
@@ -412,6 +419,7 @@ func _forest() -> void:
 	hang.position = Vector3(hpos.x, _g(hpos.x, hpos.z) + 4.6, hpos.z)
 	B.box(hang, Vector3(0, 1.2, 0), Vector3(0.03, 2.4, 0.03), B.mat("rope", Color.WHITE, 2.0), {"collide": false})
 	P.corpse(hang, Vector3(0, -0.9, 0), 0.0, "hung")
+	_no_collide(hang)   # overhead decoration must never count as a roof against Kell
 	_watch.append(func() -> bool:
 		if _near(Vector3(hpos.x, hang.position.y - 4.0, hpos.z), 3.0) and _calm():
 			_scared()
