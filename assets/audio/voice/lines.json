@@ -1,0 +1,412 @@
+[
+	{
+		"id": "boat_arrival_0",
+		"speaker": "RADIO",
+		"text": "...Vale. Vale, do you copy..."
+	},
+	{
+		"id": "boat_arrival_1",
+		"speaker": "RADIO — YOUR VOICE",
+		"text": "\"Mainland, this is Vale. I'm on the dock. There's nobody here.\""
+	},
+	{
+		"id": "boat_arrival_2",
+		"speaker": "",
+		"text": "(You haven't said that yet.)"
+	},
+	{
+		"id": "teahouse_0",
+		"speaker": "RADIO — A WOMAN",
+		"text": "\"Did you leave the station key with the clock?\""
+	},
+	{
+		"id": "teahouse_1",
+		"speaker": "RADIO — A MAN",
+		"text": "\"Where else? It's the only thing in Vey that keeps time.\""
+	},
+	{
+		"id": "teahouse_2",
+		"speaker": "RADIO — A WOMAN",
+		"text": "\"Then go to the blue house and take it before the bell.\""
+	},
+	{
+		"id": "teahouse_echo_0",
+		"speaker": "VOICES — FROM THE BLUE HOUSE",
+		"text": "\"...the only thing in Vey that keeps time.\""
+	},
+	{
+		"id": "station_reply_0",
+		"speaker": "RADIO",
+		"text": "Diagnostic report received. Mainland copies, Vey."
+	},
+	{
+		"id": "station_reply_1",
+		"speaker": "RADIO — YOUR VOICE",
+		"text": "\"Don't go into the caves. It's already down there. It heard you coming.\""
+	},
+	{
+		"id": "station_reply_2",
+		"speaker": "",
+		"text": "(Below the cliffs, the sea is pulling away from the island.)"
+	},
+	{
+		"id": "control_voice_0",
+		"speaker": "TAPE — YOUR VOICE",
+		"text": "\"Elias. If you're hearing this, you've already chosen once.\""
+	},
+	{
+		"id": "control_voice_1",
+		"speaker": "TAPE — YOUR VOICE",
+		"text": "\"Don't listen to the other tape. Whatever it told you—\""
+	},
+	{
+		"id": "control_voice_2",
+		"speaker": "",
+		"text": "(The tape ends in thirteen seconds of nothing.)"
+	},
+	{
+		"id": "landing_voice_0",
+		"speaker": "TAPE — YOUR VOICE",
+		"text": "\"Send it. Whatever it costs. Someone has to know what's out here.\""
+	},
+	{
+		"id": "landing_voice_1",
+		"speaker": "TAPE — YOUR VOICE",
+		"text": "\"And don't trust the tape upstairs. That one's lying.\""
+	},
+	{
+		"id": "chamber_send_0",
+		"speaker": "TRANSMITTER",
+		"text": "Carrier locked. Sending the Vey Isle report to the mainland."
+	},
+	{
+		"id": "chamber_send_1",
+		"speaker": "RADIO — MAINLAND",
+		"text": "\"Vey, we copy. We... copy.\""
+	},
+	{
+		"id": "chamber_send_2",
+		"speaker": "",
+		"text": "(Every radio on the island answers at once, in your voice.)"
+	},
+	{
+		"id": "suha_1_0",
+		"speaker": "RADIO — SUHA",
+		"text": "\"Elias? It's Suha. Call me the second you land. I hate it when you go out there.\""
+	},
+	{
+		"id": "suha_1_1",
+		"speaker": "",
+		"text": "(Suha. Home is a long way from here.)"
+	},
+	{
+		"id": "suha_2_0",
+		"speaker": "RADIO — SUHA",
+		"text": "\"Love, I can hear the sea behind you. I can hear you breathing. Why aren't you answering?\""
+	},
+	{
+		"id": "suha_2_1",
+		"speaker": "RADIO — SUHA",
+		"text": "\"I'll keep the light on for you. I always do.\""
+	},
+	{
+		"id": "suha_3_0",
+		"speaker": "RADIO — SUHA",
+		"text": "\"Elias. Listen to me. None of this is real. You fell asleep on the boat. You're dreaming.\""
+	},
+	{
+		"id": "suha_3_1",
+		"speaker": "RADIO — SUHA",
+		"text": "\"Don't touch that machine. Come up to the top of the lighthouse — to the light. I'm there. I'll wake you up.\""
+	},
+	{
+		"id": "suha_3_2",
+		"speaker": "RADIO — SUHA",
+		"text": "\"Come home to me.\""
+	},
+	{
+		"id": "ending_suha_0",
+		"speaker": "SUHA",
+		"text": "\"You came. I knew you would. You always come back to me.\""
+	},
+	{
+		"id": "ending_suha_1",
+		"speaker": "ELIAS",
+		"text": "Suha... I'm so tired. Wake me up."
+	},
+	{
+		"id": "ending_suha_2",
+		"speaker": "SUHA",
+		"text": "\"Shh. Don't turn the light off. Not ever.\""
+	},
+	{
+		"id": "ending_suha_3",
+		"speaker": "",
+		"text": "(She turns around.)"
+	},
+	{
+		"id": "ending_suha_4",
+		"speaker": "THE ISLAND — IN HER VOICE",
+		"text": "\"There was never anyone waiting for you, Elias. You drowned at 03:12. We only needed someone to keep the light.\""
+	},
+	{
+		"id": "ending_last_0",
+		"speaker": "RADIO",
+		"text": "..."
+	},
+	{
+		"id": "ending_last_1",
+		"speaker": "",
+		"text": "(Your recorder clicks on by itself. RECORDING 1 OF 1 — 00:13.)"
+	},
+	{
+		"id": "ending_last_2",
+		"speaker": "",
+		"text": "(Thirteen seconds of nothing. Then, very faintly, someone breathing out.)"
+	},
+	{
+		"id": "ending_break_0",
+		"speaker": "RADIO",
+		"text": "..."
+	},
+	{
+		"id": "ending_break_1",
+		"speaker": "RADIO — VERY QUIET",
+		"text": "\"...three more steps.\""
+	},
+	{
+		"id": "ending_send_0",
+		"speaker": "RADIO — YOUR VOICE",
+		"text": "\"Mainland, this is Vale. Report sent. I'm leaving the island.\""
+	},
+	{
+		"id": "ending_send_1",
+		"speaker": "ELIAS",
+		"text": "Mainland, this is Vale. Report sent. I'm leaving the—"
+	},
+	{
+		"id": "ending_send_2",
+		"speaker": "RADIO — YOUR VOICE",
+		"text": "\"—it's on the boat.\""
+	},
+	{
+		"id": "elias_arrive",
+		"speaker": "ELIAS",
+		"text": "That was my voice. I haven't said that yet."
+	},
+	{
+		"id": "elias_dock_steps",
+		"speaker": "ELIAS",
+		"text": "Footsteps behind me... my footsteps. They kept going after I stopped."
+	},
+	{
+		"id": "elias_recorder",
+		"speaker": "ELIAS",
+		"text": "A field recorder. Someone left it here for me."
+	},
+	{
+		"id": "elias_listen",
+		"speaker": "ELIAS",
+		"text": "Under the hiss — my footsteps again. And my voice."
+	},
+	{
+		"id": "elias_settlement",
+		"speaker": "ELIAS",
+		"text": "Lights in the windows. No power lines. No people."
+	},
+	{
+		"id": "elias_listener_first",
+		"speaker": "ELIAS",
+		"text": "Something's standing on the lighthouse road. Too tall to be a man."
+	},
+	{
+		"id": "elias_teahouse",
+		"speaker": "ELIAS",
+		"text": "The tea's still warm. The chair is turned to face the wall."
+	},
+	{
+		"id": "elias_key",
+		"speaker": "ELIAS",
+		"text": "The station key. The clock is running backwards around it."
+	},
+	{
+		"id": "elias_bell",
+		"speaker": "ELIAS",
+		"text": "The bell just rang. It isn't moving."
+	},
+	{
+		"id": "elias_station",
+		"speaker": "ELIAS",
+		"text": "Project Pelagic. Let's get the lights on and get out."
+	},
+	{
+		"id": "elias_tide_out",
+		"speaker": "ELIAS",
+		"text": "The sea is pulling away from the island. That isn't possible."
+	},
+	{
+		"id": "elias_forest",
+		"speaker": "ELIAS",
+		"text": "Something is clicking up in the trees."
+	},
+	{
+		"id": "elias_cabin",
+		"speaker": "ELIAS",
+		"text": "The radio tower hut. Kell's. Tally marks on every wall — hours."
+	},
+	{
+		"id": "elias_roost",
+		"speaker": "ELIAS",
+		"text": "He's up there. Hanging. Breathing like a man asleep."
+	},
+	{
+		"id": "elias_kell_wakes",
+		"speaker": "ELIAS",
+		"text": "He's awake! The tower floodlight — light hurts him!"
+	},
+	{
+		"id": "elias_kell_dead",
+		"speaker": "ELIAS",
+		"text": "In the light he looked like a man again. I'm sorry, Tomas."
+	},
+	{
+		"id": "elias_graveyard",
+		"speaker": "ELIAS",
+		"text": "The Pelagic. And every boat that came looking for her."
+	},
+	{
+		"id": "elias_cargo",
+		"speaker": "ELIAS",
+		"text": "Oh God. They kept the crew in the hold."
+	},
+	{
+		"id": "elias_lowvey",
+		"speaker": "ELIAS",
+		"text": "Low Vey. The drowned village. The tide brought it back."
+	},
+	{
+		"id": "elias_silence",
+		"speaker": "ELIAS",
+		"text": "..."
+	},
+	{
+		"id": "elias_caves",
+		"speaker": "ELIAS",
+		"text": "The caves the radio warned me about. Of course I'm going in."
+	},
+	{
+		"id": "elias_annex",
+		"speaker": "ELIAS",
+		"text": "A hospital. Under the sea."
+	},
+	{
+		"id": "elias_exam",
+		"speaker": "ELIAS",
+		"text": "They were cutting into people's ears. To make them hear better."
+	},
+	{
+		"id": "elias_lighthouse",
+		"speaker": "ELIAS",
+		"text": "Two tapes, both in my voice, telling me opposite things."
+	},
+	{
+		"id": "elias_chamber",
+		"speaker": "ELIAS",
+		"text": "This is it. This is what's been listening."
+	},
+	{
+		"id": "elias_lodger",
+		"speaker": "ELIAS",
+		"text": "...Who's there?"
+	},
+	{
+		"id": "suha_line_0",
+		"speaker": "SUHA",
+		"text": "Wake up, love. It's only a dream."
+	},
+	{
+		"id": "suha_line_1",
+		"speaker": "SUHA",
+		"text": "You're asleep on the boat. I'm right here, holding your hand."
+	},
+	{
+		"id": "suha_line_2",
+		"speaker": "SUHA",
+		"text": "I left the light on for you. Like always."
+	},
+	{
+		"id": "suha_line_3",
+		"speaker": "SUHA",
+		"text": "Don't be scared. Just follow my voice."
+	},
+	{
+		"id": "suha_line_4",
+		"speaker": "SUHA",
+		"text": "None of this is real, Elias. Only us."
+	},
+	{
+		"id": "suha_line_5",
+		"speaker": "SUHA",
+		"text": "Come up to the light. I'll be waiting at the top."
+	},
+	{
+		"id": "suha_line_6",
+		"speaker": "SUHA",
+		"text": "Shh. I can hear your heart. Come home."
+	},
+	{
+		"id": "lodger_0",
+		"speaker": "WHISPER",
+		"text": "\"...you already opened it, Elias. You just don't remember yet...\""
+	},
+	{
+		"id": "lodger_1",
+		"speaker": "WHISPER",
+		"text": "\"...don't look at the light. It looks back...\""
+	},
+	{
+		"id": "lodger_2",
+		"speaker": "WHISPER",
+		"text": "\"...you said this already. Tonight. Again...\""
+	},
+	{
+		"id": "lodger_3",
+		"speaker": "WHISPER",
+		"text": "\"...it isn't behind you. I am...\""
+	},
+	{
+		"id": "lodger_4",
+		"speaker": "WHISPER",
+		"text": "\"...three more steps...\""
+	},
+	{
+		"id": "lodger_5",
+		"speaker": "WHISPER",
+		"text": "\"...they cut my ears so I could hear you coming...\""
+	},
+	{
+		"id": "lodger_6",
+		"speaker": "WHISPER",
+		"text": "\"...03:12...\""
+	},
+	{
+		"id": "rec_morrow_tape",
+		"speaker": "REC_morrow_tape",
+		"text": "[Dr. Morrow: 'Subject Kell can hear the thirteen seconds coming. He says it is not silence. He says it is someone holding their breath.']"
+	},
+	{
+		"id": "rec_mayday",
+		"speaker": "REC_mayday",
+		"text": "[a ship's radio: 'Mayday, Pelagic... we hear the island answering... it is asking us to come closer...']"
+	},
+	{
+		"id": "rec_kell_tape",
+		"speaker": "REC_kell_tape",
+		"text": "[Kell, in a human voice for the last time: 'If you play all three into the transmitter, it will hear itself. Then it will stop listening to us.']"
+	},
+	{
+		"id": "dock_whisper",
+		"speaker": "WHISPER",
+		"text": "...don't let it hear you twice..."
+	}
+]

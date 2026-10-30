@@ -19,7 +19,7 @@ var settings := {
 	"mouse_sensitivity": 0.18,
 	"master_volume": 0.85,
 	"reduced_effects": false,
-	"subtitles": true,
+	"sfx_captions": false,
 	"fov": 72.0,
 	"volumetric_fog": true,
 	"fullscreen": true,

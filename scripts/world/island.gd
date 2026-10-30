@@ -137,10 +137,10 @@ func _process(delta: float) -> void:
 	if _rain:
 		_rain.global_position = player.global_position + Vector3(0, 9, 0)
 		_rain.emitting = space == "surface"
-		_rain_snd.volume_db = lerp(_rain_snd.volume_db, -14.0 if space == "surface" else -80.0, delta * 2.0)
+		_rain_snd.volume_db = lerp(_rain_snd.volume_db, -24.0 if space == "surface" else -80.0, delta * 2.0)
 		_thunder_t -= delta
 		if _thunder_t <= 0.0 and space == "surface":
-			_thunder_t = randf_range(35.0, 80.0)
+			_thunder_t = randf_range(110.0, 200.0)
 			_lightning()
 
 
@@ -183,7 +183,7 @@ func _lightning() -> void:
 		tw.tween_property(moon, "light_energy", 4.0, 0.04)
 		tw.tween_property(moon, "light_energy", e, 0.12)
 	await get_tree().create_timer(randf_range(1.0, 3.0)).timeout
-	Sound.play_2d("thunder_%d" % (randi() % 3), -6.0, "Ambience")
+	Sound.play_2d("thunder_%d" % (randi() % 3), -14.0, "Ambience")
 
 
 func _build_environment() -> void:

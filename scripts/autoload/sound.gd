@@ -13,21 +13,21 @@ const LOOPS := ["amb_sea", "amb_wind", "amb_interior", "amb_cave", "amb_drone", 
 
 ## Ambience presets: layer -> volume dB. Layers not listed fade out.
 const ZONES := {
-	"boat": {"amb_sea": -4.0, "amb_wind": -10.0, "amb_signal": -34.0},
-	"dock": {"amb_sea": -6.0, "amb_wind": -9.0, "amb_drone": -30.0, "amb_signal": -32.0},
-	"settlement": {"amb_sea": -16.0, "amb_wind": -8.0, "amb_drone": -24.0, "amb_signal": -30.0},
-	"interior": {"amb_sea": -26.0, "amb_wind": -20.0, "amb_interior": -8.0, "amb_drone": -26.0},
-	"station": {"amb_sea": -22.0, "amb_wind": -10.0, "amb_drone": -22.0, "amb_signal": -26.0},
-	"station_in": {"amb_sea": -30.0, "amb_wind": -22.0, "amb_interior": -10.0, "amb_drone": -20.0},
-	"cliffs": {"amb_sea": -5.0, "amb_wind": -6.0, "amb_drone": -26.0, "amb_signal": -24.0},
-	"caves": {"amb_cave": -4.0, "amb_drone": -16.0, "amb_sea": -28.0},
-	"lighthouse": {"amb_wind": -12.0, "amb_interior": -12.0, "amb_drone": -18.0, "amb_signal": -16.0},
-	"chamber": {"amb_drone": -10.0, "amb_signal": -8.0, "amb_cave": -18.0},
+	"boat": {"amb_sea": -8.0, "amb_wind": -16.0},
+	"dock": {"amb_sea": -9.0, "amb_wind": -15.0},
+	"settlement": {"amb_sea": -22.0, "amb_wind": -14.0, "amb_drone": -34.0},
+	"interior": {"amb_interior": -14.0, "amb_wind": -28.0},
+	"station": {"amb_sea": -26.0, "amb_wind": -14.0, "amb_drone": -32.0},
+	"station_in": {"amb_interior": -15.0, "amb_drone": -32.0},
+	"cliffs": {"amb_sea": -9.0, "amb_wind": -12.0},
+	"caves": {"amb_cave": -9.0, "amb_drone": -28.0},
+	"lighthouse": {"amb_wind": -18.0, "amb_interior": -16.0, "amb_signal": -24.0},
+	"chamber": {"amb_drone": -16.0, "amb_signal": -14.0},
+	"forest": {"amb_woods": -12.0, "amb_wind": -18.0},
 	"silence": {},
-	"aftermath_break": {"amb_sea": -10.0, "amb_wind": -14.0},
-	"aftermath_send": {"amb_sea": -12.0, "amb_wind": -10.0, "amb_signal": -6.0, "amb_static": -24.0, "amb_drone": -14.0},
-	"forest": {"amb_woods": -6.0, "amb_wind": -12.0, "amb_drone": -22.0, "amb_signal": -30.0},
-	"menu": {"amb_sea": -12.0, "amb_wind": -14.0, "amb_drone": -28.0},
+	"aftermath_break": {"amb_sea": -14.0, "amb_wind": -18.0},
+	"aftermath_send": {"amb_sea": -16.0, "amb_wind": -16.0, "amb_signal": -16.0},
+	"menu": {"amb_sea": -14.0, "amb_wind": -18.0},
 }
 
 var _cache := {}
@@ -88,7 +88,8 @@ func get_stream(name: String) -> AudioStream:
 		return _cache[name]
 	var path := AUDIO_DIR + name + ".wav"
 	if not ResourceLoader.exists(path):
-		push_warning("Missing sound: " + name)
+		if not name.begins_with("voice/"):
+			push_warning("Missing sound: " + name)
 		return null
 	var s: AudioStream = load(path)
 	if s is AudioStreamWAV and name in LOOPS:
@@ -184,6 +185,18 @@ func pre_echo(name: String, pos: Vector3, caption_text := "", volume_db := 0.0, 
 		say(caption_text, "preecho", opts.get("caption_time", 4.0))
 	if noise_radius > 0.0:
 		get_tree().call_group("listener_ai", "hear", pos, noise_radius, "pre_echo")
+
+
+## A spoken line from assets/audio/voice (made by tools/gen_voice.py). Returns its length.
+func voice(id: String, pos := Vector3.INF, volume_db := 0.0) -> float:
+	var stream := get_stream("voice/" + id)
+	if stream == null:
+		return 0.0
+	if pos == Vector3.INF:
+		play_2d("voice/" + id, volume_db, "Voice")
+	else:
+		play_at("voice/" + id, pos, volume_db, {"bus": "Voice", "unit_size": 4.0})
+	return stream.get_length()
 
 
 func say(text: String, kind := "sfx", duration := 3.5) -> void:

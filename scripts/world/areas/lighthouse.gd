@@ -42,7 +42,7 @@ func build(lv: Node) -> void:
 		Sound.say("[your footsteps — exactly when you take them]", "aside", 4.0)})
 	Zone.make(self, C + Vector3(0, 1.5, 8.5), Vector3(6, 3, 3), {"once": true, "require": "chose_send", "on_enter": func(_b):
 		await get_tree().create_timer(2.0).timeout
-		Sound.pre_echo("radio_voice_elias", C + Vector3(0, TOP, 0), "[the beacon is broadcasting your voice — words you haven't said]", 0.0)})
+		Sound.pre_echo("voice/ending_send_0", C + Vector3(0, TOP, 0), "[the beacon is broadcasting your voice — words you haven't said]", 0.0)})
 
 
 func _tower() -> void:
@@ -197,7 +197,6 @@ func _landing() -> void:
 	var it := Interactable.make(self, deck.global_position + Vector3(0.45, 0.1, 0), Vector3(0.5, 0.4, 0.5), "Play the tape")
 	it.used.connect(func(p):
 		Sound.play_at("tape_start", it.global_position, -6.0)
-		Sound.play_at("radio_voice_elias", it.global_position, -4.0, {"bus": "Voice"})
 		p.hud.radio("landing_voice"))
 
 
@@ -240,7 +239,6 @@ func _control_room() -> void:
 	B.box(self, C + Vector3(1.2, y + 1.05, -2.6), Vector3(0.4, 0.2, 0.3), B.mat("metal_green", Color.WHITE, 2.0), {"collide": false})
 	tape.used.connect(func(p):
 		Sound.play_at("tape_start", tape.global_position, -6.0)
-		Sound.play_at("radio_voice_elias", tape.global_position, -4.0, {"bus": "Voice"})
 		p.hud.radio("control_voice"))
 	for wy in [0.0]:
 		var win := B.box(self, C + Vector3(0, y + 1.6, R_IN + 0.02), Vector3(1.6, 1.0, 0.03), B.glass(), {"collide": false})
@@ -278,14 +276,13 @@ func _suha_ending() -> void:
 	await p.hud.fade_black(false, 2.0)
 	p.look_toward(her.global_position + Vector3(0, 1.5, 0), 1.5)
 	Sound.override_zone("silence")
-	Sound.play_2d("suha_2", -2.0, "Voice")
 	p.hud.radio("ending_suha")
 	await get_tree().create_timer(17.0).timeout
 	# she turns
 	her.rotation.y = PI * 0.5
 	level.horror.jumpscare(p.head.global_position - p.camera.global_transform.basis.z * 0.8, 1)
 	_flare = 6.0
-	await get_tree().create_timer(6.5).timeout
+	await get_tree().create_timer(14.0).timeout   # let the island finish speaking in her voice
 	p.hud.white_flash()
 	Sound.play_2d("overload", -6.0)
 	await get_tree().create_timer(1.5).timeout

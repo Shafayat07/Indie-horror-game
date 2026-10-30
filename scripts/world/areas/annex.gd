@@ -148,7 +148,7 @@ func _tape_room() -> void:
 			p.hud.toast("You already have Morrow's tape.")
 			return
 		Game.add_recording("morrow_tape", c + Vector3(0, 1.0, 0))
-		Sound.play_at("radio_voice_c", c + Vector3(0, 1.0, 0), 0.0, {"bus": "Voice"})
+		Sound.play_at(Story.RECORDINGS["morrow_tape"].sound, c + Vector3(0, 1.0, 0), 0.0, {"bus": "Voice"})
 		Sound.say(Story.RECORDINGS["morrow_tape"].caption, "radio", 6.0)
 		p.hud.toast("Recorded: " + Story.RECORDINGS["morrow_tape"].name)
 		_chase())

@@ -356,7 +356,6 @@ func _transmit(p: Node) -> void:
 	Sound.play_at("radio_burst", p.global_position, 0.0)
 	p.hud.toast("Transmitting diagnostic report...", 3.0)
 	await get_tree().create_timer(3.0).timeout
-	Sound.play_2d("radio_voice_elias", -6.0, "Voice")
 	p.hud.radio("station_reply")
 	await get_tree().create_timer(9.0).timeout
 	Game.set_flag("transmitted")
@@ -420,7 +419,7 @@ func _process(delta: float) -> void:
 	if Game.has_flag("station_power") and level.player.recorder.listening and _tape_caption_cd <= 0.0:
 		if level.player.global_position.distance_to(_tape_pos) < 4.0:
 			_tape_caption_cd = 12.0
-			Sound.say("[under the hiss: footsteps on metal... then tones — MIDDLE... LOW... HIGH... LOW]", "preecho", 6.0)
+			Sound.say("[under the hiss: footsteps on metal... then tones — MIDDLE... LOW... HIGH... LOW]", "hint", 6.0)
 			if not Game.has_flag("heard_tape"):
 				Game.set_flag("heard_tape")
 				await get_tree().create_timer(6.5).timeout
@@ -434,7 +433,6 @@ func _suha_call() -> void:
 	await get_tree().create_timer(9.0).timeout
 	var radio_pos := ORIGIN + Vector3(5.6, 1.2, -3.8)
 	Sound.play_at("radio_burst", radio_pos, -2.0)
-	Sound.play_at("suha_1", radio_pos, -1.0, {"bus": "Voice"})
 	level.hud.radio("suha_2")
 	Game.add_journal("j_suha")
 

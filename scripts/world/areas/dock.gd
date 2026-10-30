@@ -204,10 +204,8 @@ func _opening() -> void:
 	var pos: Vector3 = boat_radio.global_position + Vector3(0, 0.2, 0)
 	Sound.play_at("radio_burst", pos, 0.0)
 	await get_tree().create_timer(0.8).timeout
-	Sound.play_at("radio_voice_elias", pos, -2.0, {"bus": "Voice", "unit_size": 3.0})
 	level.hud.radio("boat_arrival")
 	level.hud.radio("suha_1")
-	get_tree().create_timer(9.0).timeout.connect(func(): Sound.play_at("suha_0", pos, -2.0, {"bus": "Voice", "unit_size": 3.0}))
 	level.chapter("ch_dock")
 	level.hud.elias("arrive", 12.0)
 	Sound.play_at("bell", Vector3(-10, 30, -40), -6.0, {"unit_size": 40.0, "max_distance": 400.0})
@@ -268,7 +266,8 @@ func _on_listen(on: bool) -> void:
 		await get_tree().create_timer(1.2).timeout
 		Sound.say("[the footsteps again — and beneath them, a voice. Yours.]", "preecho", 4.5)
 		await get_tree().create_timer(3.0).timeout
-		Sound.say("\"...don't let it hear you twice...\"", "preecho", 4.0)
+		Sound.voice("dock_whisper", Vector3.INF, -2.0)
+		Sound.say("YOUR VOICE, WHISPERING:  \"...don't let it hear you twice...\"", "elias", 4.0)
 		level.hud.elias("listen", 4.0)
 		await get_tree().create_timer(2.0).timeout
 		level.objective("record_echo")
@@ -296,8 +295,6 @@ func _on_leave(p: Node) -> void:
 	await get_tree().create_timer(5.0).timeout
 	var pos: Vector3 = boat_radio.global_position
 	Sound.play_at("radio_burst", pos, -8.0 if choice != "send" else 0.0)
-	if choice == "send":
-		Sound.play_at("radio_voice_elias", pos, -2.0, {"bus": "Voice"})
 	await get_tree().create_timer(1.0).timeout
 	p.hud.radio("ending_" + choice)
 	await get_tree().create_timer(13.0).timeout

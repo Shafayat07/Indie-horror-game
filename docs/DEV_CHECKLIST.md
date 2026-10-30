@@ -65,4 +65,4 @@ Legend: [x] done and verified · [~] done, partly verified · [ ] not done
 - [x] Fourth ending: The Light (Suha) — radio calls at the boat, the station and the armed chamber; lantern-room betrayal
 - [x] Suha's soft voice (4 lines), her whispers and warm figure through the game, radio calls in her voice
 - [x] Immersion pass: ground fog, dust, foghorn, cave drips, clutter in every location
-- [x] Final suite: 17/17 scenarios pass
+- [x] Final suite: 18/18 scenarios pass (incl. voices)

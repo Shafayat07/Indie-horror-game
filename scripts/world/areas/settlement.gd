@@ -99,7 +99,7 @@ func _teahouse() -> void:
 	P.note(r, Vector3(0.6, 0.8, -0.75), "tea_room", -15)
 	var radio := P.radio_set(r, Vector3(-0.2, 0.8, -0.85), 0)
 	var radio_pos: Vector3 = radio.global_position
-	Sound.attach_loop(radio, "amb_static", -16.0, {"unit_size": 2.0, "max_distance": 14.0})
+	Sound.attach_loop(radio, "amb_static", -28.0, {"unit_size": 2.0, "max_distance": 14.0})
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"ambience": "interior", "reverb": 0.15})
 	Zone.make(r, Vector3(0, 1.3, 0), Vector3(5.8, 2.5, 4.8), {"once": true, "block": "heard_teahouse", "on_enter": func(_b): _teahouse_radio(radio_pos)})
 	P.examine(r, Vector3(0.1, 0.9, -0.5), Vector3(0.3, 0.3, 0.3), "teahouse_cup")
@@ -107,21 +107,19 @@ func _teahouse() -> void:
 	# first entry: look back at the chair facing the wall and someone is sitting in it
 	level.horror.apparition(r.to_global(Vector3(-2.3, 0, -1.55)), r.rotation.y, {"range": 9.0, "scare": true, "sting": 0, "flag": "tea_ghost", "require": "heard_teahouse"})
 	# three knocks from inside the west wall (there's nothing behind it)
-	Recordable.make(r, Vector3(-3.1, 1.4, 0.5), "knocks", "knock3", {"radius": 5.0, "interval": 11.0, "volume": -2.0, "unit_size": 3.0})
+	Recordable.make(r, Vector3(-3.1, 1.4, 0.5), "knocks", "knock3", {"radius": 5.0, "interval": 24.0, "volume": -6.0, "unit_size": 3.0})
 
 
 func _teahouse_radio(radio_pos: Vector3) -> void:
 	Game.set_flag("heard_teahouse")
 	Sound.play_at("radio_burst", radio_pos, -4.0)
 	await get_tree().create_timer(0.6).timeout
-	Sound.play_at("radio_voice_b", radio_pos, -6.0, {"bus": "Voice", "unit_size": 2.5})
 	level.hud.radio("teahouse")
-	await get_tree().create_timer(5.0).timeout
-	Sound.play_at("radio_voice_a", radio_pos, -6.0, {"bus": "Voice", "unit_size": 2.5})
-	await get_tree().create_timer(8.0).timeout
+	await get_tree().create_timer(13.0).timeout
 	# ...and moments later, the same conversation from the blue house across the path
-	Sound.pre_echo("radio_voice_a", Vector3(9, 5.5, 40), "", 2.0)
-	level.hud.radio("teahouse_echo")
+	Sound.pre_echo("voice/teahouse_echo_0", Vector3(9, 5.5, 40), "", 2.0)
+	var echo_line: Array = Story.RADIO["teahouse_echo"][0]
+	Sound.say(echo_line[0] + ":  " + echo_line[1], "radio", 4.0)
 
 
 func _blue_house() -> void:
@@ -156,14 +154,6 @@ func _blue_house() -> void:
 		B.box(h, Vector3(0, 0.08 - i * 0.02, 0), Vector3(0.015, 0.16 - i * 0.04, 0.01), B.flat(Color(0.05, 0.05, 0.05)), {"collide": false})
 		clock_hands.append(h)
 	B.box(clock, Vector3(0, 0.7, 0.16), Vector3(0.3, 0.6, 0.01), B.glass(Color(0.3, 0.3, 0.25, 0.4)), {"collide": false})
-	var tick := Sound.attach_loop(clock, "ui_click", -18.0, {"unit_size": 1.5, "max_distance": 8.0, "autoplay": false})
-	var t := Timer.new()
-	t.wait_time = 1.0
-	t.autostart = true
-	clock.add_child(t)
-	t.timeout.connect(func():
-		tick.pitch_scale = 0.6
-		tick.play())
 	var it := Interactable.make(clock, Vector3(0, 1.0, 0.25), Vector3(0.6, 1.8, 0.3), "Open the clock case")
 	it.used.connect(func(p):
 		if Game.has_flag("has_station_key"):
@@ -341,9 +331,9 @@ func on_spawn(cp: String) -> void:
 	add_to_group("hourly")
 	Zone.make(self, Vector3(0, 6, 62), Vector3(8, 6, 3), {"once": true, "block": "entered_settlement", "on_enter": func(_b): _enter()})
 	Zone.make(self, Vector3(0, 6, 24), Vector3(12, 6, 6), {"once": true, "require": "chose_send", "on_enter": func(_b):
-		Sound.pre_echo("radio_voice_elias", Vector3(-9, 5.2, 50), "[every radio in Vey is playing your voice]", 2.0)
+		Sound.pre_echo("voice/ending_send_0", Vector3(-9, 5.2, 50), "[every radio in Vey is playing your voice]", 2.0)
 		await get_tree().create_timer(4.0).timeout
-		Sound.pre_echo("radio_voice_elias", Vector3(-9, 5.2, 34), "", 0.0)})
+		Sound.pre_echo("voice/ending_send_0", Vector3(-9, 5.2, 34), "", 0.0)})
 	if Game.has_flag("has_station_key") and not Game.has_flag("tide_out"):
 		level.listener.activate(PATROL[2], PATROL)
 		level.listener.patrol_i = 2

@@ -90,7 +90,7 @@ func set_listening(on: bool) -> void:
 	Sound.set_listen(on)
 	Sound.play_2d("rec_button", -6.0, "UI")
 	var tw := create_tween()
-	tw.tween_property(_hiss, "volume_db", -24.0 if on else -80.0, 0.4)
+	tw.tween_property(_hiss, "volume_db", -32.0 if on else -80.0, 0.4)
 	_update_model()
 	if player.hud:
 		player.hud.set_listen(on)

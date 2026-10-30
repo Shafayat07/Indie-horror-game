@@ -323,7 +323,7 @@ func _gallery() -> void:
 	# the loose plate in the side cave: a recordable lure
 	var plate := B.box(self, _p(PLATE.x + 1.6, PLATE.y + 0.5, 1.2), Vector3(0.05, 1.4, 1.0), B.mat("metal_rust", Color.WHITE, 1.0, {"metallic": 0.5}), {"collide": false})
 	plate.rotation_degrees.z = 8
-	Recordable.make(self, _p(PLATE.x + 1.2, PLATE.y + 0.5, 1.0), "plate", "metal_knock", {"radius": 5.5, "interval": 9.0, "volume": -4.0, "unit_size": 4.0})
+	Recordable.make(self, _p(PLATE.x + 1.2, PLATE.y + 0.5, 1.0), "plate", "metal_knock", {"radius": 5.5, "interval": 18.0, "volume": -8.0, "unit_size": 4.0})
 	P.note(self, _p(PLATE.x - 3.0, PLATE.y - 1.25, 1.4), "cave_scrawl", 180, true)
 	# entering the gallery: your own running footsteps come down it toward you
 	Zone.make(self, O + Vector3(0, 1, -40), Vector3(6, 3, 2), {"once": true, "require": "seal_open", "block": "gallery_entered", "on_enter": func(_b):
@@ -430,4 +430,4 @@ func _process(delta: float) -> void:
 	if level.space == "caves" and level.player.recorder.listening and _bell_caption_cd <= 0.0:
 		if level.player.global_position.distance_to(_p(BELL.x, BELL.y)) < 6.0:
 			_bell_caption_cd = 14.0
-			Sound.say("[the bell is ringing, under the water. It isn't moving.]", "preecho", 4.0)
+			Sound.say("[the bell is ringing, under the water. It isn't moving.]", "hint", 4.0)

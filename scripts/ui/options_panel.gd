@@ -16,7 +16,7 @@ func _ready() -> void:
 	_slider(v, "Master volume", "master_volume", 0.0, 1.0, 0.01)
 	_slider(v, "Field of view", "fov", 60.0, 95.0, 1.0)
 	_check(v, "Invert mouse Y", "invert_y")
-	_check(v, "Subtitles for sound effects", "subtitles")
+	_check(v, "Captions for sound effects (speech is always subtitled)", "sfx_captions")
 	_check(v, "Reduced screen effects (less shake, bob and flashes)", "reduced_effects")
 	_check(v, "Volumetric fog (turn off for performance)", "volumetric_fog")
 	_check(v, "Fullscreen  (F11 or Alt+Enter)", "fullscreen")

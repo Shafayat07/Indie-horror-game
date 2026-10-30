@@ -64,4 +64,4 @@ func _ready() -> void:
 	tw.tween_callback(b.grab_focus)
 	if Game.ending_choice == "send":
 		# the radio keeps talking under the credits
-		Sound.play_2d("radio_voice_elias", -18.0, "Voice")
+		Sound.voice("ending_send_0", Vector3.INF, -16.0)

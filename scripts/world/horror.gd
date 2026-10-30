@@ -95,9 +95,10 @@ func _lodger() -> void:
 		if turned:
 			jumpscare(p.head.global_position - p.global_transform.basis.z * 0.9, 1)
 		elif Vector2(p.velocity.x, p.velocity.z).length() <= 0.6:
-			var line: String = WHISPERS[_whisper_i % WHISPERS.size()]
+			var wi := _whisper_i % WHISPERS.size()
+			var line: String = WHISPERS[wi]
 			_whisper_i += 1
-			Sound.play_at("whisper_0", p.head.global_position + p.global_transform.basis.z * 0.25 + p.global_transform.basis.x * 0.2, 4.0, {"unit_size": 1.0})
+			Sound.voice("lodger_%d" % wi, p.head.global_position + p.global_transform.basis.z * 0.25 + p.global_transform.basis.x * 0.2, 2.0)
 			Sound.say("[a whisper, right against your ear] " + line, "preecho", 4.5)
 			await get_tree().create_timer(1.6).timeout
 			level.hud.elias("lodger")
@@ -111,10 +112,11 @@ func _lodger() -> void:
 # ------------------------------------------------------------------ Suha
 func suha_presence(show := true) -> void:
 	var p: Node3D = level.player
-	var line: String = SUHA_LINES[_suha_i % SUHA_LINES.size()]
+	var si := _suha_i % SUHA_LINES.size()
+	var line: String = SUHA_LINES[si]
 	_suha_i += 1
-	Sound.play_at("suha_%d" % (_suha_i % 4), p.head.global_position + p.global_transform.basis.x * 0.35 + p.global_transform.basis.z * 0.2, -2.0, {"unit_size": 1.2, "bus": "Voice"})
-	Sound.say("SUHA (softly, close to your ear):  \"" + line + "\"", "suha", 5.0)
+	var d := Sound.voice("suha_line_%d" % si, p.head.global_position + p.global_transform.basis.x * 0.35 + p.global_transform.basis.z * 0.2, 1.0)
+	Sound.say("SUHA (softly, close to your ear):  \"" + line + "\"", "suha", max(5.0, d + 0.8))
 	if show and level.space == "surface":
 		# a warm figure, far off, that is gone when you look straight at her
 		var fwd: Vector3 = -p.global_transform.basis.z

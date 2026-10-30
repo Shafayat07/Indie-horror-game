@@ -312,7 +312,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_caption(text: String, kind: String, duration: float) -> void:
-	if not Game.settings.subtitles and kind == "sfx":
+	# sound-effect and pre-echo captions are optional (off by default); speech and hints always show
+	if not Game.settings.get("sfx_captions", false) and kind in ["sfx", "preecho"]:
 		return
 	_queue.append([text, kind, duration])
 	if not _sub_running:
@@ -320,12 +321,16 @@ func _on_caption(text: String, kind: String, duration: float) -> void:
 
 
 ## Radio/tape sequences: lines with speaker names, typed out over static.
-func radio(seq_id: String, sound := "") -> void:
+func radio(seq_id: String, _sound := "") -> void:
+	var i := 0
 	for line in Story.RADIO[seq_id]:
 		var speaker: String = line[0]
 		var txt: String = line[1]
 		var kind := "radio" if speaker != "" else "aside"
-		_queue.append([(speaker + ":  " if speaker != "" else "") + txt, kind, line[2]])
+		if speaker.contains("SUHA") or speaker.contains("HER VOICE"):
+			kind = "suha"
+		_queue.append([(speaker + ":  " if speaker != "" else "") + txt, kind, line[2], "%s_%d" % [seq_id, i]])
+		i += 1
 	if not _sub_running:
 		_run_subs()
 
@@ -345,6 +350,7 @@ func _run_subs() -> void:
 			"aside": color = UITheme.DIM
 			"elias": color = Color(0.95, 0.86, 0.62)
 			"suha": color = Color(1.0, 0.72, 0.78)
+			"hint": color = UITheme.AMBER
 		var l := UITheme.lbl("", 20, color, item[1] == "radio")
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -362,9 +368,14 @@ func _run_subs() -> void:
 			tw.tween_property(l, "visible_ratio", 1.0, min(text.length() * 0.03, 2.0))
 		else:
 			l.text = text
-		_fade_out_later(l, item[2])
-		# radio lines are sequential; captions can overlap slightly
-		await get_tree().create_timer(item[2] if item[1] in ["radio", "aside"] else 0.4).timeout
+		var hold: float = item[2]
+		if item.size() > 3:
+			var spoken := Sound.voice(item[3])
+			if spoken > 0.0:
+				hold = spoken + 0.5
+		_fade_out_later(l, hold + 0.5)
+		# spoken/radio lines are sequential; captions can overlap slightly
+		await get_tree().create_timer(hold if item[1] in ["radio", "aside", "suha"] else 0.4).timeout
 		if not is_inside_tree():
 			return
 	_sub_running = false
@@ -504,7 +515,8 @@ func elias(id: String, delay := 0.0) -> void:
 	if delay > 0.0:
 		await get_tree().create_timer(delay).timeout
 	if Story.ELIAS.has(id):
-		_on_caption("ELIAS:  " + Story.ELIAS[id], "elias", 4.0)
+		var d := Sound.voice("elias_" + id, Vector3.INF, -2.0)
+		_on_caption("ELIAS:  " + Story.ELIAS[id], "elias", max(4.0, d + 0.6))
 
 
 ## Opening briefing: black cards that tell you who you are and why you're here.

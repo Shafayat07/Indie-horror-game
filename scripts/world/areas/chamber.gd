@@ -78,7 +78,7 @@ func _hall() -> void:
 	# the valve that hammers: a lure to record
 	var pipe := B.cyl(self, O + VALVE + Vector3(0, 1.0, 0), 0.15, 2.0, iron, {"collide": true})
 	B.cyl(self, O + VALVE + Vector3(0.0, 1.4, 0.2), 0.18, 0.04, B.flat(Color(0.5, 0.1, 0.08), 0.5, 0.6), {"collide": false, "rot": Vector3(90, 0, 0)})
-	Recordable.make(self, O + VALVE + Vector3(0, 1.2, 0), "valve", "metal_knock", {"radius": 5.0, "interval": 8.0, "volume": -6.0, "unit_size": 4.0})
+	Recordable.make(self, O + VALVE + Vector3(0, 1.2, 0), "valve", "metal_knock", {"radius": 5.0, "interval": 16.0, "volume": -9.0, "unit_size": 4.0})
 	P.note(self, O + VALVE + Vector3(0.9, 1.4, 0.0), "control_note", 90, true)
 
 
@@ -192,7 +192,6 @@ func _armed() -> void:
 	if not _choice_made:
 		Game.set_flag("suha_call")
 		Sound.play_2d("radio_burst", -4.0)
-		Sound.play_2d("suha_3", -3.0, "Voice")
 		level.hud.radio("suha_3")
 		Game.add_journal("j_suha")
 
@@ -283,7 +282,6 @@ func _choose(choice: String, handle: Node3D) -> void:
 		var tw := create_tween()
 		tw.tween_property(handle, "rotation_degrees:z", 90.0, 0.3)
 		Sound.play_at("transmit_surge", O + Vector3(0, 3, 0), 4.0)
-		Sound.play_2d("radio_voice_elias", -4.0, "Voice")
 		level.hud.radio("chamber_send")
 		_core_light.light_energy = 9.0
 		_core_mat.emission_energy_multiplier = 12.0

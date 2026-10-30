@@ -237,9 +237,9 @@ const RECORDINGS := {
 	"tape_13": {"name": "Calibration tape 13", "sound": "calibration_tape", "caption": "[footsteps on metal... MIDDLE tone... LOW tone... HIGH tone... LOW tone]"},
 	"bell": {"name": "Drowned bell", "sound": "bell_drowned", "caption": "[a bell rings underwater]"},
 	"plate": {"name": "Loose plate — side cave", "sound": "metal_knock", "caption": "[two heavy metal knocks]"},
-	"morrow_tape": {"name": "LAST RECORDING 1/3 — Dr. Morrow", "sound": "radio_voice_c", "caption": "[Dr. Morrow: 'Subject Kell can hear the thirteen seconds coming. He says it is not silence. He says it is someone holding their breath.']"},
-	"mayday": {"name": "LAST RECORDING 2/3 — Mayday, MV Pelagic", "sound": "radio_voice_d", "caption": "[a ship's radio: 'Mayday, Pelagic... we hear the island answering... it is asking us to come closer...']"},
-	"kell_tape": {"name": "LAST RECORDING 3/3 — Tomas Kell", "sound": "radio_voice_a", "caption": "[Kell, in a human voice for the last time: 'If you play all three into the transmitter, it will hear itself. Then it will stop listening to us.']"},
+	"morrow_tape": {"name": "LAST RECORDING 1/3 — Dr. Morrow", "sound": "voice/rec_morrow_tape", "caption": "[Dr. Morrow: 'Subject Kell can hear the thirteen seconds coming. He says it is not silence. He says it is someone holding their breath.']"},
+	"mayday": {"name": "LAST RECORDING 2/3 — Mayday, MV Pelagic", "sound": "voice/rec_mayday", "caption": "[a ship's radio: 'Mayday, Pelagic... we hear the island answering... it is asking us to come closer...']"},
+	"kell_tape": {"name": "LAST RECORDING 3/3 — Tomas Kell", "sound": "voice/rec_kell_tape", "caption": "[Kell, in a human voice for the last time: 'If you play all three into the transmitter, it will hear itself. Then it will stop listening to us.']"},
 	"valve": {"name": "Valve knock — chamber", "sound": "metal_knock", "caption": "[a valve hammers twice]"},
 	"knocks": {"name": "Three knocks — tea room", "sound": "knock3", "caption": "[three knocks]"},
 }

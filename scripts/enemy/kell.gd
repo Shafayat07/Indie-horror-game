@@ -185,7 +185,7 @@ func _ping(p: Node3D) -> void:
 		return
 	if _first_ping:
 		_first_ping = false
-		Sound.say("[clicks sweep over you from above — STAND STILL]", "preecho", 4.0)
+		Sound.say("[clicks sweep over you from above — STAND STILL]", "hint", 4.0)
 	var moving: bool = Vector2(p.velocity.x, p.velocity.z).length() > 0.6
 	if Game.debug_ai:
 		print("[debug] kell ping flat=%.1f moving=%s covered=%s safe=%s" % [flat, moving, _covered(p), p.is_safe()])

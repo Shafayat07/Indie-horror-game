@@ -70,13 +70,13 @@ func _hulk(base: Vector3) -> void:
 		level.horror.jumpscare(level.player.head.global_position - level.player.camera.global_transform.basis.z * 1.1, 1)
 		await get_tree().create_timer(1.2).timeout
 		Game.set_flag("graveyard_radio")
-		Sound.play_at("radio_voice_d", radio.global_position, 0.0, {"bus": "Voice"})
+		Sound.play_at(Story.RECORDINGS["mayday"].sound, radio.global_position, 0.0, {"bus": "Voice"})
 		Sound.say(Story.RECORDINGS["mayday"].caption, "radio", 6.0)
 		var t := Timer.new()
-		t.wait_time = 9.0
+		t.wait_time = 20.0
 		t.autostart = true
 		radio.add_child(t)
-		t.timeout.connect(func(): Sound.play_at("radio_voice_d", radio.global_position, -4.0, {"bus": "Voice"}))
+		t.timeout.connect(func(): Sound.play_at(Story.RECORDINGS["mayday"].sound, radio.global_position, -4.0, {"bus": "Voice"}))
 		level.hud.toast("The radio is repeating the mayday. Record it [R].", 4.0)})
 
 

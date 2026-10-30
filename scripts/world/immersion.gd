@@ -69,9 +69,9 @@ func _process(delta: float) -> void:
 	_dust.global_position = pp + Vector3(0, 1.4, 0)
 	_horn_t -= delta
 	if _horn_t <= 0.0:
-		_horn_t = randf_range(70.0, 130.0)
+		_horn_t = randf_range(200.0, 320.0)
 		if level.space == "surface" and not Game.has_flag("chose_break"):
-			Sound.play_at("foghorn", Vector3(-40, 5, 260), -2.0, {"unit_size": 120.0, "max_distance": 600.0})
+			Sound.play_at("foghorn", Vector3(-40, 5, 260), -10.0, {"unit_size": 120.0, "max_distance": 600.0})
 
 
 func _g(x: float, z: float) -> float:
@@ -118,11 +118,6 @@ func _settlement() -> void:
 	chime.position = Vector3(-5.9, _g(-6, 47) + 2.4, 46.5)
 	for i in 4:
 		B.cyl(chime, Vector3(i * 0.06, -0.3 - i * 0.05, 0), 0.01, 0.4 + i * 0.1, B.flat(Color(0.6, 0.6, 0.55), 0.3, 0.8), {"collide": false})
-	var t := Timer.new()
-	t.wait_time = 6.0
-	t.autostart = true
-	chime.add_child(t)
-	t.timeout.connect(func(): Sound.play_at("bell_drowned", chime.global_position, -26.0, {"pitch": 3.5, "unit_size": 2.0}))
 	# candles in the windows that should be dark
 	for pos in [Vector3(-12, 5.7, 47.5), Vector3(-6.4, 5.7, 32.6), Vector3(12.1, 5.7, 40.5)]:
 		_lantern(pos, 0.25)

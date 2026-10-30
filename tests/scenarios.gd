@@ -152,8 +152,13 @@ func run(name: String, lv: Node) -> bool:
 			await level.travel(lc + Vector3(1.0, 12.2, 1.0), 0.0, "surface", "lighthouse")
 			await use("Climb to the light")
 			expect(Game.has_flag("chose_suha"), "followed her voice to the lantern room")
-			await wait(30.0)
+			await wait(40.0)
 			expect(get_tree().current_scene.name == "Ending" and Game.ending_choice == "suha", "ending THE LIGHT (SUHA) reached")
+		"voices":
+			for id in ["elias_arrive", "suha_line_0", "boat_arrival_1", "suha_3_0", "ending_suha_4", "lodger_0", "rec_mayday", "teahouse_0"]:
+				var d := Sound.voice(id)
+				expect(d > 0.8, "voice line %s plays (%.1fs)" % [id, d])
+			expect(Sound.voice("boat_arrival_2") == 0.0, "narration lines stay text-only")
 		"optional":
 			await _optional()
 		"seal":

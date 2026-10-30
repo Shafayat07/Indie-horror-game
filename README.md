@@ -102,7 +102,8 @@ effects and volumetric fog can be changed in **Options** (main menu or pause).
 - **The Light (Suha)** — Suha, Elias's love, calls him on the radio through the night in a soft, loving voice, and whispers to him between the scares ("wake up, love, it's only a dream"); now and then a warm figure in a pale dress stands far off and smiles. After the transmitter is armed she begs him to come up to the lantern room: "it's only a dream". Follow her voice (the ladder in the control room) and learn what the island did with it.
 - **The Last Recording** (secret) — collect the three optional recordings (Morrow's tape in the Annex, the Pelagic mayday at the Ship Graveyard, Kell's tape from his roost) and a third option appears at the transmitter console. No extra puzzle is needed.
 
-See `docs/STORY.md` for the story bible.
+See `docs/STORY.md` for the story bible, and `docs/THE_TIDE_REMEMBERS_COMPLETE_GUIDE.md` (also as `.pdf`)
+for the complete story, characters, locations, mechanics, puzzle solutions and endings in one document.
 
 ## Project layout
 
@@ -141,6 +142,12 @@ tests/shoot.sh --cp=settlement "--shots=0,5.8,66,0,0"   # rendered screenshot (n
 ```
 
 See **Testing status** below for what has and has not been verified.
+
+## Voices
+Every spoken line is real synthesized speech (Kokoro TTS, Apache 2.0), generated offline by `tools/gen_voice.py`:
+Elias (a calm British voice), Suha (soft and warm), and the radio and tape voices, each with its own radio,
+tape or whisper treatment. Speech is always subtitled; captions for sound effects are optional
+(Options → "Captions for sound effects", off by default).
 
 ## Credits and licenses
 See `docs/ASSET_MANIFEST.md`. All textures, sounds and models are original and
@@ -186,16 +193,16 @@ Automated scenarios (`tests/run_all.sh`), all run on the final code:
 | suha | Suha's final call, the lantern-room climb, ending THE LIGHT | ✅ |
 | horror | the Lodger whisper, apparition appears/vanishes, journal, watch | ✅ |
 | ai, death, menus, mouselook | Listener states, catch → checkpoint reload, pause/options, mouse look | ✅ |
+| voices | every spoken line has a voice file and it plays on the Voice bus | ✅ |
 | walk_* (7 routes) | real movement input over every main and forest route | ✅ |
 
 ## Known limitations
 
-- Spoken lines are shown as on-screen radio/tape text over distorted, deliberately
-  unintelligible synthetic "voice" audio. There is no recorded dialogue.
-- All models are procedural meshes built in code (no Blender was available), so
-  the look is stylised low-poly rather than sculpted.
+- Models are procedural (built in code or by a Blender script), so the look is
+  stylised low-poly rather than sculpted.
 - Free asset libraries (Poly Haven, ambientCG, Kenney) were blocked by the build
   environment's network policy, so every texture and sound is procedurally generated.
+- Voices are synthesized, not acted; they are clear but not as expressive as a voice actor.
 - The Windows `.exe` is unsigned; Windows SmartScreen may warn on first launch
   (*More info → Run anyway*).
 - If a GPU lacks Vulkan, run with `--rendering-driver opengl3`; volumetric fog is

@@ -9,6 +9,7 @@ No third-party textures, models, sounds or music are used. The only third-party 
 |---|---|---|---|---|---|
 | assets/fonts/SpecialElite-Regular.ttf | Font | https://github.com/google/fonts/tree/main/apache/specialelite (Google Fonts) | Apache License 2.0 (assets/fonts/SpecialElite-LICENSE.txt) | Special Elite by Astigmatic | None |
 | assets/fonts/IBMPlexMono-Regular.ttf | Font | https://github.com/google/fonts/tree/main/ofl/ibmplexmono (Google Fonts) | SIL Open Font License 1.1 (assets/fonts/IBMPlexMono-OFL.txt) | IBM Plex Mono, © 2017 IBM Corp. | None |
+| assets/audio/voice/*.wav (70 spoken lines) | Speech | Generated offline with the Kokoro-82M TTS model (https://github.com/hexgrad/kokoro, weights via https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0) and kokoro-onnx; script: tools/gen_voice.py | Kokoro-82M: Apache License 2.0; kokoro-onnx: MIT | Voices: af_heart (Suha), bm_george (Elias), bf_emma, bm_lewis, bm_daniel, am_michael, am_eric, am_onyx | Radio/tape/whisper/reverb processing in tools/gen_voice.py |
 | Godot Engine 4.3 (runtime) | Engine | https://godotengine.org | MIT | Godot Engine contributors | None |
 
 ## Original procedural assets
